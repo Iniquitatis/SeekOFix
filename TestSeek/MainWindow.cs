@@ -54,7 +54,7 @@ namespace TestSeek
         bool isRunning = true;
 
         string localPath;
-        string tempUnit;
+        string tempUnit = "K";
 
         ushort[] arrID4 = new ushort[32448];
         ushort[] arrID1 = new ushort[32448];
@@ -83,7 +83,7 @@ namespace TestSeek
         Bitmap bitmap = new Bitmap(208, 156, PixelFormat.Format24bppRgb);
         Bitmap croppedBitmap = new Bitmap(206, 156, PixelFormat.Format24bppRgb);
         Bitmap bigBitmap = new Bitmap(412, 312, PixelFormat.Format24bppRgb);
-        BitmapData bitmap_data;
+        BitmapData bitmapData;
 
         //ResizeBicubic bicubicResize = new ResizeBicubic(412, 312);
         ResizeBilinear bilinearResize = new ResizeBilinear(412, 312);
@@ -102,11 +102,13 @@ namespace TestSeek
             unitsFRadio.CheckedChanged += new EventHandler(unitRadios_CheckedChanged);
 
             var device = SeekThermal.Enumerate().FirstOrDefault();
+
             if (device == null)
             {
                 MessageBox.Show("No Seek Thermal devices found.");
                 return;
             }
+
             thermal = new SeekThermal(device);
 
             thermalThread = new Thread(ThermalThreadProc);
@@ -127,6 +129,7 @@ namespace TestSeek
                     // Gain calibration
                     case 4:
                         Frame4Stuff();
+
                         break;
 
                     // Shutter calibration
@@ -134,11 +137,13 @@ namespace TestSeek
                         MarkBadPixels();
                         if (!usingExternalCal) Frame1Stuff();
                         firstAfterCal = true;
+
                         break;
 
                     // Image frame
                     case 3:
                         MarkBadPixels();
+
                         // Use this image as reference
                         if (grabExternalReference)
                         {
@@ -152,6 +157,7 @@ namespace TestSeek
                             lastUsableFrame = currentFrame;
                             progress = true;
                         }
+
                         break;
 
                     default:
@@ -216,8 +222,7 @@ namespace TestSeek
 
         private void FillImgBuffer()
         {
-            double iScaler;
-            iScaler = (double) (gModeRight - gModeLeft) / 1000;
+            double iScaler = (double) (gModeRight - gModeLeft) / 1000;
 
             for (int i = 0; i < 32448; i++)
             {
@@ -252,7 +257,7 @@ namespace TestSeek
 
             for (ushort y = 0; y < 156; y++)
             {
-                for (ushort x = 0; x < 208; x++, i++)
+                for (ushort x = 0; x < 208; x++)
                 {
                     if (badPixelArr[i] && x < 206)
                     {
@@ -293,21 +298,20 @@ namespace TestSeek
                             arrID3[i] = val;
                         }
                     }
+
+                    i++;
                 }
             }
         }
 
         private void RemoveNoise()
         {
-            ushort x = 0;
-            ushort y = 0;
             ushort i = 0;
-            ushort val = 0;
             ushort[] arrColor = new ushort[4];
 
-            for (y = 0; y < 156; y++)
+            for (ushort y = 0; y < 156; y++)
             {
-                for (x = 0; x < 208; x++)
+                for (ushort x = 0; x < 208; x++)
                 {
                     if (x > 0 && x < 206 && y > 0 && y < 155)
                     {
@@ -316,17 +320,17 @@ namespace TestSeek
                         arrColor[2] = arrID3[i - 1]; // Left
                         arrColor[3] = arrID3[i + 1]; // Right
 
-                        val = (ushort) ((arrColor[0] + arrColor[1] + arrColor[2] + arrColor[3] - Highest(arrColor) - Lowest(arrColor)) / 2);
+                        ushort val = (ushort) ((arrColor[0] + arrColor[1] + arrColor[2] + arrColor[3] - Highest(arrColor) - Lowest(arrColor)) / 2);
 
                         if (Math.Abs(val - arrID3[i]) > 100 && val != 0)
                         {
                             arrID3[i] = val;
                         }
                     }
+
                     i++;
                 }
             }
-
         }
 
         private ushort Highest(ushort[] numbers)
@@ -358,6 +362,7 @@ namespace TestSeek
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             stopThread = true;
+
             if (thermal != null)
             {
                 thermalThread.Join(500);
@@ -375,6 +380,7 @@ namespace TestSeek
         private void manualRangeSwitchButton_Click(object sender, EventArgs e)
         {
             autoRange = !autoRange;
+
             if (autoRange)
             {
                 manualRangeSwitchButton.Text = "Switch to manual range";
@@ -471,6 +477,7 @@ namespace TestSeek
             {
                 paletteCombo.Items.Add(new ComboItem(file.FullName, file.Name.Replace(".png", "")));
             }
+
             paletteCombo.SelectedIndex = 1;
         }
 
@@ -478,11 +485,10 @@ namespace TestSeek
         {
             ComboItem newPal = (ComboItem) paletteCombo.SelectedItem;
             Bitmap paletteImg = new Bitmap(newPal.Key);
-            Color picColor;
 
             for (int i = 0; i < 1001; i++)
             {
-                picColor = paletteImg.GetPixel(i, 0);
+                Color picColor = paletteImg.GetPixel(i, 0);
                 paletteArr[i, 0] = picColor.R;
                 paletteArr[i, 1] = picColor.G;
                 paletteArr[i, 2] = picColor.B;
@@ -496,11 +502,13 @@ namespace TestSeek
         {
             public string Key { get; set; }
             public string Value { get; set; }
+
             public ComboItem(string key, string value)
             {
                 Key = key;
                 Value = value;
             }
+
             public override string ToString()
             {
                 return Value;
@@ -510,13 +518,13 @@ namespace TestSeek
         public ushort GetMode(ushort[] arr)
         {
             ushort[] arrMode = new ushort[320];
-            ushort topPos = 0;
+
             for (ushort i = 0; i < 32448; i++)
             {
                 if ((arr[i] > 1000) && (arr[i] / 100 != 0)) arrMode[(arr[i]) / 100]++;
             }
 
-            topPos = (ushort) Array.IndexOf(arrMode, arrMode.Max());
+            ushort topPos = (ushort) Array.IndexOf(arrMode, arrMode.Max());
 
             return (ushort) (topPos * 100);
         }
@@ -524,14 +532,15 @@ namespace TestSeek
         public void GetHistogram()
         {
             maxTempRaw = arrID3.Max();
+
             ushort[] arrMode = new ushort[2100];
-            ushort topPos = 0;
+
             for (ushort i = 0; i < 32448; i++)
             {
                 if ((arrID3[i] > 1000) && (arrID3[i] / 10 != 0) && !badPixelArr[i]) arrMode[(arrID3[i]) / 10]++;
             }
 
-            topPos = (ushort) Array.IndexOf(arrMode, arrMode.Max());
+            ushort topPos = (ushort) Array.IndexOf(arrMode, arrMode.Max());
 
             gMode = arrMode;
             gModePeakCnt = arrMode.Max();
@@ -547,6 +556,7 @@ namespace TestSeek
             {
                 gModeLeft = gModePeakIx;
                 gModeRight = gModePeakIx;
+
                 // Find left border
                 for (ushort i = 0; i < topPos; i++)
                 {
@@ -566,6 +576,7 @@ namespace TestSeek
                         break;
                     }
                 }
+
                 gModeLeftManual = gModeLeft;
                 gModeRightManual = gModeRight;
             }
@@ -611,23 +622,25 @@ namespace TestSeek
                 thermalThread.Resume();
                 startStopButton.Text = "STOP";
             }
+
             isRunning = !isRunning;
         }
 
         private string RawToTemp(int val)
         {
-            double tempVal = 0;
-
-            tempVal = (double) (val - 5950) / 40 + 273.15; // K
+            double tempVal = ((double) val - 5950.0) / 40.0 + 273.15;
 
             switch (tempUnit)
             {
+                case "K":
+                    break;
+
                 case "C":
-                    tempVal = tempVal - 273.15; // C
+                    tempVal = tempVal - 273.15;
                     break;
 
                 case "F":
-                    tempVal = tempVal * 9 / 5 - 459.67; // F
+                    tempVal = tempVal * 9.0 / 5.0 - 459.67; 
                     break;
             }
 
@@ -650,13 +663,13 @@ namespace TestSeek
         {
             if (lastUsableFrame != null)
             {
-                string minTemp = RawToTemp(gModeLeft);
-                string maxTemp = RawToTemp(gModeRight);
+                string minTemp = $"{RawToTemp(gModeLeft)} {GetTempUnitString()}";
+                string maxTemp = $"{RawToTemp(gModeRight)} {GetTempUnitString()}";
 
-                sliderMinLabel.Text = minTemp;
-                sliderMaxLabel.Text = maxTemp;
                 minTempLabel.Text = minTemp;
                 maxTempLabel.Text = maxTemp;
+                sliderMinLabel.Text = minTemp;
+                sliderMaxLabel.Text = maxTemp;
 
                 gModeLeftLabel.Text = gModeLeft.ToString();
                 gModeRightLabel.Text = gModeRight.ToString();
@@ -669,9 +682,9 @@ namespace TestSeek
                     maxTempSlider.Value = gModeRight;
                 }
 
-                bitmap_data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
-                Marshal.Copy(imgBuffer, 0, bitmap_data.Scan0, imgBuffer.Length);
-                bitmap.UnlockBits(bitmap_data);
+                bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+                Marshal.Copy(imgBuffer, 0, bitmapData.Scan0, imgBuffer.Length);
+                bitmap.UnlockBits(bitmapData);
 
                 // Crop image to 206x156
                 croppedBitmap = cropFilter.Apply(bitmap);
@@ -688,13 +701,24 @@ namespace TestSeek
                 {
                     firstAfterCal = false;
                     firstAfterCalPicture.Image = bigBitmap;
-                    if (autoSaveImg) bigBitmap.Save(localPath + @"\export\seek_" + DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss_fff") + ".png");
+
+                    if (autoSaveImg) 
+                        bigBitmap.Save(localPath + @"\export\seek_" + DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss_fff") + ".png");
                 }
 
                 DrawHistogram();
             }
-
         }
 
+        private string GetTempUnitString()
+        {
+            switch (tempUnit)
+            {
+                case "K": return "K";
+                case "C": return "°C";
+                case "F": return "°F";
+                default:  return "";
+            }
+        }
     }
 }
