@@ -474,8 +474,8 @@ namespace SeekOFix
                 string minTemp = Utils.FormatTempString(tempUnit, gModeLeft);
                 string maxTemp = Utils.FormatTempString(tempUnit, gModeRight);
 
-                minTempLabel.Text = minTemp;
-                maxTempLabel.Text = maxTemp;
+                tempGaugeMinLabel.Text = minTemp;
+                tempGaugeMaxLabel.Text = maxTemp;
                 sliderMinLabel.Text = minTemp;
                 sliderMaxLabel.Text = maxTemp;
 
@@ -592,7 +592,7 @@ namespace SeekOFix
             }
 
             paletteImg.RotateFlip(RotateFlipType.Rotate270FlipNone);
-            temperatureGaugePicture.Image = paletteImg;
+            tempGaugePicture.Image = paletteImg;
         }
 
         private void autoSaveCheck_CheckedChanged(object sender, EventArgs e)

@@ -21,43 +21,43 @@ namespace SeekOFix
 
         public bool AnalysisEnabled
         {
-            get { return _analysisEnabled; }
+            get => _analysisEnabled;
             set { _analysisEnabled = value; Reanalyze(); }
         }
 
         public string TempUnit
         {
-            get { return _tempUnit; }
+            get => _tempUnit;
             set { _tempUnit = value; Invalidate(); }
         }
 
         public bool ShowTemperature
         {
-            get { return _showTemperature; }
+            get => _showTemperature;
             set { _showTemperature = value; Invalidate(); }
         }
 
         public int CrossSize
         {
-            get { return _crossSize; }
+            get => _crossSize;
             set { _crossSize = value; Invalidate(); }
         }
 
         public bool ShowExtremes
         {
-            get { return _showExtremes; }
+            get => _showExtremes;
             set { _showExtremes = value; Reanalyze(); }
         }
 
         public int MaxCount
         {
-            get { return _maxCount; }
+            get => _maxCount;
             set { _maxCount = value; AdjustAnalyzerCount(); Invalidate(); }
         }
 
         public ushort[] RawValues
         {
-            get { return _rawValues; }
+            get => _rawValues;
             set { _rawValues = value; Reanalyze(); }
         }
 
