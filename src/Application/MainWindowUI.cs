@@ -65,10 +65,6 @@ namespace SeekOFix
 
             components = new Container();
 
-            var startStopToolTip = new ToolTip(components);
-            var intCalToolTip = new ToolTip(components);
-            var extCalToolTip = new ToolTip(components);
-
             var mainLayout = new TableLayoutPanel();
             mainLayout.ColumnCount = 3;
             mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 250f));
@@ -100,9 +96,9 @@ namespace SeekOFix
 
             var mainControlButtons = new TableLayoutPanel();
             mainControlButtons.ColumnCount = 3;
-            mainControlButtons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33333f));
-            mainControlButtons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33333f));
-            mainControlButtons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33333f));
+            mainControlButtons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
+            mainControlButtons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
+            mainControlButtons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
             mainControlButtons.Dock = DockStyle.Fill;
             mainControlButtons.Margin = new Padding(0);
             mainControlButtons.RowCount = 1;
@@ -112,23 +108,33 @@ namespace SeekOFix
             startStopButton = new Button();
             startStopButton.Dock = DockStyle.Fill;
             startStopButton.Text = "STOP";
-            startStopButton.Click += new EventHandler(HandleStartStopButtonClick);
-            startStopToolTip.SetToolTip(startStopButton, "Start/stop streaming");
+            startStopButton.Click += new EventHandler((sender, e) =>
+            {
+                ToggleThreadActivity();
+                startStopButton.Text = isRunning ? "STOP" : "START";
+            });
             mainControlButtons.Controls.Add(startStopButton, 0, 0);
+
+            var startStopToolTip = new ToolTip(components);
+            startStopToolTip.SetToolTip(startStopButton, "Start/stop streaming");
 
             var intCalButton = new Button();
             intCalButton.Dock = DockStyle.Fill;
             intCalButton.Text = "INT Cal";
             intCalButton.Click += new EventHandler((sender, e) => usingExternalCal = false);
-            intCalToolTip.SetToolTip(intCalButton, "Do internal calibration");
             mainControlButtons.Controls.Add(intCalButton, 1, 0);
+
+            var intCalToolTip = new ToolTip(components);
+            intCalToolTip.SetToolTip(intCalButton, "Do internal calibration");
 
             var extCalButton = new Button();
             extCalButton.Dock = DockStyle.Fill;
             extCalButton.Text = "EXT Cal";
             extCalButton.Click += new EventHandler((sender, e) => grabExternalReference = true);
-            extCalToolTip.SetToolTip(extCalButton, "Do external calibration");
             mainControlButtons.Controls.Add(extCalButton, 2, 0);
+
+            var extCalToolTip = new ToolTip(components);
+            extCalToolTip.SetToolTip(extCalButton, "Do external calibration");
 
             var mainControlTabs = new TabControl();
             mainControlTabs.Dock = DockStyle.Fill;
@@ -176,9 +182,9 @@ namespace SeekOFix
 
             var unitsLayout = new TableLayoutPanel();
             unitsLayout.ColumnCount = 3;
-            unitsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33333f));
-            unitsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33333f));
-            unitsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33333f));
+            unitsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
+            unitsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
+            unitsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
             unitsLayout.Dock = DockStyle.Fill;
             unitsLayout.Margin = new Padding(0);
             unitsLayout.RowCount = 1;
@@ -391,9 +397,9 @@ namespace SeekOFix
 
             var debugValueLayout = new TableLayoutPanel();
             debugValueLayout.ColumnCount = 3;
-            debugValueLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33333f));
-            debugValueLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33333f));
-            debugValueLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33333f));
+            debugValueLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
+            debugValueLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
+            debugValueLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
             debugValueLayout.Dock = DockStyle.Fill;
             debugValueLayout.Margin = new Padding(0);
             debugValueLayout.RowCount = 1;

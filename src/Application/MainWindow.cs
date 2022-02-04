@@ -88,6 +88,16 @@ namespace SeekOFix
             thermalThread.Start();
         }
 
+        void ToggleThreadActivity()
+        {
+            if (isRunning)
+                thermalThread.Suspend();
+            else
+                thermalThread.Resume();
+
+            isRunning = !isRunning;
+        }
+
         void ThermalThreadProc()
         {
             while (!stopThread && thermal != null)
@@ -533,22 +543,6 @@ namespace SeekOFix
                 thermalThread.Join(500);
                 thermal.Deinit();
             }
-        }
-
-        private void HandleStartStopButtonClick(object sender, EventArgs e)
-        {
-            if (isRunning)
-            {
-                thermalThread.Suspend();
-                startStopButton.Text = "START";
-            }
-            else
-            {
-                thermalThread.Resume();
-                startStopButton.Text = "STOP";
-            }
-
-            isRunning = !isRunning;
         }
 
         class ComboItem
