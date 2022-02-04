@@ -71,6 +71,7 @@
             this.showExtremesCheck = new System.Windows.Forms.CheckBox();
             this.maxCountLabel = new System.Windows.Forms.Label();
             this.maxCountSpinner = new System.Windows.Forms.NumericUpDown();
+            this.deletePointsButton = new System.Windows.Forms.Button();
             this.outputTab = new System.Windows.Forms.TabPage();
             this.outputLayout = new System.Windows.Forms.TableLayoutPanel();
             this.outputPathLabel = new System.Windows.Forms.Label();
@@ -81,13 +82,12 @@
             this.recordVideoButton = new System.Windows.Forms.Button();
             this.pictureTabs = new System.Windows.Forms.TabControl();
             this.liveTab = new System.Windows.Forms.TabPage();
+            this.livePicture = new SeekOFix.AnalyzablePictureBox();
             this.firstAfterCalTab = new System.Windows.Forms.TabPage();
+            this.firstAfterCalPicture = new SeekOFix.AnalyzablePictureBox();
             this.debugValueLayout = new System.Windows.Forms.TableLayoutPanel();
             this.mouseLabel = new System.Windows.Forms.Label();
             this.intCalToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.deletePointsButton = new System.Windows.Forms.Button();
-            this.livePicture = new AnalyzablePictureBox();
-            this.firstAfterCalPicture = new AnalyzablePictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.maxTempSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minTempSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.histogramPicture)).BeginInit();
@@ -108,10 +108,10 @@
             this.outputPathLayout.SuspendLayout();
             this.pictureTabs.SuspendLayout();
             this.liveTab.SuspendLayout();
-            this.firstAfterCalTab.SuspendLayout();
-            this.debugValueLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.livePicture)).BeginInit();
+            this.firstAfterCalTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.firstAfterCalPicture)).BeginInit();
+            this.debugValueLayout.SuspendLayout();
             this.SuspendLayout();
             // 
             // extCalButton
@@ -132,11 +132,11 @@
             this.maxTempSlider.CausesValidation = false;
             this.mainLayout.SetColumnSpan(this.maxTempSlider, 2);
             this.maxTempSlider.LargeChange = 100;
-            this.maxTempSlider.Location = new System.Drawing.Point(3, 896);
+            this.maxTempSlider.Location = new System.Drawing.Point(3, 697);
             this.maxTempSlider.Maximum = 20000;
             this.maxTempSlider.Minimum = 4000;
             this.maxTempSlider.Name = "maxTempSlider";
-            this.maxTempSlider.Size = new System.Drawing.Size(1159, 19);
+            this.maxTempSlider.Size = new System.Drawing.Size(932, 19);
             this.maxTempSlider.SmallChange = 10;
             this.maxTempSlider.TabIndex = 11;
             this.maxTempSlider.TickFrequency = 100;
@@ -149,11 +149,11 @@
             this.minTempSlider.CausesValidation = false;
             this.mainLayout.SetColumnSpan(this.minTempSlider, 2);
             this.minTempSlider.LargeChange = 100;
-            this.minTempSlider.Location = new System.Drawing.Point(3, 846);
+            this.minTempSlider.Location = new System.Drawing.Point(3, 647);
             this.minTempSlider.Maximum = 20000;
             this.minTempSlider.Minimum = 4000;
             this.minTempSlider.Name = "minTempSlider";
-            this.minTempSlider.Size = new System.Drawing.Size(1159, 19);
+            this.minTempSlider.Size = new System.Drawing.Size(932, 19);
             this.minTempSlider.SmallChange = 10;
             this.minTempSlider.TabIndex = 12;
             this.minTempSlider.TickFrequency = 100;
@@ -217,7 +217,7 @@
             // sliderMinLabel
             // 
             this.sliderMinLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.sliderMinLabel.Location = new System.Drawing.Point(1168, 843);
+            this.sliderMinLabel.Location = new System.Drawing.Point(941, 644);
             this.sliderMinLabel.Name = "sliderMinLabel";
             this.sliderMinLabel.Size = new System.Drawing.Size(54, 25);
             this.sliderMinLabel.TabIndex = 22;
@@ -227,7 +227,7 @@
             // sliderMaxLabel
             // 
             this.sliderMaxLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.sliderMaxLabel.Location = new System.Drawing.Point(1168, 893);
+            this.sliderMaxLabel.Location = new System.Drawing.Point(941, 694);
             this.sliderMaxLabel.Name = "sliderMaxLabel";
             this.sliderMaxLabel.Size = new System.Drawing.Size(54, 25);
             this.sliderMaxLabel.TabIndex = 23;
@@ -369,9 +369,9 @@
             // temperatureGaugePicture
             // 
             this.temperatureGaugePicture.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.temperatureGaugePicture.Location = new System.Drawing.Point(1168, 28);
+            this.temperatureGaugePicture.Location = new System.Drawing.Point(941, 28);
             this.temperatureGaugePicture.Name = "temperatureGaugePicture";
-            this.temperatureGaugePicture.Size = new System.Drawing.Size(54, 787);
+            this.temperatureGaugePicture.Size = new System.Drawing.Size(54, 588);
             this.temperatureGaugePicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.temperatureGaugePicture.TabIndex = 37;
             this.temperatureGaugePicture.TabStop = false;
@@ -390,7 +390,7 @@
             // maxTempLabel
             // 
             this.maxTempLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.maxTempLabel.Location = new System.Drawing.Point(1168, 0);
+            this.maxTempLabel.Location = new System.Drawing.Point(941, 0);
             this.maxTempLabel.Name = "maxTempLabel";
             this.maxTempLabel.Size = new System.Drawing.Size(54, 25);
             this.maxTempLabel.TabIndex = 41;
@@ -400,7 +400,7 @@
             // minTempLabel
             // 
             this.minTempLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.minTempLabel.Location = new System.Drawing.Point(1168, 818);
+            this.minTempLabel.Location = new System.Drawing.Point(941, 619);
             this.minTempLabel.Name = "minTempLabel";
             this.minTempLabel.Size = new System.Drawing.Size(54, 25);
             this.minTempLabel.TabIndex = 42;
@@ -436,7 +436,7 @@
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.mainLayout.Size = new System.Drawing.Size(1225, 918);
+            this.mainLayout.Size = new System.Drawing.Size(998, 719);
             this.mainLayout.TabIndex = 43;
             // 
             // mainControlLayout
@@ -454,7 +454,7 @@
             this.mainControlLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.mainControlLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.mainControlLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.mainControlLayout.Size = new System.Drawing.Size(250, 818);
+            this.mainControlLayout.Size = new System.Drawing.Size(250, 619);
             this.mainControlLayout.TabIndex = 49;
             // 
             // mainControlButtons
@@ -485,7 +485,7 @@
             this.mainControlTabs.Location = new System.Drawing.Point(3, 33);
             this.mainControlTabs.Name = "mainControlTabs";
             this.mainControlTabs.SelectedIndex = 0;
-            this.mainControlTabs.Size = new System.Drawing.Size(244, 782);
+            this.mainControlTabs.Size = new System.Drawing.Size(244, 583);
             this.mainControlTabs.TabIndex = 48;
             // 
             // appearanceTab
@@ -494,7 +494,7 @@
             this.appearanceTab.Location = new System.Drawing.Point(4, 22);
             this.appearanceTab.Name = "appearanceTab";
             this.appearanceTab.Padding = new System.Windows.Forms.Padding(3);
-            this.appearanceTab.Size = new System.Drawing.Size(236, 756);
+            this.appearanceTab.Size = new System.Drawing.Size(236, 557);
             this.appearanceTab.TabIndex = 0;
             this.appearanceTab.Text = "Appearance";
             this.appearanceTab.UseVisualStyleBackColor = true;
@@ -524,7 +524,7 @@
             this.appearanceLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.appearanceLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.appearanceLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.appearanceLayout.Size = new System.Drawing.Size(230, 750);
+            this.appearanceLayout.Size = new System.Drawing.Size(230, 551);
             this.appearanceLayout.TabIndex = 0;
             // 
             // unitsLayout
@@ -551,7 +551,7 @@
             this.analysisTab.Location = new System.Drawing.Point(4, 22);
             this.analysisTab.Name = "analysisTab";
             this.analysisTab.Padding = new System.Windows.Forms.Padding(3);
-            this.analysisTab.Size = new System.Drawing.Size(236, 756);
+            this.analysisTab.Size = new System.Drawing.Size(236, 557);
             this.analysisTab.TabIndex = 1;
             this.analysisTab.Text = "Analysis";
             this.analysisTab.UseVisualStyleBackColor = true;
@@ -581,7 +581,7 @@
             this.analysisLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.analysisLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.analysisLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.analysisLayout.Size = new System.Drawing.Size(230, 750);
+            this.analysisLayout.Size = new System.Drawing.Size(230, 551);
             this.analysisLayout.TabIndex = 0;
             // 
             // enableAnalysisCheck
@@ -697,13 +697,25 @@
             0});
             this.maxCountSpinner.ValueChanged += new System.EventHandler(this.maxCountSpinner_ValueChanged);
             // 
+            // deletePointsButton
+            // 
+            this.analysisLayout.SetColumnSpan(this.deletePointsButton, 2);
+            this.deletePointsButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.deletePointsButton.Location = new System.Drawing.Point(3, 153);
+            this.deletePointsButton.Name = "deletePointsButton";
+            this.deletePointsButton.Size = new System.Drawing.Size(224, 24);
+            this.deletePointsButton.TabIndex = 52;
+            this.deletePointsButton.Text = "Delete all points";
+            this.deletePointsButton.UseVisualStyleBackColor = true;
+            this.deletePointsButton.Click += new System.EventHandler(this.deletePointsButton_Click);
+            // 
             // outputTab
             // 
             this.outputTab.Controls.Add(this.outputLayout);
             this.outputTab.Location = new System.Drawing.Point(4, 22);
             this.outputTab.Name = "outputTab";
             this.outputTab.Padding = new System.Windows.Forms.Padding(3);
-            this.outputTab.Size = new System.Drawing.Size(236, 756);
+            this.outputTab.Size = new System.Drawing.Size(236, 557);
             this.outputTab.TabIndex = 2;
             this.outputTab.Text = "Output";
             this.outputTab.UseVisualStyleBackColor = true;
@@ -728,7 +740,7 @@
             this.outputLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.outputLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.outputLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.outputLayout.Size = new System.Drawing.Size(230, 750);
+            this.outputLayout.Size = new System.Drawing.Size(230, 551);
             this.outputLayout.TabIndex = 0;
             // 
             // outputPathLabel
@@ -812,7 +824,7 @@
             this.pictureTabs.Name = "pictureTabs";
             this.mainLayout.SetRowSpan(this.pictureTabs, 2);
             this.pictureTabs.SelectedIndex = 0;
-            this.pictureTabs.Size = new System.Drawing.Size(909, 812);
+            this.pictureTabs.Size = new System.Drawing.Size(682, 613);
             this.pictureTabs.TabIndex = 44;
             // 
             // liveTab
@@ -821,62 +833,10 @@
             this.liveTab.Location = new System.Drawing.Point(4, 22);
             this.liveTab.Name = "liveTab";
             this.liveTab.Padding = new System.Windows.Forms.Padding(3);
-            this.liveTab.Size = new System.Drawing.Size(901, 786);
+            this.liveTab.Size = new System.Drawing.Size(674, 587);
             this.liveTab.TabIndex = 0;
             this.liveTab.Text = "Live";
             this.liveTab.UseVisualStyleBackColor = true;
-            // 
-            // firstAfterCalTab
-            // 
-            this.firstAfterCalTab.Controls.Add(this.firstAfterCalPicture);
-            this.firstAfterCalTab.Location = new System.Drawing.Point(4, 22);
-            this.firstAfterCalTab.Name = "firstAfterCalTab";
-            this.firstAfterCalTab.Padding = new System.Windows.Forms.Padding(3);
-            this.firstAfterCalTab.Size = new System.Drawing.Size(901, 786);
-            this.firstAfterCalTab.TabIndex = 1;
-            this.firstAfterCalTab.Text = "On calibration";
-            this.firstAfterCalTab.UseVisualStyleBackColor = true;
-            // 
-            // debugValueLayout
-            // 
-            this.debugValueLayout.ColumnCount = 3;
-            this.debugValueLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.debugValueLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.debugValueLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.debugValueLayout.Controls.Add(this.gModeLeftLabel, 0, 0);
-            this.debugValueLayout.Controls.Add(this.gModeRightLabel, 1, 0);
-            this.debugValueLayout.Controls.Add(this.maxTempRawLabel, 2, 0);
-            this.debugValueLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.debugValueLayout.Location = new System.Drawing.Point(0, 818);
-            this.debugValueLayout.Margin = new System.Windows.Forms.Padding(0);
-            this.debugValueLayout.Name = "debugValueLayout";
-            this.debugValueLayout.RowCount = 1;
-            this.debugValueLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.debugValueLayout.Size = new System.Drawing.Size(250, 25);
-            this.debugValueLayout.TabIndex = 45;
-            // 
-            // mouseLabel
-            // 
-            this.mouseLabel.AutoSize = true;
-            this.mouseLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mouseLabel.Location = new System.Drawing.Point(253, 818);
-            this.mouseLabel.Name = "mouseLabel";
-            this.mouseLabel.Size = new System.Drawing.Size(909, 25);
-            this.mouseLabel.TabIndex = 46;
-            this.mouseLabel.Text = "mouse";
-            this.mouseLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // deletePointsButton
-            // 
-            this.analysisLayout.SetColumnSpan(this.deletePointsButton, 2);
-            this.deletePointsButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.deletePointsButton.Location = new System.Drawing.Point(3, 153);
-            this.deletePointsButton.Name = "deletePointsButton";
-            this.deletePointsButton.Size = new System.Drawing.Size(224, 24);
-            this.deletePointsButton.TabIndex = 52;
-            this.deletePointsButton.Text = "Delete all points";
-            this.deletePointsButton.UseVisualStyleBackColor = true;
-            this.deletePointsButton.Click += new System.EventHandler(this.deletePointsButton_Click);
             // 
             // livePicture
             // 
@@ -898,6 +858,17 @@
             this.livePicture.MouseLeave += new System.EventHandler(this.analyzablePicture_MouseLeave);
             this.livePicture.MouseMove += new System.Windows.Forms.MouseEventHandler(this.analyzablePicture_MouseMove);
             // 
+            // firstAfterCalTab
+            // 
+            this.firstAfterCalTab.Controls.Add(this.firstAfterCalPicture);
+            this.firstAfterCalTab.Location = new System.Drawing.Point(4, 22);
+            this.firstAfterCalTab.Name = "firstAfterCalTab";
+            this.firstAfterCalTab.Padding = new System.Windows.Forms.Padding(3);
+            this.firstAfterCalTab.Size = new System.Drawing.Size(674, 587);
+            this.firstAfterCalTab.TabIndex = 1;
+            this.firstAfterCalTab.Text = "On calibration";
+            this.firstAfterCalTab.UseVisualStyleBackColor = true;
+            // 
             // firstAfterCalPicture
             // 
             this.firstAfterCalPicture.AnalysisEnabled = false;
@@ -918,16 +889,45 @@
             this.firstAfterCalPicture.MouseLeave += new System.EventHandler(this.analyzablePicture_MouseLeave);
             this.firstAfterCalPicture.MouseMove += new System.Windows.Forms.MouseEventHandler(this.analyzablePicture_MouseMove);
             // 
+            // debugValueLayout
+            // 
+            this.debugValueLayout.ColumnCount = 3;
+            this.debugValueLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.debugValueLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.debugValueLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.debugValueLayout.Controls.Add(this.gModeLeftLabel, 0, 0);
+            this.debugValueLayout.Controls.Add(this.gModeRightLabel, 1, 0);
+            this.debugValueLayout.Controls.Add(this.maxTempRawLabel, 2, 0);
+            this.debugValueLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.debugValueLayout.Location = new System.Drawing.Point(0, 619);
+            this.debugValueLayout.Margin = new System.Windows.Forms.Padding(0);
+            this.debugValueLayout.Name = "debugValueLayout";
+            this.debugValueLayout.RowCount = 1;
+            this.debugValueLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.debugValueLayout.Size = new System.Drawing.Size(250, 25);
+            this.debugValueLayout.TabIndex = 45;
+            // 
+            // mouseLabel
+            // 
+            this.mouseLabel.AutoSize = true;
+            this.mouseLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mouseLabel.Location = new System.Drawing.Point(253, 619);
+            this.mouseLabel.Name = "mouseLabel";
+            this.mouseLabel.Size = new System.Drawing.Size(682, 25);
+            this.mouseLabel.TabIndex = 46;
+            this.mouseLabel.Text = "mouse";
+            this.mouseLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1235, 928);
+            this.ClientSize = new System.Drawing.Size(1008, 729);
             this.Controls.Add(this.mainLayout);
             this.MinimumSize = new System.Drawing.Size(640, 360);
             this.Name = "MainWindow";
             this.Padding = new System.Windows.Forms.Padding(5);
-            this.Text = "SeekOFix v0.4";
+            this.Text = "SeekOFix";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
             this.Load += new System.EventHandler(this.MainWindow_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.MainWindow_Paint);
@@ -958,11 +958,11 @@
             this.outputPathLayout.PerformLayout();
             this.pictureTabs.ResumeLayout(false);
             this.liveTab.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.livePicture)).EndInit();
             this.firstAfterCalTab.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.firstAfterCalPicture)).EndInit();
             this.debugValueLayout.ResumeLayout(false);
             this.debugValueLayout.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.livePicture)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.firstAfterCalPicture)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -983,11 +983,9 @@
         private System.Windows.Forms.ToolTip extCalToolTip;
         private System.Windows.Forms.Label paletteLabel;
         private System.Windows.Forms.ComboBox paletteCombo;
-        private AnalyzablePictureBox livePicture;
         private System.Windows.Forms.Label gModeLeftLabel;
         private System.Windows.Forms.Label gModeRightLabel;
         private System.Windows.Forms.PictureBox temperatureGaugePicture;
-        private AnalyzablePictureBox firstAfterCalPicture;
         private System.Windows.Forms.Label maxTempRawLabel;
         private System.Windows.Forms.PictureBox histogramPicture;
         private System.Windows.Forms.Label maxTempLabel;
@@ -1028,6 +1026,8 @@
         private System.Windows.Forms.TabPage outputTab;
         private System.Windows.Forms.Label outputPathLabel;
         private System.Windows.Forms.Button deletePointsButton;
+        private AnalyzablePictureBox livePicture;
+        private AnalyzablePictureBox firstAfterCalPicture;
     }
 }
 
