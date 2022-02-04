@@ -551,16 +551,6 @@ namespace SeekOFix
             isRunning = !isRunning;
         }
 
-        private void intCalButton_Click(object sender, EventArgs e)
-        {
-            usingExternalCal = false;
-        }
-
-        private void extCalButton_Click(object sender, EventArgs e)
-        {
-            grabExternalReference = true;
-        }
-
         class ComboItem
         {
             public string Key { get; set; }
@@ -593,16 +583,6 @@ namespace SeekOFix
 
             paletteImg.RotateFlip(RotateFlipType.Rotate270FlipNone);
             tempGaugePicture.Image = paletteImg;
-        }
-
-        private void autoSaveCheck_CheckedChanged(object sender, EventArgs e)
-        {
-            autoSaveImg = !autoSaveImg;
-        }
-
-        private void applySharpenCheck_CheckedChanged(object sender, EventArgs e)
-        {
-            sharpenImage = !sharpenImage;
         }
 
         private void unitRadios_CheckedChanged(object sender, EventArgs e)
