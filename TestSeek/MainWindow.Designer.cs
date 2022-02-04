@@ -49,11 +49,9 @@
             this.unitsCRadio = new System.Windows.Forms.RadioButton();
             this.paletteCombo = new System.Windows.Forms.ComboBox();
             this.paletteLabel = new System.Windows.Forms.Label();
-            this.livePicture = new System.Windows.Forms.PictureBox();
             this.gModeLeftLabel = new System.Windows.Forms.Label();
             this.gModeRightLabel = new System.Windows.Forms.Label();
             this.temperatureGaugePicture = new System.Windows.Forms.PictureBox();
-            this.firstAfterCalPicture = new System.Windows.Forms.PictureBox();
             this.maxTempRawLabel = new System.Windows.Forms.Label();
             this.maxTempLabel = new System.Windows.Forms.Label();
             this.minTempLabel = new System.Windows.Forms.Label();
@@ -63,28 +61,42 @@
             this.firstAfterCalPage = new System.Windows.Forms.TabPage();
             this.mainSettingsLayout = new System.Windows.Forms.TableLayoutPanel();
             this.unitsLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.pointsGroup = new System.Windows.Forms.GroupBox();
+            this.pointsLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.enableAnalysisCheck = new System.Windows.Forms.CheckBox();
+            this.showTemperatureCheck = new System.Windows.Forms.CheckBox();
+            this.crossSizeLabel = new System.Windows.Forms.Label();
+            this.crossSizeSpinner = new System.Windows.Forms.NumericUpDown();
+            this.showExtremesCheck = new System.Windows.Forms.CheckBox();
+            this.maxCountLabel = new System.Windows.Forms.Label();
+            this.maxCountSpinner = new System.Windows.Forms.NumericUpDown();
             this.debugValueLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.mouseLabel = new System.Windows.Forms.Label();
             this.intCalToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.livePicture = new TestSeek.AnalyzablePictureBox();
+            this.firstAfterCalPicture = new TestSeek.AnalyzablePictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.maxTempSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minTempSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.histogramPicture)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.livePicture)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.temperatureGaugePicture)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.firstAfterCalPicture)).BeginInit();
             this.mainLayout.SuspendLayout();
             this.pictureTabs.SuspendLayout();
             this.livePage.SuspendLayout();
             this.firstAfterCalPage.SuspendLayout();
             this.mainSettingsLayout.SuspendLayout();
             this.unitsLayout.SuspendLayout();
+            this.pointsGroup.SuspendLayout();
+            this.pointsLayout.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.crossSizeSpinner)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.maxCountSpinner)).BeginInit();
             this.debugValueLayout.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.livePicture)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.firstAfterCalPicture)).BeginInit();
             this.SuspendLayout();
             // 
             // extCalButton
             // 
-            this.extCalButton.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.extCalButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.extCalButton.Location = new System.Drawing.Point(165, 3);
             this.extCalButton.Name = "extCalButton";
             this.extCalButton.Size = new System.Drawing.Size(76, 24);
@@ -149,9 +161,9 @@
             this.mainSettingsLayout.SetColumnSpan(this.autoSaveCheck, 3);
             this.autoSaveCheck.Location = new System.Drawing.Point(3, 96);
             this.autoSaveCheck.Name = "autoSaveCheck";
-            this.autoSaveCheck.Size = new System.Drawing.Size(73, 17);
+            this.autoSaveCheck.Size = new System.Drawing.Size(173, 17);
             this.autoSaveCheck.TabIndex = 14;
-            this.autoSaveCheck.Text = "AutoSave";
+            this.autoSaveCheck.Text = "Screenshot on each calibration";
             this.autoSaveCheck.UseVisualStyleBackColor = true;
             this.autoSaveCheck.CheckedChanged += new System.EventHandler(this.autoSaveCheck_CheckedChanged);
             // 
@@ -176,9 +188,9 @@
             this.mainSettingsLayout.SetColumnSpan(this.applySharpenCheck, 3);
             this.applySharpenCheck.Location = new System.Drawing.Point(3, 126);
             this.applySharpenCheck.Name = "applySharpenCheck";
-            this.applySharpenCheck.Size = new System.Drawing.Size(117, 17);
+            this.applySharpenCheck.Size = new System.Drawing.Size(129, 17);
             this.applySharpenCheck.TabIndex = 20;
-            this.applySharpenCheck.Text = "Apply Sharpen filter";
+            this.applySharpenCheck.Text = "Apply sharpening filter";
             this.applySharpenCheck.UseVisualStyleBackColor = true;
             this.applySharpenCheck.CheckedChanged += new System.EventHandler(this.applySharpenCheck_CheckedChanged);
             // 
@@ -204,9 +216,7 @@
             // 
             // startStopButton
             // 
-            this.startStopButton.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.startStopButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.startStopButton.Location = new System.Drawing.Point(3, 3);
             this.startStopButton.Name = "startStopButton";
             this.startStopButton.Size = new System.Drawing.Size(75, 24);
@@ -218,9 +228,7 @@
             // 
             // intCalButton
             // 
-            this.intCalButton.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.intCalButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.intCalButton.Location = new System.Drawing.Point(84, 3);
             this.intCalButton.Name = "intCalButton";
             this.intCalButton.Size = new System.Drawing.Size(75, 24);
@@ -251,6 +259,7 @@
             this.unitsFRadio.TabIndex = 26;
             this.unitsFRadio.Text = "°F";
             this.unitsFRadio.UseVisualStyleBackColor = true;
+            this.unitsFRadio.CheckedChanged += new System.EventHandler(this.unitRadios_CheckedChanged);
             // 
             // histogramPicture
             // 
@@ -279,6 +288,7 @@
             this.unitsKRadio.TabStop = true;
             this.unitsKRadio.Text = "K";
             this.unitsKRadio.UseVisualStyleBackColor = true;
+            this.unitsKRadio.CheckedChanged += new System.EventHandler(this.unitRadios_CheckedChanged);
             // 
             // unitsCRadio
             // 
@@ -290,6 +300,7 @@
             this.unitsCRadio.TabIndex = 25;
             this.unitsCRadio.Text = "°C";
             this.unitsCRadio.UseVisualStyleBackColor = true;
+            this.unitsCRadio.CheckedChanged += new System.EventHandler(this.unitRadios_CheckedChanged);
             // 
             // paletteCombo
             // 
@@ -313,16 +324,6 @@
             this.paletteLabel.TabIndex = 30;
             this.paletteLabel.Text = "Palette:";
             this.paletteLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // livePicture
-            // 
-            this.livePicture.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.livePicture.Location = new System.Drawing.Point(3, 3);
-            this.livePicture.Name = "livePicture";
-            this.livePicture.Size = new System.Drawing.Size(668, 606);
-            this.livePicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.livePicture.TabIndex = 34;
-            this.livePicture.TabStop = false;
             // 
             // gModeLeftLabel
             // 
@@ -348,25 +349,13 @@
             // 
             // temperatureGaugePicture
             // 
-            this.temperatureGaugePicture.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.temperatureGaugePicture.Dock = System.Windows.Forms.DockStyle.Fill;
             this.temperatureGaugePicture.Location = new System.Drawing.Point(941, 28);
             this.temperatureGaugePicture.Name = "temperatureGaugePicture";
             this.temperatureGaugePicture.Size = new System.Drawing.Size(54, 588);
             this.temperatureGaugePicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.temperatureGaugePicture.TabIndex = 37;
             this.temperatureGaugePicture.TabStop = false;
-            // 
-            // firstAfterCalPicture
-            // 
-            this.firstAfterCalPicture.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.firstAfterCalPicture.Location = new System.Drawing.Point(3, 3);
-            this.firstAfterCalPicture.Name = "firstAfterCalPicture";
-            this.firstAfterCalPicture.Size = new System.Drawing.Size(688, 606);
-            this.firstAfterCalPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.firstAfterCalPicture.TabIndex = 38;
-            this.firstAfterCalPicture.TabStop = false;
             // 
             // maxTempRawLabel
             // 
@@ -415,6 +404,7 @@
             this.mainLayout.Controls.Add(this.debugValueLayout, 0, 2);
             this.mainLayout.Controls.Add(this.sliderMaxLabel, 2, 5);
             this.mainLayout.Controls.Add(this.sliderMinLabel, 2, 3);
+            this.mainLayout.Controls.Add(this.mouseLabel, 1, 2);
             this.mainLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainLayout.Location = new System.Drawing.Point(5, 5);
             this.mainLayout.Name = "mainLayout";
@@ -425,6 +415,7 @@
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.mainLayout.Size = new System.Drawing.Size(998, 719);
             this.mainLayout.TabIndex = 43;
             // 
@@ -435,9 +426,9 @@
             this.pictureTabs.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureTabs.Location = new System.Drawing.Point(253, 3);
             this.pictureTabs.Name = "pictureTabs";
-            this.mainLayout.SetRowSpan(this.pictureTabs, 3);
+            this.mainLayout.SetRowSpan(this.pictureTabs, 2);
             this.pictureTabs.SelectedIndex = 0;
-            this.pictureTabs.Size = new System.Drawing.Size(682, 638);
+            this.pictureTabs.Size = new System.Drawing.Size(682, 613);
             this.pictureTabs.TabIndex = 44;
             // 
             // livePage
@@ -446,7 +437,7 @@
             this.livePage.Location = new System.Drawing.Point(4, 22);
             this.livePage.Name = "livePage";
             this.livePage.Padding = new System.Windows.Forms.Padding(3);
-            this.livePage.Size = new System.Drawing.Size(674, 612);
+            this.livePage.Size = new System.Drawing.Size(674, 587);
             this.livePage.TabIndex = 0;
             this.livePage.Text = "Live";
             this.livePage.UseVisualStyleBackColor = true;
@@ -457,9 +448,9 @@
             this.firstAfterCalPage.Location = new System.Drawing.Point(4, 22);
             this.firstAfterCalPage.Name = "firstAfterCalPage";
             this.firstAfterCalPage.Padding = new System.Windows.Forms.Padding(3);
-            this.firstAfterCalPage.Size = new System.Drawing.Size(694, 612);
+            this.firstAfterCalPage.Size = new System.Drawing.Size(674, 587);
             this.firstAfterCalPage.TabIndex = 1;
-            this.firstAfterCalPage.Text = "First after cal";
+            this.firstAfterCalPage.Text = "On calibration";
             this.firstAfterCalPage.UseVisualStyleBackColor = true;
             // 
             // mainSettingsLayout
@@ -468,7 +459,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainSettingsLayout.AutoSize = true;
             this.mainSettingsLayout.ColumnCount = 3;
-            this.mainSettingsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.mainSettingsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33332F));
             this.mainSettingsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.mainSettingsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.mainSettingsLayout.Controls.Add(this.startStopButton, 0, 0);
@@ -483,9 +474,10 @@
             this.mainSettingsLayout.Controls.Add(this.histogramPicture, 0, 5);
             this.mainSettingsLayout.Controls.Add(this.manualRangeSwitchButton, 0, 6);
             this.mainSettingsLayout.Controls.Add(this.dynSlidersCheck, 0, 7);
+            this.mainSettingsLayout.Controls.Add(this.pointsGroup, 0, 8);
             this.mainSettingsLayout.Location = new System.Drawing.Point(3, 3);
             this.mainSettingsLayout.Name = "mainSettingsLayout";
-            this.mainSettingsLayout.RowCount = 8;
+            this.mainSettingsLayout.RowCount = 9;
             this.mainLayout.SetRowSpan(this.mainSettingsLayout, 2);
             this.mainSettingsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.mainSettingsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
@@ -495,14 +487,12 @@
             this.mainSettingsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.mainSettingsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.mainSettingsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.mainSettingsLayout.Size = new System.Drawing.Size(244, 310);
+            this.mainSettingsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 180F));
+            this.mainSettingsLayout.Size = new System.Drawing.Size(244, 490);
             this.mainSettingsLayout.TabIndex = 43;
             // 
             // unitsLayout
             // 
-            this.unitsLayout.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.unitsLayout.ColumnCount = 3;
             this.mainSettingsLayout.SetColumnSpan(this.unitsLayout, 2);
             this.unitsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
@@ -511,12 +501,166 @@
             this.unitsLayout.Controls.Add(this.unitsKRadio, 0, 0);
             this.unitsLayout.Controls.Add(this.unitsCRadio, 1, 0);
             this.unitsLayout.Controls.Add(this.unitsFRadio, 2, 0);
+            this.unitsLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.unitsLayout.Location = new System.Drawing.Point(84, 63);
             this.unitsLayout.Name = "unitsLayout";
             this.unitsLayout.RowCount = 1;
             this.unitsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.unitsLayout.Size = new System.Drawing.Size(157, 24);
             this.unitsLayout.TabIndex = 44;
+            // 
+            // pointsGroup
+            // 
+            this.pointsGroup.AutoSize = true;
+            this.mainSettingsLayout.SetColumnSpan(this.pointsGroup, 3);
+            this.pointsGroup.Controls.Add(this.pointsLayout);
+            this.pointsGroup.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pointsGroup.Location = new System.Drawing.Point(3, 313);
+            this.pointsGroup.Name = "pointsGroup";
+            this.pointsGroup.Size = new System.Drawing.Size(238, 174);
+            this.pointsGroup.TabIndex = 46;
+            this.pointsGroup.TabStop = false;
+            this.pointsGroup.Text = "Points";
+            // 
+            // pointsLayout
+            // 
+            this.pointsLayout.ColumnCount = 2;
+            this.pointsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 35F));
+            this.pointsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 65F));
+            this.pointsLayout.Controls.Add(this.enableAnalysisCheck, 0, 0);
+            this.pointsLayout.Controls.Add(this.showTemperatureCheck, 0, 1);
+            this.pointsLayout.Controls.Add(this.crossSizeLabel, 0, 2);
+            this.pointsLayout.Controls.Add(this.crossSizeSpinner, 1, 2);
+            this.pointsLayout.Controls.Add(this.showExtremesCheck, 0, 3);
+            this.pointsLayout.Controls.Add(this.maxCountLabel, 0, 4);
+            this.pointsLayout.Controls.Add(this.maxCountSpinner, 1, 4);
+            this.pointsLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pointsLayout.Location = new System.Drawing.Point(3, 16);
+            this.pointsLayout.Name = "pointsLayout";
+            this.pointsLayout.Padding = new System.Windows.Forms.Padding(3);
+            this.pointsLayout.RowCount = 5;
+            this.pointsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.pointsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.pointsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.pointsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.pointsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.pointsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.pointsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.pointsLayout.Size = new System.Drawing.Size(232, 155);
+            this.pointsLayout.TabIndex = 0;
+            // 
+            // enableAnalysisCheck
+            // 
+            this.enableAnalysisCheck.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.enableAnalysisCheck.AutoSize = true;
+            this.pointsLayout.SetColumnSpan(this.enableAnalysisCheck, 2);
+            this.enableAnalysisCheck.Location = new System.Drawing.Point(6, 9);
+            this.enableAnalysisCheck.Name = "enableAnalysisCheck";
+            this.enableAnalysisCheck.Size = new System.Drawing.Size(65, 17);
+            this.enableAnalysisCheck.TabIndex = 45;
+            this.enableAnalysisCheck.Text = "Enabled";
+            this.enableAnalysisCheck.UseVisualStyleBackColor = true;
+            this.enableAnalysisCheck.CheckedChanged += new System.EventHandler(this.analysisCheck_CheckedChanged);
+            // 
+            // showTemperatureCheck
+            // 
+            this.showTemperatureCheck.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.showTemperatureCheck.AutoSize = true;
+            this.showTemperatureCheck.Checked = true;
+            this.showTemperatureCheck.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.pointsLayout.SetColumnSpan(this.showTemperatureCheck, 2);
+            this.showTemperatureCheck.Location = new System.Drawing.Point(6, 39);
+            this.showTemperatureCheck.Name = "showTemperatureCheck";
+            this.showTemperatureCheck.Size = new System.Drawing.Size(112, 17);
+            this.showTemperatureCheck.TabIndex = 51;
+            this.showTemperatureCheck.Text = "Show temperature";
+            this.showTemperatureCheck.UseVisualStyleBackColor = true;
+            this.showTemperatureCheck.CheckedChanged += new System.EventHandler(this.showTemperatureCheck_CheckedChanged);
+            // 
+            // crossSizeLabel
+            // 
+            this.crossSizeLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.crossSizeLabel.AutoSize = true;
+            this.crossSizeLabel.Location = new System.Drawing.Point(6, 71);
+            this.crossSizeLabel.Name = "crossSizeLabel";
+            this.crossSizeLabel.Size = new System.Drawing.Size(57, 13);
+            this.crossSizeLabel.TabIndex = 49;
+            this.crossSizeLabel.Text = "Cross size:";
+            this.crossSizeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // crossSizeSpinner
+            // 
+            this.crossSizeSpinner.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.crossSizeSpinner.Location = new System.Drawing.Point(85, 68);
+            this.crossSizeSpinner.Maximum = new decimal(new int[] {
+            64,
+            0,
+            0,
+            0});
+            this.crossSizeSpinner.Minimum = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+            this.crossSizeSpinner.Name = "crossSizeSpinner";
+            this.crossSizeSpinner.Size = new System.Drawing.Size(141, 20);
+            this.crossSizeSpinner.TabIndex = 50;
+            this.crossSizeSpinner.Value = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+            this.crossSizeSpinner.ValueChanged += new System.EventHandler(this.crossSizeSpinner_ValueChanged);
+            // 
+            // showExtremesCheck
+            // 
+            this.showExtremesCheck.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.showExtremesCheck.AutoSize = true;
+            this.showExtremesCheck.Checked = true;
+            this.showExtremesCheck.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.pointsLayout.SetColumnSpan(this.showExtremesCheck, 2);
+            this.showExtremesCheck.Location = new System.Drawing.Point(6, 99);
+            this.showExtremesCheck.Name = "showExtremesCheck";
+            this.showExtremesCheck.Size = new System.Drawing.Size(98, 17);
+            this.showExtremesCheck.TabIndex = 47;
+            this.showExtremesCheck.Text = "Show extremes";
+            this.showExtremesCheck.UseVisualStyleBackColor = true;
+            this.showExtremesCheck.CheckedChanged += new System.EventHandler(this.showExtremesCheck_CheckedChanged);
+            // 
+            // maxCountLabel
+            // 
+            this.maxCountLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.maxCountLabel.AutoSize = true;
+            this.maxCountLabel.Location = new System.Drawing.Point(6, 131);
+            this.maxCountLabel.Name = "maxCountLabel";
+            this.maxCountLabel.Size = new System.Drawing.Size(60, 13);
+            this.maxCountLabel.TabIndex = 46;
+            this.maxCountLabel.Text = "Max count:";
+            this.maxCountLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // maxCountSpinner
+            // 
+            this.maxCountSpinner.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.maxCountSpinner.Location = new System.Drawing.Point(85, 128);
+            this.maxCountSpinner.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.maxCountSpinner.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.maxCountSpinner.Name = "maxCountSpinner";
+            this.maxCountSpinner.Size = new System.Drawing.Size(141, 20);
+            this.maxCountSpinner.TabIndex = 48;
+            this.maxCountSpinner.Value = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.maxCountSpinner.ValueChanged += new System.EventHandler(this.maxCountSpinner_ValueChanged);
             // 
             // debugValueLayout
             // 
@@ -535,6 +679,57 @@
             this.debugValueLayout.Size = new System.Drawing.Size(244, 19);
             this.debugValueLayout.TabIndex = 45;
             // 
+            // mouseLabel
+            // 
+            this.mouseLabel.AutoSize = true;
+            this.mouseLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mouseLabel.Location = new System.Drawing.Point(253, 619);
+            this.mouseLabel.Name = "mouseLabel";
+            this.mouseLabel.Size = new System.Drawing.Size(682, 25);
+            this.mouseLabel.TabIndex = 46;
+            this.mouseLabel.Text = "mouse";
+            this.mouseLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // livePicture
+            // 
+            this.livePicture.AnalysisEnabled = false;
+            this.livePicture.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.livePicture.CrossSize = 16;
+            this.livePicture.Location = new System.Drawing.Point(8, 8);
+            this.livePicture.MaxCount = 3;
+            this.livePicture.Name = "livePicture";
+            this.livePicture.RawValues = null;
+            this.livePicture.ShowExtremes = true;
+            this.livePicture.ShowTemperature = true;
+            this.livePicture.Size = new System.Drawing.Size(32, 32);
+            this.livePicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.livePicture.TabIndex = 34;
+            this.livePicture.TabStop = false;
+            this.livePicture.TempUnit = "K";
+            this.livePicture.MouseEnter += new System.EventHandler(this.thermoPicture_MouseEnter);
+            this.livePicture.MouseLeave += new System.EventHandler(this.thermoPicture_MouseLeave);
+            this.livePicture.MouseMove += new System.Windows.Forms.MouseEventHandler(this.thermoPicture_MouseMove);
+            // 
+            // firstAfterCalPicture
+            // 
+            this.firstAfterCalPicture.AnalysisEnabled = false;
+            this.firstAfterCalPicture.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.firstAfterCalPicture.CrossSize = 16;
+            this.firstAfterCalPicture.Location = new System.Drawing.Point(8, 8);
+            this.firstAfterCalPicture.MaxCount = 3;
+            this.firstAfterCalPicture.Name = "firstAfterCalPicture";
+            this.firstAfterCalPicture.RawValues = null;
+            this.firstAfterCalPicture.ShowExtremes = true;
+            this.firstAfterCalPicture.ShowTemperature = true;
+            this.firstAfterCalPicture.Size = new System.Drawing.Size(32, 32);
+            this.firstAfterCalPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.firstAfterCalPicture.TabIndex = 38;
+            this.firstAfterCalPicture.TabStop = false;
+            this.firstAfterCalPicture.TempUnit = "K";
+            this.firstAfterCalPicture.MouseEnter += new System.EventHandler(this.thermoPicture_MouseEnter);
+            this.firstAfterCalPicture.MouseLeave += new System.EventHandler(this.thermoPicture_MouseLeave);
+            this.firstAfterCalPicture.MouseMove += new System.Windows.Forms.MouseEventHandler(this.thermoPicture_MouseMove);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -551,9 +746,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.maxTempSlider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.minTempSlider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.histogramPicture)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.livePicture)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.temperatureGaugePicture)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.firstAfterCalPicture)).EndInit();
             this.mainLayout.ResumeLayout(false);
             this.mainLayout.PerformLayout();
             this.pictureTabs.ResumeLayout(false);
@@ -563,8 +756,15 @@
             this.mainSettingsLayout.PerformLayout();
             this.unitsLayout.ResumeLayout(false);
             this.unitsLayout.PerformLayout();
+            this.pointsGroup.ResumeLayout(false);
+            this.pointsLayout.ResumeLayout(false);
+            this.pointsLayout.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.crossSizeSpinner)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.maxCountSpinner)).EndInit();
             this.debugValueLayout.ResumeLayout(false);
             this.debugValueLayout.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.livePicture)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.firstAfterCalPicture)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -585,11 +785,11 @@
         private System.Windows.Forms.ToolTip extCalToolTip;
         private System.Windows.Forms.Label paletteLabel;
         private System.Windows.Forms.ComboBox paletteCombo;
-        private System.Windows.Forms.PictureBox livePicture;
+        private AnalyzablePictureBox livePicture;
         private System.Windows.Forms.Label gModeLeftLabel;
         private System.Windows.Forms.Label gModeRightLabel;
         private System.Windows.Forms.PictureBox temperatureGaugePicture;
-        private System.Windows.Forms.PictureBox firstAfterCalPicture;
+        private AnalyzablePictureBox firstAfterCalPicture;
         private System.Windows.Forms.Label maxTempRawLabel;
         private System.Windows.Forms.PictureBox histogramPicture;
         private System.Windows.Forms.Label maxTempLabel;
@@ -607,6 +807,16 @@
         private System.Windows.Forms.TabPage livePage;
         private System.Windows.Forms.TabPage firstAfterCalPage;
         private System.Windows.Forms.TableLayoutPanel debugValueLayout;
+        private System.Windows.Forms.Label mouseLabel;
+        private System.Windows.Forms.CheckBox enableAnalysisCheck;
+        private System.Windows.Forms.GroupBox pointsGroup;
+        private System.Windows.Forms.TableLayoutPanel pointsLayout;
+        private System.Windows.Forms.CheckBox showExtremesCheck;
+        private System.Windows.Forms.Label maxCountLabel;
+        private System.Windows.Forms.NumericUpDown maxCountSpinner;
+        private System.Windows.Forms.CheckBox showTemperatureCheck;
+        private System.Windows.Forms.Label crossSizeLabel;
+        private System.Windows.Forms.NumericUpDown crossSizeSpinner;
     }
 }
 
