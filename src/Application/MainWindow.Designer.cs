@@ -1,4 +1,4 @@
-﻿namespace TestSeek
+﻿namespace SeekOFix
 {
     partial class MainWindow
     {
@@ -86,8 +86,8 @@
             this.mouseLabel = new System.Windows.Forms.Label();
             this.intCalToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.deletePointsButton = new System.Windows.Forms.Button();
-            this.livePicture = new TestSeek.AnalyzablePictureBox();
-            this.firstAfterCalPicture = new TestSeek.AnalyzablePictureBox();
+            this.livePicture = new AnalyzablePictureBox();
+            this.firstAfterCalPicture = new AnalyzablePictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.maxTempSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minTempSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.histogramPicture)).BeginInit();

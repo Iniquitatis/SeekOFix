@@ -3,14 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSeek", "TestSeek\TestSeek.csproj", "{012D3FDD-9622-4018-8A29-9A4A35BC1B37}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "src\Application\Application.csproj", "{012D3FDD-9622-4018-8A29-9A4A35BC1B37}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{73D57E4F-1C01-4FFA-A829-78C4D6DA21F5}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ThirdParty", "src\ThirdParty\ThirdParty.shproj", "{8BD123F5-A1A4-4BBF-8642-9FB736C29C68}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Data", "bin\Data.shproj", "{5B48AEDA-F101-4926-A169-D010B1233C49}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Shared\Shared.projitems*{012d3fdd-9622-4018-8a29-9a4a35bc1b37}*SharedItemsImports = 4
-		Shared\Shared.projitems*{73d57e4f-1c01-4ffa-a829-78c4d6da21f5}*SharedItemsImports = 13
+		bin\Data.projitems*{012d3fdd-9622-4018-8a29-9a4a35bc1b37}*SharedItemsImports = 4
+		src\ThirdParty\ThirdParty.projitems*{012d3fdd-9622-4018-8a29-9a4a35bc1b37}*SharedItemsImports = 4
+		bin\Data.projitems*{5b48aeda-f101-4926-a169-d010b1233c49}*SharedItemsImports = 13
+		src\ThirdParty\ThirdParty.projitems*{8bd123f5-a1a4-4bbf-8642-9fb736c29c68}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

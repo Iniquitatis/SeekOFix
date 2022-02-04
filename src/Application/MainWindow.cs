@@ -37,7 +37,7 @@ using System.Windows.Forms;
 using AForge.Imaging.Filters;
 using winusbdotnet.UsbDevices;
 
-namespace TestSeek
+namespace SeekOFix
 {
     public partial class MainWindow : Form
     {
@@ -97,7 +97,7 @@ namespace TestSeek
             InitializeComponent();
 
             var localPath = Directory.GetCurrentDirectory().ToString();
-            var exportPath = localPath + @"\export";
+            var exportPath = localPath + @"\Export";
             Directory.CreateDirectory(exportPath);
             outputPathField.Text = exportPath;
 
@@ -485,7 +485,7 @@ namespace TestSeek
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
-            var pngFiles = new DirectoryInfo(Directory.GetCurrentDirectory() + "\\palette").GetFiles("*.png");
+            var pngFiles = new DirectoryInfo(Directory.GetCurrentDirectory() + "\\Palette").GetFiles("*.png");
 
             foreach (FileInfo file in pngFiles)
             {
