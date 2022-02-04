@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -58,9 +59,9 @@ namespace SeekOFix
             Padding = new Padding(5);
             Size = new Size(1024, 768);
             Text = "SeekOFix";
-            FormClosing += new FormClosingEventHandler(MainWindow_FormClosing);
-            Load += new System.EventHandler(MainWindow_Load);
-            Paint += new PaintEventHandler(MainWindow_Paint);
+            FormClosing += new FormClosingEventHandler(HandleFormClosing);
+            Load += new EventHandler(HandleLoad);
+            Paint += new PaintEventHandler(HandlePaint);
 
             components = new Container();
 
@@ -111,21 +112,21 @@ namespace SeekOFix
             startStopButton = new Button();
             startStopButton.Dock = DockStyle.Fill;
             startStopButton.Text = "STOP";
-            startStopButton.Click += new System.EventHandler(startStopButton_Click);
+            startStopButton.Click += new EventHandler(HandleStartStopButtonClick);
             startStopToolTip.SetToolTip(startStopButton, "Start/stop streaming");
             mainControlButtons.Controls.Add(startStopButton, 0, 0);
 
             var intCalButton = new Button();
             intCalButton.Dock = DockStyle.Fill;
             intCalButton.Text = "INT Cal";
-            intCalButton.Click += new System.EventHandler((sender, e) => usingExternalCal = false);
+            intCalButton.Click += new EventHandler((sender, e) => usingExternalCal = false);
             intCalToolTip.SetToolTip(intCalButton, "Do internal calibration");
             mainControlButtons.Controls.Add(intCalButton, 1, 0);
 
             var extCalButton = new Button();
             extCalButton.Dock = DockStyle.Fill;
             extCalButton.Text = "EXT Cal";
-            extCalButton.Click += new System.EventHandler((sender, e) => grabExternalReference = true);
+            extCalButton.Click += new EventHandler((sender, e) => grabExternalReference = true);
             extCalToolTip.SetToolTip(extCalButton, "Do external calibration");
             mainControlButtons.Controls.Add(extCalButton, 2, 0);
 
@@ -164,7 +165,7 @@ namespace SeekOFix
             paletteCombo.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             paletteCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             paletteCombo.FormattingEnabled = true;
-            paletteCombo.SelectedIndexChanged += new System.EventHandler(paletteCombo_SelectedIndexChanged);
+            paletteCombo.SelectedIndexChanged += new EventHandler(HandlePaletteComboSelectedIndexChanged);
             appearanceLayout.Controls.Add(paletteCombo, 1, 0);
 
             var unitsLabel = new Label();
@@ -189,28 +190,28 @@ namespace SeekOFix
             unitsKRadio.AutoSize = true;
             unitsKRadio.Checked = true;
             unitsKRadio.Text = "K";
-            unitsKRadio.CheckedChanged += new System.EventHandler(unitRadios_CheckedChanged);
+            unitsKRadio.CheckedChanged += new EventHandler(HandleUnitRadiosCheckedChanged);
             unitsLayout.Controls.Add(unitsKRadio, 0, 0);
 
             unitsCRadio = new RadioButton();
             unitsCRadio.Anchor = AnchorStyles.Left;
             unitsCRadio.AutoSize = true;
             unitsCRadio.Text = "°C";
-            unitsCRadio.CheckedChanged += new System.EventHandler(unitRadios_CheckedChanged);
+            unitsCRadio.CheckedChanged += new EventHandler(HandleUnitRadiosCheckedChanged);
             unitsLayout.Controls.Add(unitsCRadio, 1, 0);
 
             unitsFRadio = new RadioButton();
             unitsFRadio.Anchor = AnchorStyles.Left;
             unitsFRadio.AutoSize = true;
             unitsFRadio.Text = "°F";
-            unitsFRadio.CheckedChanged += new System.EventHandler(unitRadios_CheckedChanged);
+            unitsFRadio.CheckedChanged += new EventHandler(HandleUnitRadiosCheckedChanged);
             unitsLayout.Controls.Add(unitsFRadio, 2, 0);
 
             applySharpenCheck = new CheckBox();
             applySharpenCheck.Anchor = AnchorStyles.Left;
             applySharpenCheck.AutoSize = true;
             applySharpenCheck.Text = "Apply sharpening filter";
-            applySharpenCheck.CheckedChanged += new System.EventHandler((sender, e) => sharpenImage = !sharpenImage);
+            applySharpenCheck.CheckedChanged += new EventHandler((sender, e) => sharpenImage = !sharpenImage);
             appearanceLayout.Controls.Add(applySharpenCheck, 0, 2);
             appearanceLayout.SetColumnSpan(applySharpenCheck, 2);
 
@@ -225,7 +226,7 @@ namespace SeekOFix
             manualRangeSwitchButton = new Button();
             manualRangeSwitchButton.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             manualRangeSwitchButton.Text = "Switch to manual range";
-            manualRangeSwitchButton.Click += new System.EventHandler(manualRangeSwitchButton_Click);
+            manualRangeSwitchButton.Click += new EventHandler(HandleManualRangeSwitchButtonClick);
             appearanceLayout.Controls.Add(manualRangeSwitchButton, 0, 4);
             appearanceLayout.SetColumnSpan(manualRangeSwitchButton, 2);
 
@@ -234,7 +235,7 @@ namespace SeekOFix
             dynSlidersCheck.AutoSize = true;
             dynSlidersCheck.Text = "Enable relative sliders";
             dynSlidersCheck.Visible = false;
-            dynSlidersCheck.CheckedChanged += new System.EventHandler(dynSlidersCheck_CheckedChanged);
+            dynSlidersCheck.CheckedChanged += new EventHandler(HandleDynSlidersCheckCheckedChanged);
             appearanceLayout.Controls.Add(dynSlidersCheck, 0, 5);
             appearanceLayout.SetColumnSpan(dynSlidersCheck, 2);
 
@@ -263,7 +264,7 @@ namespace SeekOFix
             enableAnalysisCheck.Anchor = AnchorStyles.Left;
             enableAnalysisCheck.AutoSize = true;
             enableAnalysisCheck.Text = "Enabled";
-            enableAnalysisCheck.CheckedChanged += new System.EventHandler(analysisCheck_CheckedChanged);
+            enableAnalysisCheck.CheckedChanged += new EventHandler(HandleAnalysisCheckCheckedChanged);
             analysisLayout.Controls.Add(enableAnalysisCheck, 0, 0);
             analysisLayout.SetColumnSpan(enableAnalysisCheck, 2);
 
@@ -272,7 +273,7 @@ namespace SeekOFix
             showTemperatureCheck.AutoSize = true;
             showTemperatureCheck.Checked = true;
             showTemperatureCheck.Text = "Show temperature";
-            showTemperatureCheck.CheckedChanged += new System.EventHandler(showTemperatureCheck_CheckedChanged);
+            showTemperatureCheck.CheckedChanged += new EventHandler(HandleShowTemperatureCheckCheckedChanged);
             analysisLayout.Controls.Add(showTemperatureCheck, 0, 1);
             analysisLayout.SetColumnSpan(showTemperatureCheck, 2);
 
@@ -287,7 +288,7 @@ namespace SeekOFix
             crossSizeSpinner.Maximum = 64;
             crossSizeSpinner.Minimum = 8;
             crossSizeSpinner.Value = 16;
-            crossSizeSpinner.ValueChanged += new System.EventHandler(crossSizeSpinner_ValueChanged);
+            crossSizeSpinner.ValueChanged += new EventHandler(HandleCrossSizeSpinnerValueChanged);
             analysisLayout.Controls.Add(crossSizeSpinner, 1, 2);
 
             showExtremesCheck = new CheckBox();
@@ -295,7 +296,7 @@ namespace SeekOFix
             showExtremesCheck.AutoSize = true;
             showExtremesCheck.Checked = true;
             showExtremesCheck.Text = "Show extremes";
-            showExtremesCheck.CheckedChanged += new System.EventHandler(showExtremesCheck_CheckedChanged);
+            showExtremesCheck.CheckedChanged += new EventHandler(HandleShowExtremesCheckCheckedChanged);
             analysisLayout.Controls.Add(showExtremesCheck, 0, 3);
             analysisLayout.SetColumnSpan(showExtremesCheck, 2);
 
@@ -310,13 +311,13 @@ namespace SeekOFix
             maxCountSpinner.Maximum = 10;
             maxCountSpinner.Minimum = 1;
             maxCountSpinner.Value = 3;
-            maxCountSpinner.ValueChanged += new System.EventHandler(maxCountSpinner_ValueChanged);
+            maxCountSpinner.ValueChanged += new EventHandler(HandleMaxCountSpinnerValueChanged);
             analysisLayout.Controls.Add(maxCountSpinner, 1, 4);
 
             var deletePointsButton = new Button();
             deletePointsButton.Dock = DockStyle.Fill;
             deletePointsButton.Text = "Delete all points";
-            deletePointsButton.Click += new System.EventHandler(deletePointsButton_Click);
+            deletePointsButton.Click += new EventHandler(HandleDeletePointsButtonClick);
             analysisLayout.Controls.Add(deletePointsButton, 0, 5);
             analysisLayout.SetColumnSpan(deletePointsButton, 2);
 
@@ -365,27 +366,27 @@ namespace SeekOFix
             var outputPathButton = new Button();
             outputPathButton.Dock = DockStyle.Fill;
             outputPathButton.Text = "...";
-            outputPathButton.Click += new System.EventHandler(outputPathButton_Click);
+            outputPathButton.Click += new EventHandler(HandleOutputPathButtonClick);
             outputPathLayout.Controls.Add(outputPathButton, 1, 0);
 
             var autoSaveCheck = new CheckBox();
             autoSaveCheck.Anchor = AnchorStyles.Left;
             autoSaveCheck.AutoSize = true;
             autoSaveCheck.Text = "Screenshot on each calibration";
-            autoSaveCheck.CheckedChanged += new System.EventHandler((sender, e) => autoSaveImg = !autoSaveImg);
+            autoSaveCheck.CheckedChanged += new EventHandler((sender, e) => autoSaveImg = !autoSaveImg);
             outputLayout.Controls.Add(autoSaveCheck, 0, 2);
             outputLayout.SetColumnSpan(autoSaveCheck, 2);
 
             var screenshotButton = new Button();
             screenshotButton.Dock = DockStyle.Fill;
             screenshotButton.Text = "Screenshot";
-            screenshotButton.Click += new System.EventHandler(screenshotButton_Click);
+            screenshotButton.Click += new EventHandler(HandleScreenshotButtonClick);
             outputLayout.Controls.Add(screenshotButton, 0, 3);
 
             recordVideoButton = new Button();
             recordVideoButton.Dock = DockStyle.Fill;
             recordVideoButton.Text = "Record video";
-            recordVideoButton.Click += new System.EventHandler(recordVideoButton_Click);
+            recordVideoButton.Click += new EventHandler(HandleRecordVideoButtonClick);
             outputLayout.Controls.Add(recordVideoButton, 1, 3);
 
             var debugValueLayout = new TableLayoutPanel();
@@ -428,9 +429,9 @@ namespace SeekOFix
             livePicture.BorderStyle = BorderStyle.FixedSingle;
             livePicture.Size = new Size(32, 32);
             livePicture.SizeMode = PictureBoxSizeMode.StretchImage;
-            livePicture.MouseEnter += new System.EventHandler(analyzablePicture_MouseEnter);
-            livePicture.MouseLeave += new System.EventHandler(analyzablePicture_MouseLeave);
-            livePicture.MouseMove += new MouseEventHandler(analyzablePicture_MouseMove);
+            livePicture.MouseEnter += new EventHandler(HandleAnalyzablePictureMouseEnter);
+            livePicture.MouseLeave += new EventHandler(HandleAnalyzablePictureMouseLeave);
+            livePicture.MouseMove += new MouseEventHandler(HandleAnalyzablePictureMouseMove);
             liveTab.Controls.Add(livePicture);
 
             firstAfterCalTab = new TabPage("On calibration");
@@ -442,9 +443,9 @@ namespace SeekOFix
             firstAfterCalPicture.BorderStyle = BorderStyle.FixedSingle;
             firstAfterCalPicture.Size = new Size(32, 32);
             firstAfterCalPicture.SizeMode = PictureBoxSizeMode.StretchImage;
-            firstAfterCalPicture.MouseEnter += new System.EventHandler(analyzablePicture_MouseEnter);
-            firstAfterCalPicture.MouseLeave += new System.EventHandler(analyzablePicture_MouseLeave);
-            firstAfterCalPicture.MouseMove += new MouseEventHandler(analyzablePicture_MouseMove);
+            firstAfterCalPicture.MouseEnter += new EventHandler(HandleAnalyzablePictureMouseEnter);
+            firstAfterCalPicture.MouseLeave += new EventHandler(HandleAnalyzablePictureMouseLeave);
+            firstAfterCalPicture.MouseMove += new MouseEventHandler(HandleAnalyzablePictureMouseMove);
             firstAfterCalTab.Controls.Add(firstAfterCalPicture);
 
             mouseLabel = new Label();
@@ -486,7 +487,7 @@ namespace SeekOFix
             minTempSlider.SmallChange = 10;
             minTempSlider.TickFrequency = 100;
             minTempSlider.Value = 4000;
-            minTempSlider.Scroll += new System.EventHandler(minTempSlider_Scroll);
+            minTempSlider.Scroll += new EventHandler(HandleMinTempSliderScroll);
             mainLayout.Controls.Add(minTempSlider, 0, 3);
             mainLayout.SetColumnSpan(minTempSlider, 2);
 
@@ -499,7 +500,7 @@ namespace SeekOFix
             maxTempSlider.SmallChange = 10;
             maxTempSlider.TickFrequency = 100;
             maxTempSlider.Value = 4000;
-            maxTempSlider.Scroll += new System.EventHandler(maxTempSlider_Scroll);
+            maxTempSlider.Scroll += new EventHandler(HandleMaxTempSliderScroll);
             mainLayout.Controls.Add(maxTempSlider, 0, 5);
             mainLayout.SetColumnSpan(maxTempSlider, 2);
         }

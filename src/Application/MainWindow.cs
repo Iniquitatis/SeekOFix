@@ -455,7 +455,7 @@ namespace SeekOFix
             box.Size = new Size((int) w, (int) h);
         }
 
-        private void MainWindow_Load(object sender, EventArgs e)
+        private void HandleLoad(object sender, EventArgs e)
         {
             var pngFiles = new DirectoryInfo(Directory.GetCurrentDirectory() + "\\Palette").GetFiles("*.png");
 
@@ -467,7 +467,7 @@ namespace SeekOFix
             paletteCombo.SelectedIndex = 1;
         }
 
-        private void MainWindow_Paint(object sender, PaintEventArgs e)
+        private void HandlePaint(object sender, PaintEventArgs e)
         {
             if (lastUsableFrame != null)
             {
@@ -524,7 +524,7 @@ namespace SeekOFix
             UpdateAnalyzablePictureBoxSize(firstAfterCalPicture);
         }
 
-        private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
+        private void HandleFormClosing(object sender, FormClosingEventArgs e)
         {
             stopThread = true;
 
@@ -535,7 +535,7 @@ namespace SeekOFix
             }
         }
 
-        private void startStopButton_Click(object sender, EventArgs e)
+        private void HandleStartStopButtonClick(object sender, EventArgs e)
         {
             if (isRunning)
             {
@@ -568,7 +568,7 @@ namespace SeekOFix
             }
         }
 
-        private void paletteCombo_SelectedIndexChanged(object sender, EventArgs e)
+        private void HandlePaletteComboSelectedIndexChanged(object sender, EventArgs e)
         {
             ComboItem newPal = (ComboItem) paletteCombo.SelectedItem;
             Bitmap paletteImg = new Bitmap(newPal.Key);
@@ -585,7 +585,7 @@ namespace SeekOFix
             tempGaugePicture.Image = paletteImg;
         }
 
-        private void unitRadios_CheckedChanged(object sender, EventArgs e)
+        private void HandleUnitRadiosCheckedChanged(object sender, EventArgs e)
         {
             if (unitsKRadio.Checked) tempUnit = "K";
             if (unitsCRadio.Checked) tempUnit = "C";
@@ -595,7 +595,7 @@ namespace SeekOFix
             firstAfterCalPicture.TempUnit = tempUnit;
         }
 
-        private void manualRangeSwitchButton_Click(object sender, EventArgs e)
+        private void HandleManualRangeSwitchButtonClick(object sender, EventArgs e)
         {
             autoRange = !autoRange;
 
@@ -612,7 +612,7 @@ namespace SeekOFix
             }
         }
 
-        private void dynSlidersCheck_CheckedChanged(object sender, EventArgs e)
+        private void HandleDynSlidersCheckCheckedChanged(object sender, EventArgs e)
         {
             dynSliders = !dynSliders;
 
@@ -655,37 +655,37 @@ namespace SeekOFix
             }
         }
 
-        private void analysisCheck_CheckedChanged(object sender, EventArgs e)
+        private void HandleAnalysisCheckCheckedChanged(object sender, EventArgs e)
         {
             livePicture.AnalysisEnabled = enableAnalysisCheck.Checked;
             firstAfterCalPicture.AnalysisEnabled = enableAnalysisCheck.Checked;
         }
 
-        private void showTemperatureCheck_CheckedChanged(object sender, EventArgs e)
+        private void HandleShowTemperatureCheckCheckedChanged(object sender, EventArgs e)
         {
             livePicture.ShowTemperature = showTemperatureCheck.Checked;
             firstAfterCalPicture.ShowTemperature = showTemperatureCheck.Checked;
         }
 
-        private void crossSizeSpinner_ValueChanged(object sender, EventArgs e)
+        private void HandleCrossSizeSpinnerValueChanged(object sender, EventArgs e)
         {
             livePicture.CrossSize = (int) crossSizeSpinner.Value;
             firstAfterCalPicture.CrossSize = (int) crossSizeSpinner.Value;
         }
 
-        private void showExtremesCheck_CheckedChanged(object sender, EventArgs e)
+        private void HandleShowExtremesCheckCheckedChanged(object sender, EventArgs e)
         {
             livePicture.ShowExtremes = showExtremesCheck.Checked;
             firstAfterCalPicture.ShowExtremes = showExtremesCheck.Checked;
         }
 
-        private void maxCountSpinner_ValueChanged(object sender, EventArgs e)
+        private void HandleMaxCountSpinnerValueChanged(object sender, EventArgs e)
         {
             livePicture.MaxCount = (int) maxCountSpinner.Value;
             firstAfterCalPicture.MaxCount = (int) maxCountSpinner.Value;
         }
 
-        private void deletePointsButton_Click(object sender, EventArgs e)
+        private void HandleDeletePointsButtonClick(object sender, EventArgs e)
         {
             if (pictureTabs.SelectedTab == liveTab)
                 livePicture.DeleteAllAnalyzers();
@@ -693,7 +693,7 @@ namespace SeekOFix
                 firstAfterCalPicture.DeleteAllAnalyzers();
         }
 
-        private void outputPathButton_Click(object sender, EventArgs e)
+        private void HandleOutputPathButtonClick(object sender, EventArgs e)
         {
             using (var dialog = new FolderBrowserDialog())
             {
@@ -704,12 +704,12 @@ namespace SeekOFix
             }
         }
 
-        private void screenshotButton_Click(object sender, EventArgs e)
+        private void HandleScreenshotButtonClick(object sender, EventArgs e)
         {
             Output.Screenshot(bigBitmap, outputPathField.Text);
         }
 
-        private void recordVideoButton_Click(object sender, EventArgs e)
+        private void HandleRecordVideoButtonClick(object sender, EventArgs e)
         {
             if (recorder == null)
             {
@@ -732,24 +732,24 @@ namespace SeekOFix
             }
         }
 
-        private void analyzablePicture_MouseEnter(object sender, EventArgs e)
+        private void HandleAnalyzablePictureMouseEnter(object sender, EventArgs e)
         {
             mouseLabel.Visible = true;
         }
 
-        private void analyzablePicture_MouseLeave(object sender, EventArgs e)
+        private void HandleAnalyzablePictureMouseLeave(object sender, EventArgs e)
         {
             mouseLabel.Visible = false;
         }
 
-        private void analyzablePicture_MouseMove(object sender, MouseEventArgs e)
+        private void HandleAnalyzablePictureMouseMove(object sender, MouseEventArgs e)
         {
             var picture = (AnalyzablePictureBox) sender;
             var coords = picture.LocalToCoords(e.Location);
             mouseLabel.Text = $"({coords.X}, {coords.Y}): {Utils.FormatTempString(tempUnit, picture.DetectTemperature(coords))}";
         }
 
-        private void minTempSlider_Scroll(object sender, EventArgs e)
+        private void HandleMinTempSliderScroll(object sender, EventArgs e)
         {
             if (autoRange) return;
 
@@ -763,7 +763,7 @@ namespace SeekOFix
             }
         }
 
-        private void maxTempSlider_Scroll(object sender, EventArgs e)
+        private void HandleMaxTempSliderScroll(object sender, EventArgs e)
         {
             if (autoRange) return;
 
