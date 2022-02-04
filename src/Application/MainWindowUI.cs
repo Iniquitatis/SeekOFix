@@ -7,12 +7,7 @@ namespace SeekOFix
     partial class MainWindow
     {
         private IContainer components = null;
-        private ToolTip startStopToolTip;
-        private ToolTip intCalToolTip;
-        private ToolTip extCalToolTip;
         private Button startStopButton;
-        private Button intCalButton;
-        private Button extCalButton;
         private ComboBox paletteCombo;
         private RadioButton unitsKRadio;
         private RadioButton unitsCRadio;
@@ -26,11 +21,7 @@ namespace SeekOFix
         private NumericUpDown crossSizeSpinner;
         private CheckBox showExtremesCheck;
         private NumericUpDown maxCountSpinner;
-        private Button deletePointsButton;
         private TextBox outputPathField;
-        private Button outputPathButton;
-        private CheckBox autoSaveCheck;
-        private Button screenshotButton;
         private Button recordVideoButton;
         private Label gModeLeftLabel;
         private Label gModeRightLabel;
@@ -72,9 +63,10 @@ namespace SeekOFix
             Paint += new PaintEventHandler(MainWindow_Paint);
 
             components = new Container();
-            startStopToolTip = new ToolTip(components);
-            intCalToolTip = new ToolTip(components);
-            extCalToolTip = new ToolTip(components);
+
+            var startStopToolTip = new ToolTip(components);
+            var intCalToolTip = new ToolTip(components);
+            var extCalToolTip = new ToolTip(components);
 
             var mainLayout = new TableLayoutPanel();
             mainLayout.ColumnCount = 3;
@@ -123,14 +115,14 @@ namespace SeekOFix
             startStopToolTip.SetToolTip(startStopButton, "Start/stop streaming");
             mainControlButtons.Controls.Add(startStopButton, 0, 0);
 
-            intCalButton = new Button();
+            var intCalButton = new Button();
             intCalButton.Dock = DockStyle.Fill;
             intCalButton.Text = "INT Cal";
             intCalButton.Click += new System.EventHandler((sender, e) => usingExternalCal = false);
             intCalToolTip.SetToolTip(intCalButton, "Do internal calibration");
             mainControlButtons.Controls.Add(intCalButton, 1, 0);
 
-            extCalButton = new Button();
+            var extCalButton = new Button();
             extCalButton.Dock = DockStyle.Fill;
             extCalButton.Text = "EXT Cal";
             extCalButton.Click += new System.EventHandler((sender, e) => grabExternalReference = true);
@@ -321,7 +313,7 @@ namespace SeekOFix
             maxCountSpinner.ValueChanged += new System.EventHandler(maxCountSpinner_ValueChanged);
             analysisLayout.Controls.Add(maxCountSpinner, 1, 4);
 
-            deletePointsButton = new Button();
+            var deletePointsButton = new Button();
             deletePointsButton.Dock = DockStyle.Fill;
             deletePointsButton.Text = "Delete all points";
             deletePointsButton.Click += new System.EventHandler(deletePointsButton_Click);
@@ -370,13 +362,13 @@ namespace SeekOFix
             outputPathField.MaxLength = 256;
             outputPathLayout.Controls.Add(outputPathField, 0, 0);
 
-            outputPathButton = new Button();
+            var outputPathButton = new Button();
             outputPathButton.Dock = DockStyle.Fill;
             outputPathButton.Text = "...";
             outputPathButton.Click += new System.EventHandler(outputPathButton_Click);
             outputPathLayout.Controls.Add(outputPathButton, 1, 0);
 
-            autoSaveCheck = new CheckBox();
+            var autoSaveCheck = new CheckBox();
             autoSaveCheck.Anchor = AnchorStyles.Left;
             autoSaveCheck.AutoSize = true;
             autoSaveCheck.Text = "Screenshot on each calibration";
@@ -384,7 +376,7 @@ namespace SeekOFix
             outputLayout.Controls.Add(autoSaveCheck, 0, 2);
             outputLayout.SetColumnSpan(autoSaveCheck, 2);
 
-            screenshotButton = new Button();
+            var screenshotButton = new Button();
             screenshotButton.Dock = DockStyle.Fill;
             screenshotButton.Text = "Screenshot";
             screenshotButton.Click += new System.EventHandler(screenshotButton_Click);
