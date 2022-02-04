@@ -55,7 +55,6 @@ namespace TestSeek
         bool sharpenImage = false;
         bool isRunning = true;
 
-        string localPath;
         string tempUnit = "K";
 
         ushort[] arrID4 = new ushort[Constants.DATA_LENGTH];
@@ -91,12 +90,16 @@ namespace TestSeek
         ResizeBilinear resizeFilter = new ResizeBilinear(Constants.IMAGE_W * 2, Constants.IMAGE_H * 2);
         Sharpen sharpenFilter = new Sharpen();
 
+        Output.VideoRecorder recorder = null;
+
         public MainWindow()
         {
             InitializeComponent();
 
-            localPath = Directory.GetCurrentDirectory().ToString();
-            Directory.CreateDirectory(localPath + @"\export");
+            var localPath = Directory.GetCurrentDirectory().ToString();
+            var exportPath = localPath + @"\export";
+            Directory.CreateDirectory(exportPath);
+            outputPathField.Text = exportPath;
 
             var device = SeekThermal.Enumerate().FirstOrDefault();
 
@@ -530,13 +533,16 @@ namespace TestSeek
 
                 UpdateAnalyzablePictureBox(livePicture, bigBitmap, arrID3);
 
+                if (recorder != null)
+                    recorder.SupplyFrame(bigBitmap);
+
                 if (firstAfterCal)
                 {
                     firstAfterCal = false;
                     UpdateAnalyzablePictureBox(firstAfterCalPicture, bigBitmap, arrID3);
 
                     if (autoSaveImg)
-                        bigBitmap.Save(localPath + @"\export\seek_" + DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss_fff") + ".png");
+                        Output.Screenshot(bigBitmap, outputPathField.Text);
                 }
 
                 DrawHistogram();
@@ -727,20 +733,68 @@ namespace TestSeek
             firstAfterCalPicture.MaxCount = (int) maxCountSpinner.Value;
         }
 
-        private void thermoPicture_MouseEnter(object sender, EventArgs e)
+        private void deletePointsButton_Click(object sender, EventArgs e)
+        {
+            if (pictureTabs.SelectedTab == liveTab)
+                livePicture.DeleteAllAnalyzers();
+            else if (pictureTabs.SelectedTab == firstAfterCalTab)
+                firstAfterCalPicture.DeleteAllAnalyzers();
+        }
+
+        private void outputPathButton_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new FolderBrowserDialog())
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    outputPathField.Text = dialog.SelectedPath;
+                }
+            }
+        }
+
+        private void screenshotButton_Click(object sender, EventArgs e)
+        {
+            Output.Screenshot(bigBitmap, outputPathField.Text);
+        }
+
+        private void recordVideoButton_Click(object sender, EventArgs e)
+        {
+            if (recorder == null)
+            {
+                recorder = new Output.VideoRecorder(outputPathField.Text);
+
+                if (!recorder.Start())
+                {
+                    recorder = null;
+                    return;
+                }
+
+                recordVideoButton.Text = "Stop recording";
+            }
+            else
+            {
+                recorder.Stop();
+                recorder = null;
+
+                recordVideoButton.Text = "Record video";
+            }
+        }
+
+        private void analyzablePicture_MouseEnter(object sender, EventArgs e)
         {
             mouseLabel.Visible = true;
         }
 
-        private void thermoPicture_MouseLeave(object sender, EventArgs e)
+        private void analyzablePicture_MouseLeave(object sender, EventArgs e)
         {
             mouseLabel.Visible = false;
         }
 
-        private void thermoPicture_MouseMove(object sender, MouseEventArgs e)
+        private void analyzablePicture_MouseMove(object sender, MouseEventArgs e)
         {
             var picture = (AnalyzablePictureBox) sender;
-            mouseLabel.Text = picture.LocalToCoords(e.Location).ToString();
+            var coords = picture.LocalToCoords(e.Location);
+            mouseLabel.Text = $"({coords.X}, {coords.Y}): {Utils.FormatTempString(tempUnit, picture.DetectTemperature(coords))}";
         }
 
         private void minTempSlider_Scroll(object sender, EventArgs e)
@@ -856,6 +910,12 @@ namespace TestSeek
             Invalidate();
         }
 
+        public void DeleteAllAnalyzers()
+        {
+            _analyzers.Clear();
+            Invalidate();
+        }
+
         public Point LocalToCoords(Point p)
         {
             var pw = (double) Width;
@@ -893,6 +953,12 @@ namespace TestSeek
             var sy = ph / ih;
 
             return new Size((int) sx, (int) sy);
+        }
+
+        public int DetectTemperature(Point coords)
+        {
+            if (_rawValues == null) return 0;
+            return _rawValues[coords.Y * Constants.DATA_W + coords.X];
         }
 
         private void HandleMouseDown(object sender, MouseEventArgs e)
@@ -1035,8 +1101,6 @@ namespace TestSeek
                 }
             }
 
-            Console.WriteLine($"EXT {lowest}-{highest} in {lx},{ly};{hx},{hy}");
-
             _coldAnalyzer.coords.X = lx;
             _coldAnalyzer.coords.Y = ly;
             _coldAnalyzer.temperature = lowest;
@@ -1044,13 +1108,6 @@ namespace TestSeek
             _hotAnalyzer.coords.X = hx;
             _hotAnalyzer.coords.Y = hy;
             _hotAnalyzer.temperature = highest;
-        }
-
-        private int DetectTemperature(Point coords)
-        {
-            if (_rawValues == null) return 0;
-            Console.WriteLine($"TEMP {_rawValues[coords.Y * Constants.DATA_W + coords.X]}");
-            return _rawValues[coords.Y * Constants.DATA_W + coords.X];
         }
 
         private void AdjustAnalyzerCount()
@@ -1074,6 +1131,57 @@ namespace TestSeek
         {
             this.coords = coords;
             this.temperature = temperature;
+        }
+    }
+
+    public static class Output
+    {
+        public static void Screenshot(Bitmap image, string path)
+        {
+            if (image == null || !Directory.Exists(path)) return;
+
+            image.Save(path + FormatFileName("png"));
+        }
+
+        private static string FormatFileName(string extension)
+        {
+            return @"\seek_" + DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss_fff") + $".{extension}";
+        }
+
+        public class VideoRecorder
+        {
+            private string _path;
+            private AForge.Video.FFMPEG.VideoFileWriter _writer;
+            private DateTime _startDate;
+
+            public VideoRecorder(string path)
+            {
+                _path = path;
+            }
+
+            public bool Start()
+            {
+                if (!Directory.Exists(_path)) return false;
+
+                _writer = new AForge.Video.FFMPEG.VideoFileWriter();
+                _writer.Open(_path + FormatFileName(".avi"), Constants.IMAGE_W * 2, Constants.IMAGE_H * 2, 24, AForge.Video.FFMPEG.VideoCodec.MPEG4);
+
+                _startDate = DateTime.Now;
+
+                return true;
+            }
+            
+            public void Stop()
+            {
+                _writer.Close();
+            }
+
+            public void SupplyFrame(Bitmap image)
+            {
+                if (image == null) return;
+
+                _writer.WriteVideoFrame(image, DateTime.Now - _startDate);
+            }
         }
     }
 
