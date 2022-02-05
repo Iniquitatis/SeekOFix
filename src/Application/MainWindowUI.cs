@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -9,7 +8,6 @@ namespace SeekOFix
 {
     partial class MainWindow
     {
-        private IContainer components = null;
         private ComboBox paletteCombo;
         private RadioButton unitsKRadio;
         private RadioButton unitsCRadio;
@@ -42,20 +40,8 @@ namespace SeekOFix
         private TrackBar minTempSlider;
         private TrackBar maxTempSlider;
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-
         private void InitializeComponent()
         {
-            AutoScaleDimensions = new SizeF(6f, 13f);
-            AutoScaleMode = AutoScaleMode.Font;
             MinimumSize = new Size(640, 360);
             Padding = new Padding(5);
             Size = new Size(1024, 768);
@@ -63,8 +49,6 @@ namespace SeekOFix
             FormClosing += new FormClosingEventHandler(HandleFormClosing);
             Load += new EventHandler(HandleLoad);
             Paint += new PaintEventHandler(HandlePaint);
-
-            components = new Container();
 
             var mainLayout = CreateLayout(this);
             AddColumn(mainLayout, SizeType.Absolute, 250f);
@@ -92,32 +76,25 @@ namespace SeekOFix
                 ToggleThreadActivity();
                 startStopButton.Text = isRunning ? "STOP" : "START";
             });
-
-            var startStopToolTip = new ToolTip(components);
-            startStopToolTip.SetToolTip(startStopButton, "Start/stop streaming");
+            SetToolTip(startStopButton, "Start/stop streaming");
 
             var intCalButton = CreateInLayout<Button>(mainControlButtons, 1, 0);
             intCalButton.Dock = DockStyle.Fill;
             intCalButton.Text = "INT Cal";
             intCalButton.Click += new EventHandler((sender, e) => usingExternalCal = false);
-
-            var intCalToolTip = new ToolTip(components);
-            intCalToolTip.SetToolTip(intCalButton, "Do internal calibration");
+            SetToolTip(intCalButton, "Do internal calibration");
 
             var extCalButton = CreateInLayout<Button>(mainControlButtons, 2, 0);
             extCalButton.Dock = DockStyle.Fill;
             extCalButton.Text = "EXT Cal";
             extCalButton.Click += new EventHandler((sender, e) => grabExternalReference = true);
-
-            var extCalToolTip = new ToolTip(components);
-            extCalToolTip.SetToolTip(extCalButton, "Do external calibration");
+            SetToolTip(extCalButton, "Do external calibration");
 
             var mainControlTabs = CreateInLayout<TabControl>(mainControlLayout, 0, 1);
             mainControlTabs.Dock = DockStyle.Fill;
 
             var appearanceTab = CreateChild<TabPage>(mainControlTabs, "Appearance");
             appearanceTab.Padding = new Padding(3);
-            appearanceTab.UseVisualStyleBackColor = true;
 
             var appearanceLayout = CreateLayout(appearanceTab);
             AddColumn(appearanceLayout, SizeType.Percent, 35f);
@@ -138,12 +115,11 @@ namespace SeekOFix
             paletteCombo = CreateInLayout<ComboBox>(appearanceLayout, 1, 0);
             paletteCombo.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             paletteCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            paletteCombo.FormattingEnabled = true;
             paletteCombo.SelectedIndexChanged += new EventHandler(HandlePaletteComboSelectedIndexChanged);
 
             var unitsLabel = CreateInLayout<Label>(appearanceLayout, 0, 1);
             unitsLabel.Anchor = AnchorStyles.Left;
-            unitsLabel.Text = "Temp units:";
+            unitsLabel.Text = "Units:";
             unitsLabel.TextAlign = ContentAlignment.MiddleLeft;
 
             var unitsLayout = CreateSublayout(appearanceLayout, 1, 1);
@@ -154,46 +130,40 @@ namespace SeekOFix
 
             unitsKRadio = CreateInLayout<RadioButton>(unitsLayout, 0, 0);
             unitsKRadio.Anchor = AnchorStyles.Left;
-            unitsKRadio.AutoSize = true;
             unitsKRadio.Checked = true;
             unitsKRadio.Text = "K";
             unitsKRadio.CheckedChanged += new EventHandler(HandleUnitRadiosCheckedChanged);
-            
+
             unitsCRadio = CreateInLayout<RadioButton>(unitsLayout, 1, 0);
             unitsCRadio.Anchor = AnchorStyles.Left;
-            unitsCRadio.AutoSize = true;
             unitsCRadio.Text = "°C";
             unitsCRadio.CheckedChanged += new EventHandler(HandleUnitRadiosCheckedChanged);
-            
+
             unitsFRadio = CreateInLayout<RadioButton>(unitsLayout, 2, 0);
             unitsFRadio.Anchor = AnchorStyles.Left;
-            unitsFRadio.AutoSize = true;
             unitsFRadio.Text = "°F";
             unitsFRadio.CheckedChanged += new EventHandler(HandleUnitRadiosCheckedChanged);
-            
+
             applySharpenCheck = CreateInLayout<CheckBox>(appearanceLayout, 0, 2);
             applySharpenCheck.Anchor = AnchorStyles.Left;
-            applySharpenCheck.AutoSize = true;
             applySharpenCheck.Text = "Apply sharpening filter";
             applySharpenCheck.CheckedChanged += new EventHandler((sender, e) => sharpenImage = !sharpenImage);
             SetColumnSpan(applySharpenCheck, 2);
 
             histogramPicture = CreateInLayout<PictureBox>(appearanceLayout, 0, 3);
-            histogramPicture.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            histogramPicture.BackColor = SystemColors.ControlLightLight;
             histogramPicture.BorderStyle = BorderStyle.FixedSingle;
+            histogramPicture.Dock = DockStyle.Fill;
             histogramPicture.SizeMode = PictureBoxSizeMode.StretchImage;
             SetColumnSpan(histogramPicture, 2);
 
             manualRangeSwitchButton = CreateInLayout<Button>(appearanceLayout, 0, 4);
-            manualRangeSwitchButton.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            manualRangeSwitchButton.Dock = DockStyle.Fill;
             manualRangeSwitchButton.Text = "Switch to manual range";
             manualRangeSwitchButton.Click += new EventHandler(HandleManualRangeSwitchButtonClick);
             SetColumnSpan(manualRangeSwitchButton, 2);
 
             dynSlidersCheck = CreateInLayout<CheckBox>(appearanceLayout, 0, 5);
             dynSlidersCheck.Anchor = AnchorStyles.Left;
-            dynSlidersCheck.AutoSize = true;
             dynSlidersCheck.Text = "Enable relative sliders";
             dynSlidersCheck.Visible = false;
             dynSlidersCheck.CheckedChanged += new EventHandler(HandleDynSlidersCheckCheckedChanged);
@@ -201,8 +171,7 @@ namespace SeekOFix
 
             var analysisTab = CreateChild<TabPage>(mainControlTabs, "Analysis");
             analysisTab.Padding = new Padding(3);
-            analysisTab.UseVisualStyleBackColor = true;
-            
+
             var analysisLayout = CreateLayout(analysisTab);
             AddColumn(analysisLayout, SizeType.Percent, 35f);
             AddColumn(analysisLayout, SizeType.Percent, 65f);
@@ -216,14 +185,12 @@ namespace SeekOFix
 
             enableAnalysisCheck = CreateInLayout<CheckBox>(analysisLayout, 0, 0);
             enableAnalysisCheck.Anchor = AnchorStyles.Left;
-            enableAnalysisCheck.AutoSize = true;
             enableAnalysisCheck.Text = "Enabled";
             enableAnalysisCheck.CheckedChanged += new EventHandler(HandleAnalysisCheckCheckedChanged);
             SetColumnSpan(enableAnalysisCheck, 2);
 
             showTemperatureCheck = CreateInLayout<CheckBox>(analysisLayout, 0, 1);
             showTemperatureCheck.Anchor = AnchorStyles.Left;
-            showTemperatureCheck.AutoSize = true;
             showTemperatureCheck.Checked = true;
             showTemperatureCheck.Text = "Show temperature";
             showTemperatureCheck.CheckedChanged += new EventHandler(HandleShowTemperatureCheckCheckedChanged);
@@ -240,10 +207,9 @@ namespace SeekOFix
             crossSizeSpinner.Minimum = 8;
             crossSizeSpinner.Value = 16;
             crossSizeSpinner.ValueChanged += new EventHandler(HandleCrossSizeSpinnerValueChanged);
-            
+
             showExtremesCheck = CreateInLayout<CheckBox>(analysisLayout, 0, 3);
             showExtremesCheck.Anchor = AnchorStyles.Left;
-            showExtremesCheck.AutoSize = true;
             showExtremesCheck.Checked = true;
             showExtremesCheck.Text = "Show extremes";
             showExtremesCheck.CheckedChanged += new EventHandler(HandleShowExtremesCheckCheckedChanged);
@@ -253,14 +219,14 @@ namespace SeekOFix
             maxCountLabel.Anchor = AnchorStyles.Left;
             maxCountLabel.Text = "Max count:";
             maxCountLabel.TextAlign = ContentAlignment.MiddleLeft;
-            
+
             maxCountSpinner = CreateInLayout<NumericUpDown>(analysisLayout, 1, 4);
             maxCountSpinner.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             maxCountSpinner.Maximum = 10;
             maxCountSpinner.Minimum = 1;
             maxCountSpinner.Value = 3;
             maxCountSpinner.ValueChanged += new EventHandler(HandleMaxCountSpinnerValueChanged);
-            
+
             var deletePointsButton = CreateInLayout<Button>(analysisLayout, 0, 5);
             deletePointsButton.Dock = DockStyle.Fill;
             deletePointsButton.Text = "Delete all points";
@@ -269,8 +235,7 @@ namespace SeekOFix
 
             var outputTab = CreateChild<TabPage>(mainControlTabs, "Output");
             outputTab.Padding = new Padding(3);
-            outputTab.UseVisualStyleBackColor = true;
-            
+
             var outputLayout = CreateLayout(outputTab);
             AddColumn(outputLayout, SizeType.Percent, 50f);
             AddColumn(outputLayout, SizeType.Percent, 50f);
@@ -303,7 +268,6 @@ namespace SeekOFix
 
             var autoSaveCheck = CreateInLayout<CheckBox>(outputLayout, 0, 2);
             autoSaveCheck.Anchor = AnchorStyles.Left;
-            autoSaveCheck.AutoSize = true;
             autoSaveCheck.Text = "Screenshot on each calibration";
             autoSaveCheck.CheckedChanged += new EventHandler((sender, e) => autoSaveImg = !autoSaveImg);
             SetColumnSpan(autoSaveCheck, 2);
@@ -317,13 +281,13 @@ namespace SeekOFix
             recordVideoButton.Dock = DockStyle.Fill;
             recordVideoButton.Text = "Record video";
             recordVideoButton.Click += new EventHandler(HandleRecordVideoButtonClick);
-            
+
             var debugValueLayout = CreateSublayout(mainLayout, 0, 1);
             AddColumn(debugValueLayout, SizeType.Percent, 1f / 3f);
             AddColumn(debugValueLayout, SizeType.Percent, 1f / 3f);
             AddColumn(debugValueLayout, SizeType.Percent, 1f / 3f);
             AddRow(debugValueLayout, SizeType.Percent, 100f);
-            
+
             gModeLeftLabel = CreateInLayout<Label>(debugValueLayout, 0, 0);
             gModeLeftLabel.Anchor = AnchorStyles.None;
             gModeLeftLabel.TextAlign = ContentAlignment.MiddleCenter;
@@ -331,7 +295,7 @@ namespace SeekOFix
             gModeRightLabel = CreateInLayout<Label>(debugValueLayout, 1, 0);
             gModeRightLabel.Anchor = AnchorStyles.None;
             gModeRightLabel.TextAlign = ContentAlignment.MiddleCenter;
-            
+
             maxTempRawLabel = CreateInLayout<Label>(debugValueLayout, 2, 0);
             maxTempRawLabel.Anchor = AnchorStyles.None;
             maxTempRawLabel.TextAlign = ContentAlignment.MiddleCenter;
@@ -343,11 +307,10 @@ namespace SeekOFix
 
             pictureTabs = CreateInLayout<TabControl>(mainPictureLayout, 0, 0);
             pictureTabs.Dock = DockStyle.Fill;
-            
+
             liveTab = CreateChild<TabPage>(pictureTabs, "Live");
             liveTab.Padding = new Padding(3);
-            liveTab.UseVisualStyleBackColor = true;
-            
+
             livePicture = CreateChild<AnalyzablePictureBox>(liveTab);
             livePicture.BorderStyle = BorderStyle.FixedSingle;
             livePicture.Size = new Size(32, 32);
@@ -355,11 +318,10 @@ namespace SeekOFix
             livePicture.MouseEnter += new EventHandler(HandleAnalyzablePictureMouseEnter);
             livePicture.MouseLeave += new EventHandler(HandleAnalyzablePictureMouseLeave);
             livePicture.MouseMove += new MouseEventHandler(HandleAnalyzablePictureMouseMove);
-            
+
             firstAfterCalTab = CreateChild<TabPage>(pictureTabs, "On calibration");
             firstAfterCalTab.Padding = new Padding(3);
-            firstAfterCalTab.UseVisualStyleBackColor = true;
-            
+
             firstAfterCalPicture = CreateChild<AnalyzablePictureBox>(firstAfterCalTab);
             firstAfterCalPicture.BorderStyle = BorderStyle.FixedSingle;
             firstAfterCalPicture.Size = new Size(32, 32);
@@ -367,7 +329,7 @@ namespace SeekOFix
             firstAfterCalPicture.MouseEnter += new EventHandler(HandleAnalyzablePictureMouseEnter);
             firstAfterCalPicture.MouseLeave += new EventHandler(HandleAnalyzablePictureMouseLeave);
             firstAfterCalPicture.MouseMove += new MouseEventHandler(HandleAnalyzablePictureMouseMove);
-            
+
             mouseLabel = CreateInLayout<Label>(mainLayout, 1, 1);
             mouseLabel.Dock = DockStyle.Fill;
             mouseLabel.TextAlign = ContentAlignment.MiddleCenter;
@@ -377,15 +339,15 @@ namespace SeekOFix
             AddRow(gaugeLayout, SizeType.Absolute, 25f);
             AddRow(gaugeLayout, SizeType.Percent, 100f);
             AddRow(gaugeLayout, SizeType.Absolute, 25f);
-            
+
             tempGaugePicture = CreateInLayout<PictureBox>(gaugeLayout, 0, 1);
             tempGaugePicture.Dock = DockStyle.Fill;
             tempGaugePicture.SizeMode = PictureBoxSizeMode.StretchImage;
-            
+
             tempGaugeMinLabel = CreateInLayout<Label>(gaugeLayout, 0, 2);
             tempGaugeMinLabel.Dock = DockStyle.Fill;
             tempGaugeMinLabel.TextAlign = ContentAlignment.MiddleCenter;
-            
+
             tempGaugeMaxLabel = CreateInLayout<Label>(gaugeLayout, 0, 0);
             tempGaugeMaxLabel.Dock = DockStyle.Fill;
             tempGaugeMaxLabel.TextAlign = ContentAlignment.MiddleCenter;
@@ -411,14 +373,13 @@ namespace SeekOFix
             sliderMinTempLabel = CreateInLayout<Label>(sliderLayout, 2, 0);
             sliderMinTempLabel.Dock = DockStyle.Fill;
             sliderMinTempLabel.TextAlign = ContentAlignment.MiddleCenter;
-            
+
             sliderMaxTempLabel = CreateInLayout<Label>(sliderLayout, 2, 1);
             sliderMaxTempLabel.Dock = DockStyle.Fill;
             sliderMaxTempLabel.TextAlign = ContentAlignment.MiddleCenter;
-            
+
             minTempSlider = CreateInLayout<TrackBar>(sliderLayout, 1, 0);
             minTempSlider.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            minTempSlider.CausesValidation = false;
             minTempSlider.LargeChange = 100;
             minTempSlider.Maximum = 20000;
             minTempSlider.Minimum = 4000;
@@ -429,7 +390,6 @@ namespace SeekOFix
 
             maxTempSlider = CreateInLayout<TrackBar>(sliderLayout, 1, 1);
             maxTempSlider.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            maxTempSlider.CausesValidation = false;
             maxTempSlider.LargeChange = 100;
             maxTempSlider.Maximum = 20000;
             maxTempSlider.Minimum = 4000;
@@ -440,4 +400,3 @@ namespace SeekOFix
         }
     }
 }
-
