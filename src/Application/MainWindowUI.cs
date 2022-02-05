@@ -66,25 +66,19 @@ namespace SeekOFix
 
             components = new Container();
 
-            var mainLayout = CreateChild<TableLayoutPanel>(this);
-            mainLayout.Dock = DockStyle.Fill;
-            mainLayout.Margin = new Padding(0);
+            var mainLayout = CreateLayout(this);
             AddColumn(mainLayout, SizeType.Absolute, 250f);
             AddColumn(mainLayout, SizeType.Percent, 100f);
             AddRow(mainLayout, SizeType.Percent, 100f);
             AddRow(mainLayout, SizeType.Absolute, 25f);
             AddRow(mainLayout, SizeType.Absolute, 75f);
 
-            var mainControlLayout = CreateInLayout<TableLayoutPanel>(mainLayout, 0, 0);
-            mainControlLayout.Dock = DockStyle.Fill;
-            mainControlLayout.Margin = new Padding(0);
+            var mainControlLayout = CreateSublayout(mainLayout, 0, 0);
             AddColumn(mainControlLayout, SizeType.Percent, 100f);
             AddRow(mainControlLayout, SizeType.Absolute, 30f);
             AddRow(mainControlLayout, SizeType.Percent, 100f);
 
-            var mainControlButtons = CreateInLayout<TableLayoutPanel>(mainControlLayout, 0, 0);
-            mainControlButtons.Dock = DockStyle.Fill;
-            mainControlButtons.Margin = new Padding(0);
+            var mainControlButtons = CreateSublayout(mainControlLayout, 0, 0);
             AddColumn(mainControlButtons, SizeType.Percent, 1f / 3f);
             AddColumn(mainControlButtons, SizeType.Percent, 1f / 3f);
             AddColumn(mainControlButtons, SizeType.Percent, 1f / 3f);
@@ -125,9 +119,7 @@ namespace SeekOFix
             appearanceTab.Padding = new Padding(3);
             appearanceTab.UseVisualStyleBackColor = true;
 
-            var appearanceLayout = CreateChild<TableLayoutPanel>(appearanceTab);
-            appearanceLayout.Dock = DockStyle.Fill;
-            appearanceLayout.Margin = new Padding(0);
+            var appearanceLayout = CreateLayout(appearanceTab);
             AddColumn(appearanceLayout, SizeType.Percent, 35f);
             AddColumn(appearanceLayout, SizeType.Percent, 65f);
             AddRow(appearanceLayout, SizeType.Absolute, 30f);
@@ -154,9 +146,7 @@ namespace SeekOFix
             unitsLabel.Text = "Temp units:";
             unitsLabel.TextAlign = ContentAlignment.MiddleLeft;
 
-            var unitsLayout = CreateInLayout<TableLayoutPanel>(appearanceLayout, 1, 1);
-            unitsLayout.Dock = DockStyle.Fill;
-            unitsLayout.Margin = new Padding(0);
+            var unitsLayout = CreateSublayout(appearanceLayout, 1, 1);
             AddColumn(unitsLayout, SizeType.Percent, 1f / 3f);
             AddColumn(unitsLayout, SizeType.Percent, 1f / 3f);
             AddColumn(unitsLayout, SizeType.Percent, 1f / 3f);
@@ -213,9 +203,7 @@ namespace SeekOFix
             analysisTab.Padding = new Padding(3);
             analysisTab.UseVisualStyleBackColor = true;
             
-            var analysisLayout = CreateChild<TableLayoutPanel>(analysisTab);
-            analysisLayout.Dock = DockStyle.Fill;
-            analysisLayout.Margin = new Padding(0);
+            var analysisLayout = CreateLayout(analysisTab);
             AddColumn(analysisLayout, SizeType.Percent, 35f);
             AddColumn(analysisLayout, SizeType.Percent, 65f);
             AddRow(analysisLayout, SizeType.Absolute, 30f);
@@ -283,9 +271,7 @@ namespace SeekOFix
             outputTab.Padding = new Padding(3);
             outputTab.UseVisualStyleBackColor = true;
             
-            var outputLayout = CreateChild<TableLayoutPanel>(outputTab);
-            outputLayout.Dock = DockStyle.Fill;
-            outputLayout.Margin = new Padding(0);
+            var outputLayout = CreateLayout(outputTab);
             AddColumn(outputLayout, SizeType.Percent, 50f);
             AddColumn(outputLayout, SizeType.Percent, 50f);
             AddRow(outputLayout, SizeType.Absolute, 25f);
@@ -300,9 +286,7 @@ namespace SeekOFix
             outputPathLabel.TextAlign = ContentAlignment.MiddleLeft;
             SetColumnSpan(outputPathLabel, 2);
 
-            var outputPathLayout = CreateInLayout<TableLayoutPanel>(outputLayout, 0, 1);
-            outputPathLayout.Dock = DockStyle.Fill;
-            outputPathLayout.Margin = new Padding(0);
+            var outputPathLayout = CreateSublayout(outputLayout, 0, 1);
             AddColumn(outputPathLayout, SizeType.Percent, 100f);
             AddColumn(outputPathLayout, SizeType.Absolute, 30f);
             AddRow(outputPathLayout, SizeType.Percent, 100f);
@@ -334,9 +318,7 @@ namespace SeekOFix
             recordVideoButton.Text = "Record video";
             recordVideoButton.Click += new EventHandler(HandleRecordVideoButtonClick);
             
-            var debugValueLayout = CreateInLayout<TableLayoutPanel>(mainLayout, 0, 1);
-            debugValueLayout.Dock = DockStyle.Fill;
-            debugValueLayout.Margin = new Padding(0);
+            var debugValueLayout = CreateSublayout(mainLayout, 0, 1);
             AddColumn(debugValueLayout, SizeType.Percent, 1f / 3f);
             AddColumn(debugValueLayout, SizeType.Percent, 1f / 3f);
             AddColumn(debugValueLayout, SizeType.Percent, 1f / 3f);
@@ -354,9 +336,7 @@ namespace SeekOFix
             maxTempRawLabel.Anchor = AnchorStyles.None;
             maxTempRawLabel.TextAlign = ContentAlignment.MiddleCenter;
 
-            var mainPictureLayout = CreateInLayout<TableLayoutPanel>(mainLayout, 1, 0);
-            mainPictureLayout.Dock = DockStyle.Fill;
-            mainPictureLayout.Margin = new Padding(0);
+            var mainPictureLayout = CreateSublayout(mainLayout, 1, 0);
             AddColumn(mainPictureLayout, SizeType.Percent, 100f);
             AddColumn(mainPictureLayout, SizeType.Absolute, 60f);
             AddRow(mainPictureLayout, SizeType.Percent, 100f);
@@ -392,9 +372,7 @@ namespace SeekOFix
             mouseLabel.Dock = DockStyle.Fill;
             mouseLabel.TextAlign = ContentAlignment.MiddleCenter;
 
-            var gaugeLayout = CreateInLayout<TableLayoutPanel>(mainPictureLayout, 1, 0);
-            gaugeLayout.Dock = DockStyle.Fill;
-            gaugeLayout.Margin = new Padding(0);
+            var gaugeLayout = CreateSublayout(mainPictureLayout, 1, 0);
             AddColumn(gaugeLayout, SizeType.Percent, 100f);
             AddRow(gaugeLayout, SizeType.Absolute, 25f);
             AddRow(gaugeLayout, SizeType.Percent, 100f);
@@ -412,9 +390,7 @@ namespace SeekOFix
             tempGaugeMaxLabel.Dock = DockStyle.Fill;
             tempGaugeMaxLabel.TextAlign = ContentAlignment.MiddleCenter;
 
-            var sliderLayout = CreateInLayout<TableLayoutPanel>(mainLayout, 0, 2);
-            sliderLayout.Dock = DockStyle.Fill;
-            sliderLayout.Margin = new Padding(0);
+            var sliderLayout = CreateSublayout(mainLayout, 0, 2);
             AddColumn(sliderLayout, SizeType.Absolute, 40f);
             AddColumn(sliderLayout, SizeType.Percent, 100f);
             AddColumn(sliderLayout, SizeType.Absolute, 60f);

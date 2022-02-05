@@ -33,6 +33,24 @@ namespace SeekOFix
             layout.RowStyles.Add(new RowStyle(sizeType, size));
         }
 
+        public static TableLayoutPanel CreateLayout(Control parent)
+        {
+            var layout = new TableLayoutPanel();
+            layout.Dock = DockStyle.Fill;
+            layout.Margin = new Padding(0);
+            parent.Controls.Add(layout);
+            return layout;
+        }
+
+        public static TableLayoutPanel CreateSublayout(TableLayoutPanel layout, int column, int row)
+        {
+            var sublayout = new TableLayoutPanel();
+            sublayout.Dock = DockStyle.Fill;
+            sublayout.Margin = new Padding(0);
+            layout.Controls.Add(sublayout, column, row);
+            return sublayout;
+        }
+
         public static void SetColumnSpan(Control control, int count)
         {
             var layout = control?.Parent as TableLayoutPanel;
