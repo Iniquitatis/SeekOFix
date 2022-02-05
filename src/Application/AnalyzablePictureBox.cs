@@ -69,8 +69,6 @@ namespace SeekOFix
 
         public void Reanalyze()
         {
-            if (!_analysisEnabled) return;
-
             DetectExtremes();
 
             foreach (var analyzer in _analyzers)

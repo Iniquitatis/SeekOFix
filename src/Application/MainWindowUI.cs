@@ -3,12 +3,13 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
+using static SeekOFix.UIUtils;
+
 namespace SeekOFix
 {
     partial class MainWindow
     {
         private IContainer components = null;
-        private Button startStopButton;
         private ComboBox paletteCombo;
         private RadioButton unitsKRadio;
         private RadioButton unitsCRadio;
@@ -36,8 +37,8 @@ namespace SeekOFix
         private PictureBox tempGaugePicture;
         private Label tempGaugeMinLabel;
         private Label tempGaugeMaxLabel;
-        private Label sliderMinLabel;
-        private Label sliderMaxLabel;
+        private Label sliderMinTempLabel;
+        private Label sliderMaxTempLabel;
         private TrackBar minTempSlider;
         private TrackBar maxTempSlider;
 
@@ -65,47 +66,31 @@ namespace SeekOFix
 
             components = new Container();
 
-            var mainLayout = new TableLayoutPanel();
-            mainLayout.ColumnCount = 3;
-            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 250f));
-            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
-            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 60f));
+            var mainLayout = CreateChild<TableLayoutPanel>(this);
             mainLayout.Dock = DockStyle.Fill;
             mainLayout.Margin = new Padding(0);
-            mainLayout.RowCount = 6;
-            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 25f));
-            mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
-            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 25f));
-            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 25f));
-            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 25f));
-            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 25f));
-            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 20f));
-            Controls.Add(mainLayout);
+            AddColumn(mainLayout, SizeType.Absolute, 250f);
+            AddColumn(mainLayout, SizeType.Percent, 100f);
+            AddRow(mainLayout, SizeType.Percent, 100f);
+            AddRow(mainLayout, SizeType.Absolute, 25f);
+            AddRow(mainLayout, SizeType.Absolute, 75f);
 
-            var mainControlLayout = new TableLayoutPanel();
-            mainControlLayout.ColumnCount = 1;
-            mainControlLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
+            var mainControlLayout = CreateInLayout<TableLayoutPanel>(mainLayout, 0, 0);
             mainControlLayout.Dock = DockStyle.Fill;
             mainControlLayout.Margin = new Padding(0);
-            mainControlLayout.RowCount = 2;
-            mainControlLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            mainControlLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
-            mainControlLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 20f));
-            mainLayout.Controls.Add(mainControlLayout, 0, 0);
-            mainLayout.SetRowSpan(mainControlLayout, 2);
+            AddColumn(mainControlLayout, SizeType.Percent, 100f);
+            AddRow(mainControlLayout, SizeType.Absolute, 30f);
+            AddRow(mainControlLayout, SizeType.Percent, 100f);
 
-            var mainControlButtons = new TableLayoutPanel();
-            mainControlButtons.ColumnCount = 3;
-            mainControlButtons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
-            mainControlButtons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
-            mainControlButtons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
+            var mainControlButtons = CreateInLayout<TableLayoutPanel>(mainControlLayout, 0, 0);
             mainControlButtons.Dock = DockStyle.Fill;
             mainControlButtons.Margin = new Padding(0);
-            mainControlButtons.RowCount = 1;
-            mainControlButtons.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            mainControlLayout.Controls.Add(mainControlButtons, 0, 0);
+            AddColumn(mainControlButtons, SizeType.Percent, 1f / 3f);
+            AddColumn(mainControlButtons, SizeType.Percent, 1f / 3f);
+            AddColumn(mainControlButtons, SizeType.Percent, 1f / 3f);
+            AddRow(mainControlButtons, SizeType.Absolute, 30f);
 
-            startStopButton = new Button();
+            var startStopButton = CreateInLayout<Button>(mainControlButtons, 0, 0);
             startStopButton.Dock = DockStyle.Fill;
             startStopButton.Text = "STOP";
             startStopButton.Click += new EventHandler((sender, e) =>
@@ -113,378 +98,349 @@ namespace SeekOFix
                 ToggleThreadActivity();
                 startStopButton.Text = isRunning ? "STOP" : "START";
             });
-            mainControlButtons.Controls.Add(startStopButton, 0, 0);
 
             var startStopToolTip = new ToolTip(components);
             startStopToolTip.SetToolTip(startStopButton, "Start/stop streaming");
 
-            var intCalButton = new Button();
+            var intCalButton = CreateInLayout<Button>(mainControlButtons, 1, 0);
             intCalButton.Dock = DockStyle.Fill;
             intCalButton.Text = "INT Cal";
             intCalButton.Click += new EventHandler((sender, e) => usingExternalCal = false);
-            mainControlButtons.Controls.Add(intCalButton, 1, 0);
 
             var intCalToolTip = new ToolTip(components);
             intCalToolTip.SetToolTip(intCalButton, "Do internal calibration");
 
-            var extCalButton = new Button();
+            var extCalButton = CreateInLayout<Button>(mainControlButtons, 2, 0);
             extCalButton.Dock = DockStyle.Fill;
             extCalButton.Text = "EXT Cal";
             extCalButton.Click += new EventHandler((sender, e) => grabExternalReference = true);
-            mainControlButtons.Controls.Add(extCalButton, 2, 0);
 
             var extCalToolTip = new ToolTip(components);
             extCalToolTip.SetToolTip(extCalButton, "Do external calibration");
 
-            var mainControlTabs = new TabControl();
+            var mainControlTabs = CreateInLayout<TabControl>(mainControlLayout, 0, 1);
             mainControlTabs.Dock = DockStyle.Fill;
-            mainControlLayout.Controls.Add(mainControlTabs, 0, 1);
 
-            var appearanceTab = new TabPage("Appearance");
+            var appearanceTab = CreateChild<TabPage>(mainControlTabs, "Appearance");
             appearanceTab.Padding = new Padding(3);
             appearanceTab.UseVisualStyleBackColor = true;
-            mainControlTabs.Controls.Add(appearanceTab);
 
-            var appearanceLayout = new TableLayoutPanel();
-            appearanceLayout.ColumnCount = 2;
-            appearanceLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35f));
-            appearanceLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65f));
+            var appearanceLayout = CreateChild<TableLayoutPanel>(appearanceTab);
             appearanceLayout.Dock = DockStyle.Fill;
             appearanceLayout.Margin = new Padding(0);
-            appearanceLayout.RowCount = 7;
-            appearanceLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            appearanceLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            appearanceLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            appearanceLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 100f));
-            appearanceLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            appearanceLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            appearanceLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            appearanceTab.Controls.Add(appearanceLayout);
+            AddColumn(appearanceLayout, SizeType.Percent, 35f);
+            AddColumn(appearanceLayout, SizeType.Percent, 65f);
+            AddRow(appearanceLayout, SizeType.Absolute, 30f);
+            AddRow(appearanceLayout, SizeType.Absolute, 30f);
+            AddRow(appearanceLayout, SizeType.Absolute, 30f);
+            AddRow(appearanceLayout, SizeType.Absolute, 100f);
+            AddRow(appearanceLayout, SizeType.Absolute, 30f);
+            AddRow(appearanceLayout, SizeType.Absolute, 30f);
+            AddRow(appearanceLayout, SizeType.Absolute, 30f);
 
-            var paletteLabel = new Label();
+            var paletteLabel = CreateInLayout<Label>(appearanceLayout, 0, 0);
             paletteLabel.Anchor = AnchorStyles.Left;
             paletteLabel.Text = "Palette:";
             paletteLabel.TextAlign = ContentAlignment.MiddleLeft;
-            appearanceLayout.Controls.Add(paletteLabel, 0, 0);
 
-            paletteCombo = new ComboBox();
+            paletteCombo = CreateInLayout<ComboBox>(appearanceLayout, 1, 0);
             paletteCombo.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             paletteCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             paletteCombo.FormattingEnabled = true;
             paletteCombo.SelectedIndexChanged += new EventHandler(HandlePaletteComboSelectedIndexChanged);
-            appearanceLayout.Controls.Add(paletteCombo, 1, 0);
 
-            var unitsLabel = new Label();
+            var unitsLabel = CreateInLayout<Label>(appearanceLayout, 0, 1);
             unitsLabel.Anchor = AnchorStyles.Left;
             unitsLabel.Text = "Temp units:";
             unitsLabel.TextAlign = ContentAlignment.MiddleLeft;
-            appearanceLayout.Controls.Add(unitsLabel, 0, 1);
 
-            var unitsLayout = new TableLayoutPanel();
-            unitsLayout.ColumnCount = 3;
-            unitsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
-            unitsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
-            unitsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
+            var unitsLayout = CreateInLayout<TableLayoutPanel>(appearanceLayout, 1, 1);
             unitsLayout.Dock = DockStyle.Fill;
             unitsLayout.Margin = new Padding(0);
-            unitsLayout.RowCount = 1;
-            unitsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
-            appearanceLayout.Controls.Add(unitsLayout, 1, 1);
+            AddColumn(unitsLayout, SizeType.Percent, 1f / 3f);
+            AddColumn(unitsLayout, SizeType.Percent, 1f / 3f);
+            AddColumn(unitsLayout, SizeType.Percent, 1f / 3f);
+            AddRow(unitsLayout, SizeType.Percent, 100f);
 
-            unitsKRadio = new RadioButton();
+            unitsKRadio = CreateInLayout<RadioButton>(unitsLayout, 0, 0);
             unitsKRadio.Anchor = AnchorStyles.Left;
             unitsKRadio.AutoSize = true;
             unitsKRadio.Checked = true;
             unitsKRadio.Text = "K";
             unitsKRadio.CheckedChanged += new EventHandler(HandleUnitRadiosCheckedChanged);
-            unitsLayout.Controls.Add(unitsKRadio, 0, 0);
-
-            unitsCRadio = new RadioButton();
+            
+            unitsCRadio = CreateInLayout<RadioButton>(unitsLayout, 1, 0);
             unitsCRadio.Anchor = AnchorStyles.Left;
             unitsCRadio.AutoSize = true;
             unitsCRadio.Text = "°C";
             unitsCRadio.CheckedChanged += new EventHandler(HandleUnitRadiosCheckedChanged);
-            unitsLayout.Controls.Add(unitsCRadio, 1, 0);
-
-            unitsFRadio = new RadioButton();
+            
+            unitsFRadio = CreateInLayout<RadioButton>(unitsLayout, 2, 0);
             unitsFRadio.Anchor = AnchorStyles.Left;
             unitsFRadio.AutoSize = true;
             unitsFRadio.Text = "°F";
             unitsFRadio.CheckedChanged += new EventHandler(HandleUnitRadiosCheckedChanged);
-            unitsLayout.Controls.Add(unitsFRadio, 2, 0);
-
-            applySharpenCheck = new CheckBox();
+            
+            applySharpenCheck = CreateInLayout<CheckBox>(appearanceLayout, 0, 2);
             applySharpenCheck.Anchor = AnchorStyles.Left;
             applySharpenCheck.AutoSize = true;
             applySharpenCheck.Text = "Apply sharpening filter";
             applySharpenCheck.CheckedChanged += new EventHandler((sender, e) => sharpenImage = !sharpenImage);
-            appearanceLayout.Controls.Add(applySharpenCheck, 0, 2);
-            appearanceLayout.SetColumnSpan(applySharpenCheck, 2);
+            SetColumnSpan(applySharpenCheck, 2);
 
-            histogramPicture = new PictureBox();
+            histogramPicture = CreateInLayout<PictureBox>(appearanceLayout, 0, 3);
             histogramPicture.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             histogramPicture.BackColor = SystemColors.ControlLightLight;
             histogramPicture.BorderStyle = BorderStyle.FixedSingle;
             histogramPicture.SizeMode = PictureBoxSizeMode.StretchImage;
-            appearanceLayout.Controls.Add(histogramPicture, 0, 3);
-            appearanceLayout.SetColumnSpan(histogramPicture, 2);
+            SetColumnSpan(histogramPicture, 2);
 
-            manualRangeSwitchButton = new Button();
+            manualRangeSwitchButton = CreateInLayout<Button>(appearanceLayout, 0, 4);
             manualRangeSwitchButton.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             manualRangeSwitchButton.Text = "Switch to manual range";
             manualRangeSwitchButton.Click += new EventHandler(HandleManualRangeSwitchButtonClick);
-            appearanceLayout.Controls.Add(manualRangeSwitchButton, 0, 4);
-            appearanceLayout.SetColumnSpan(manualRangeSwitchButton, 2);
+            SetColumnSpan(manualRangeSwitchButton, 2);
 
-            dynSlidersCheck = new CheckBox();
+            dynSlidersCheck = CreateInLayout<CheckBox>(appearanceLayout, 0, 5);
             dynSlidersCheck.Anchor = AnchorStyles.Left;
             dynSlidersCheck.AutoSize = true;
             dynSlidersCheck.Text = "Enable relative sliders";
             dynSlidersCheck.Visible = false;
             dynSlidersCheck.CheckedChanged += new EventHandler(HandleDynSlidersCheckCheckedChanged);
-            appearanceLayout.Controls.Add(dynSlidersCheck, 0, 5);
-            appearanceLayout.SetColumnSpan(dynSlidersCheck, 2);
+            SetColumnSpan(dynSlidersCheck, 2);
 
-            var analysisTab = new TabPage("Analysis");
+            var analysisTab = CreateChild<TabPage>(mainControlTabs, "Analysis");
             analysisTab.Padding = new Padding(3);
             analysisTab.UseVisualStyleBackColor = true;
-            mainControlTabs.Controls.Add(analysisTab);
-
-            var analysisLayout = new TableLayoutPanel();
-            analysisLayout.ColumnCount = 2;
-            analysisLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35f));
-            analysisLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65f));
+            
+            var analysisLayout = CreateChild<TableLayoutPanel>(analysisTab);
             analysisLayout.Dock = DockStyle.Fill;
             analysisLayout.Margin = new Padding(0);
-            analysisLayout.RowCount = 7;
-            analysisLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            analysisLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            analysisLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            analysisLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            analysisLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            analysisLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            analysisLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            analysisTab.Controls.Add(analysisLayout);
+            AddColumn(analysisLayout, SizeType.Percent, 35f);
+            AddColumn(analysisLayout, SizeType.Percent, 65f);
+            AddRow(analysisLayout, SizeType.Absolute, 30f);
+            AddRow(analysisLayout, SizeType.Absolute, 30f);
+            AddRow(analysisLayout, SizeType.Absolute, 30f);
+            AddRow(analysisLayout, SizeType.Absolute, 30f);
+            AddRow(analysisLayout, SizeType.Absolute, 30f);
+            AddRow(analysisLayout, SizeType.Absolute, 30f);
+            AddRow(analysisLayout, SizeType.Absolute, 30f);
 
-            enableAnalysisCheck = new CheckBox();
+            enableAnalysisCheck = CreateInLayout<CheckBox>(analysisLayout, 0, 0);
             enableAnalysisCheck.Anchor = AnchorStyles.Left;
             enableAnalysisCheck.AutoSize = true;
             enableAnalysisCheck.Text = "Enabled";
             enableAnalysisCheck.CheckedChanged += new EventHandler(HandleAnalysisCheckCheckedChanged);
-            analysisLayout.Controls.Add(enableAnalysisCheck, 0, 0);
-            analysisLayout.SetColumnSpan(enableAnalysisCheck, 2);
+            SetColumnSpan(enableAnalysisCheck, 2);
 
-            showTemperatureCheck = new CheckBox();
+            showTemperatureCheck = CreateInLayout<CheckBox>(analysisLayout, 0, 1);
             showTemperatureCheck.Anchor = AnchorStyles.Left;
             showTemperatureCheck.AutoSize = true;
             showTemperatureCheck.Checked = true;
             showTemperatureCheck.Text = "Show temperature";
             showTemperatureCheck.CheckedChanged += new EventHandler(HandleShowTemperatureCheckCheckedChanged);
-            analysisLayout.Controls.Add(showTemperatureCheck, 0, 1);
-            analysisLayout.SetColumnSpan(showTemperatureCheck, 2);
+            SetColumnSpan(showTemperatureCheck, 2);
 
-            var crossSizeLabel = new Label();
+            var crossSizeLabel = CreateInLayout<Label>(analysisLayout, 0, 2);
             crossSizeLabel.Anchor = AnchorStyles.Left;
             crossSizeLabel.Text = "Cross size:";
             crossSizeLabel.TextAlign = ContentAlignment.MiddleLeft;
-            analysisLayout.Controls.Add(crossSizeLabel, 0, 2);
 
-            crossSizeSpinner = new NumericUpDown();
+            crossSizeSpinner = CreateInLayout<NumericUpDown>(analysisLayout, 1, 2);
             crossSizeSpinner.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             crossSizeSpinner.Maximum = 64;
             crossSizeSpinner.Minimum = 8;
             crossSizeSpinner.Value = 16;
             crossSizeSpinner.ValueChanged += new EventHandler(HandleCrossSizeSpinnerValueChanged);
-            analysisLayout.Controls.Add(crossSizeSpinner, 1, 2);
-
-            showExtremesCheck = new CheckBox();
+            
+            showExtremesCheck = CreateInLayout<CheckBox>(analysisLayout, 0, 3);
             showExtremesCheck.Anchor = AnchorStyles.Left;
             showExtremesCheck.AutoSize = true;
             showExtremesCheck.Checked = true;
             showExtremesCheck.Text = "Show extremes";
             showExtremesCheck.CheckedChanged += new EventHandler(HandleShowExtremesCheckCheckedChanged);
-            analysisLayout.Controls.Add(showExtremesCheck, 0, 3);
-            analysisLayout.SetColumnSpan(showExtremesCheck, 2);
+            SetColumnSpan(showExtremesCheck, 2);
 
-            var maxCountLabel = new Label();
+            var maxCountLabel = CreateInLayout<Label>(analysisLayout, 0, 4);
             maxCountLabel.Anchor = AnchorStyles.Left;
             maxCountLabel.Text = "Max count:";
             maxCountLabel.TextAlign = ContentAlignment.MiddleLeft;
-            analysisLayout.Controls.Add(maxCountLabel, 0, 4);
-
-            maxCountSpinner = new NumericUpDown();
+            
+            maxCountSpinner = CreateInLayout<NumericUpDown>(analysisLayout, 1, 4);
             maxCountSpinner.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             maxCountSpinner.Maximum = 10;
             maxCountSpinner.Minimum = 1;
             maxCountSpinner.Value = 3;
             maxCountSpinner.ValueChanged += new EventHandler(HandleMaxCountSpinnerValueChanged);
-            analysisLayout.Controls.Add(maxCountSpinner, 1, 4);
-
-            var deletePointsButton = new Button();
+            
+            var deletePointsButton = CreateInLayout<Button>(analysisLayout, 0, 5);
             deletePointsButton.Dock = DockStyle.Fill;
             deletePointsButton.Text = "Delete all points";
             deletePointsButton.Click += new EventHandler(HandleDeletePointsButtonClick);
-            analysisLayout.Controls.Add(deletePointsButton, 0, 5);
-            analysisLayout.SetColumnSpan(deletePointsButton, 2);
+            SetColumnSpan(deletePointsButton, 2);
 
-            var outputTab = new TabPage("Output");
+            var outputTab = CreateChild<TabPage>(mainControlTabs, "Output");
             outputTab.Padding = new Padding(3);
             outputTab.UseVisualStyleBackColor = true;
-            mainControlTabs.Controls.Add(outputTab);
-
-            var outputLayout = new TableLayoutPanel();
-            outputLayout.ColumnCount = 2;
-            outputLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
-            outputLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
+            
+            var outputLayout = CreateChild<TableLayoutPanel>(outputTab);
             outputLayout.Dock = DockStyle.Fill;
             outputLayout.Margin = new Padding(0);
-            outputLayout.RowCount = 5;
-            outputLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 25f));
-            outputLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            outputLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            outputLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            outputLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
-            outputTab.Controls.Add(outputLayout);
+            AddColumn(outputLayout, SizeType.Percent, 50f);
+            AddColumn(outputLayout, SizeType.Percent, 50f);
+            AddRow(outputLayout, SizeType.Absolute, 25f);
+            AddRow(outputLayout, SizeType.Absolute, 30f);
+            AddRow(outputLayout, SizeType.Absolute, 30f);
+            AddRow(outputLayout, SizeType.Absolute, 30f);
+            AddRow(outputLayout, SizeType.Absolute, 30f);
 
-            var outputPathLabel = new Label();
+            var outputPathLabel = CreateInLayout<Label>(outputLayout, 0, 0);
             outputPathLabel.Anchor = AnchorStyles.Left;
             outputPathLabel.Text = "Output path:";
             outputPathLabel.TextAlign = ContentAlignment.MiddleLeft;
-            outputLayout.Controls.Add(outputPathLabel, 0, 0);
-            outputLayout.SetColumnSpan(outputPathLabel, 2);
+            SetColumnSpan(outputPathLabel, 2);
 
-            var outputPathLayout = new TableLayoutPanel();
-            outputPathLayout.ColumnCount = 2;
-            outputPathLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
-            outputPathLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 30f));
+            var outputPathLayout = CreateInLayout<TableLayoutPanel>(outputLayout, 0, 1);
             outputPathLayout.Dock = DockStyle.Fill;
             outputPathLayout.Margin = new Padding(0);
-            outputPathLayout.RowCount = 1;
-            outputPathLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
-            outputLayout.Controls.Add(outputPathLayout, 0, 1);
-            outputLayout.SetColumnSpan(outputPathLayout, 2);
+            AddColumn(outputPathLayout, SizeType.Percent, 100f);
+            AddColumn(outputPathLayout, SizeType.Absolute, 30f);
+            AddRow(outputPathLayout, SizeType.Percent, 100f);
+            SetColumnSpan(outputPathLayout, 2);
 
-            outputPathField = new TextBox();
+            outputPathField = CreateInLayout<TextBox>(outputPathLayout, 0, 0);
             outputPathField.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             outputPathField.MaxLength = 256;
-            outputPathLayout.Controls.Add(outputPathField, 0, 0);
 
-            var outputPathButton = new Button();
+            var outputPathButton = CreateInLayout<Button>(outputPathLayout, 1, 0);
             outputPathButton.Dock = DockStyle.Fill;
             outputPathButton.Text = "...";
             outputPathButton.Click += new EventHandler(HandleOutputPathButtonClick);
-            outputPathLayout.Controls.Add(outputPathButton, 1, 0);
 
-            var autoSaveCheck = new CheckBox();
+            var autoSaveCheck = CreateInLayout<CheckBox>(outputLayout, 0, 2);
             autoSaveCheck.Anchor = AnchorStyles.Left;
             autoSaveCheck.AutoSize = true;
             autoSaveCheck.Text = "Screenshot on each calibration";
             autoSaveCheck.CheckedChanged += new EventHandler((sender, e) => autoSaveImg = !autoSaveImg);
-            outputLayout.Controls.Add(autoSaveCheck, 0, 2);
-            outputLayout.SetColumnSpan(autoSaveCheck, 2);
+            SetColumnSpan(autoSaveCheck, 2);
 
-            var screenshotButton = new Button();
+            var screenshotButton = CreateInLayout<Button>(outputLayout, 0, 3);
             screenshotButton.Dock = DockStyle.Fill;
             screenshotButton.Text = "Screenshot";
             screenshotButton.Click += new EventHandler(HandleScreenshotButtonClick);
-            outputLayout.Controls.Add(screenshotButton, 0, 3);
 
-            recordVideoButton = new Button();
+            recordVideoButton = CreateInLayout<Button>(outputLayout, 1, 3);
             recordVideoButton.Dock = DockStyle.Fill;
             recordVideoButton.Text = "Record video";
             recordVideoButton.Click += new EventHandler(HandleRecordVideoButtonClick);
-            outputLayout.Controls.Add(recordVideoButton, 1, 3);
-
-            var debugValueLayout = new TableLayoutPanel();
-            debugValueLayout.ColumnCount = 3;
-            debugValueLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
-            debugValueLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
-            debugValueLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f / 3f));
+            
+            var debugValueLayout = CreateInLayout<TableLayoutPanel>(mainLayout, 0, 1);
             debugValueLayout.Dock = DockStyle.Fill;
             debugValueLayout.Margin = new Padding(0);
-            debugValueLayout.RowCount = 1;
-            debugValueLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
-            mainLayout.Controls.Add(debugValueLayout, 0, 2);
-
-            gModeLeftLabel = new Label();
+            AddColumn(debugValueLayout, SizeType.Percent, 1f / 3f);
+            AddColumn(debugValueLayout, SizeType.Percent, 1f / 3f);
+            AddColumn(debugValueLayout, SizeType.Percent, 1f / 3f);
+            AddRow(debugValueLayout, SizeType.Percent, 100f);
+            
+            gModeLeftLabel = CreateInLayout<Label>(debugValueLayout, 0, 0);
             gModeLeftLabel.Anchor = AnchorStyles.None;
             gModeLeftLabel.TextAlign = ContentAlignment.MiddleCenter;
-            debugValueLayout.Controls.Add(gModeLeftLabel, 0, 0);
 
-            gModeRightLabel = new Label();
+            gModeRightLabel = CreateInLayout<Label>(debugValueLayout, 1, 0);
             gModeRightLabel.Anchor = AnchorStyles.None;
             gModeRightLabel.TextAlign = ContentAlignment.MiddleCenter;
-            debugValueLayout.Controls.Add(gModeRightLabel, 1, 0);
-
-            maxTempRawLabel = new Label();
+            
+            maxTempRawLabel = CreateInLayout<Label>(debugValueLayout, 2, 0);
             maxTempRawLabel.Anchor = AnchorStyles.None;
             maxTempRawLabel.TextAlign = ContentAlignment.MiddleCenter;
-            debugValueLayout.Controls.Add(maxTempRawLabel, 2, 0);
 
-            pictureTabs = new TabControl();
+            var mainPictureLayout = CreateInLayout<TableLayoutPanel>(mainLayout, 1, 0);
+            mainPictureLayout.Dock = DockStyle.Fill;
+            mainPictureLayout.Margin = new Padding(0);
+            AddColumn(mainPictureLayout, SizeType.Percent, 100f);
+            AddColumn(mainPictureLayout, SizeType.Absolute, 60f);
+            AddRow(mainPictureLayout, SizeType.Percent, 100f);
+
+            pictureTabs = CreateInLayout<TabControl>(mainPictureLayout, 0, 0);
             pictureTabs.Dock = DockStyle.Fill;
-            mainLayout.Controls.Add(pictureTabs, 1, 0);
-            mainLayout.SetRowSpan(pictureTabs, 2);
-
-            liveTab = new TabPage("Live");
+            
+            liveTab = CreateChild<TabPage>(pictureTabs, "Live");
             liveTab.Padding = new Padding(3);
             liveTab.UseVisualStyleBackColor = true;
-            pictureTabs.Controls.Add(liveTab);
-
-            livePicture = new AnalyzablePictureBox();
+            
+            livePicture = CreateChild<AnalyzablePictureBox>(liveTab);
             livePicture.BorderStyle = BorderStyle.FixedSingle;
             livePicture.Size = new Size(32, 32);
             livePicture.SizeMode = PictureBoxSizeMode.StretchImage;
             livePicture.MouseEnter += new EventHandler(HandleAnalyzablePictureMouseEnter);
             livePicture.MouseLeave += new EventHandler(HandleAnalyzablePictureMouseLeave);
             livePicture.MouseMove += new MouseEventHandler(HandleAnalyzablePictureMouseMove);
-            liveTab.Controls.Add(livePicture);
-
-            firstAfterCalTab = new TabPage("On calibration");
+            
+            firstAfterCalTab = CreateChild<TabPage>(pictureTabs, "On calibration");
             firstAfterCalTab.Padding = new Padding(3);
             firstAfterCalTab.UseVisualStyleBackColor = true;
-            pictureTabs.Controls.Add(firstAfterCalTab);
-
-            firstAfterCalPicture = new AnalyzablePictureBox();
+            
+            firstAfterCalPicture = CreateChild<AnalyzablePictureBox>(firstAfterCalTab);
             firstAfterCalPicture.BorderStyle = BorderStyle.FixedSingle;
             firstAfterCalPicture.Size = new Size(32, 32);
             firstAfterCalPicture.SizeMode = PictureBoxSizeMode.StretchImage;
             firstAfterCalPicture.MouseEnter += new EventHandler(HandleAnalyzablePictureMouseEnter);
             firstAfterCalPicture.MouseLeave += new EventHandler(HandleAnalyzablePictureMouseLeave);
             firstAfterCalPicture.MouseMove += new MouseEventHandler(HandleAnalyzablePictureMouseMove);
-            firstAfterCalTab.Controls.Add(firstAfterCalPicture);
-
-            mouseLabel = new Label();
+            
+            mouseLabel = CreateInLayout<Label>(mainLayout, 1, 1);
             mouseLabel.Dock = DockStyle.Fill;
             mouseLabel.TextAlign = ContentAlignment.MiddleCenter;
-            mainLayout.Controls.Add(mouseLabel, 1, 2);
 
-            tempGaugePicture = new PictureBox();
+            var gaugeLayout = CreateInLayout<TableLayoutPanel>(mainPictureLayout, 1, 0);
+            gaugeLayout.Dock = DockStyle.Fill;
+            gaugeLayout.Margin = new Padding(0);
+            AddColumn(gaugeLayout, SizeType.Percent, 100f);
+            AddRow(gaugeLayout, SizeType.Absolute, 25f);
+            AddRow(gaugeLayout, SizeType.Percent, 100f);
+            AddRow(gaugeLayout, SizeType.Absolute, 25f);
+            
+            tempGaugePicture = CreateInLayout<PictureBox>(gaugeLayout, 0, 1);
             tempGaugePicture.Dock = DockStyle.Fill;
             tempGaugePicture.SizeMode = PictureBoxSizeMode.StretchImage;
-            mainLayout.Controls.Add(tempGaugePicture, 2, 1);
-
-            tempGaugeMinLabel = new Label();
+            
+            tempGaugeMinLabel = CreateInLayout<Label>(gaugeLayout, 0, 2);
             tempGaugeMinLabel.Dock = DockStyle.Fill;
             tempGaugeMinLabel.TextAlign = ContentAlignment.MiddleCenter;
-            mainLayout.Controls.Add(tempGaugeMinLabel, 2, 2);
-
-            tempGaugeMaxLabel = new Label();
+            
+            tempGaugeMaxLabel = CreateInLayout<Label>(gaugeLayout, 0, 0);
             tempGaugeMaxLabel.Dock = DockStyle.Fill;
             tempGaugeMaxLabel.TextAlign = ContentAlignment.MiddleCenter;
-            mainLayout.Controls.Add(tempGaugeMaxLabel, 2, 0);
 
-            sliderMinLabel = new Label();
+            var sliderLayout = CreateInLayout<TableLayoutPanel>(mainLayout, 0, 2);
+            sliderLayout.Dock = DockStyle.Fill;
+            sliderLayout.Margin = new Padding(0);
+            AddColumn(sliderLayout, SizeType.Absolute, 40f);
+            AddColumn(sliderLayout, SizeType.Percent, 100f);
+            AddColumn(sliderLayout, SizeType.Absolute, 60f);
+            AddRow(sliderLayout, SizeType.Percent, 50f);
+            AddRow(sliderLayout, SizeType.Percent, 50f);
+            SetColumnSpan(sliderLayout, 2);
+
+            var sliderMinLabel = CreateInLayout<Label>(sliderLayout, 0, 0);
             sliderMinLabel.Dock = DockStyle.Fill;
-            sliderMinLabel.TextAlign = ContentAlignment.MiddleCenter;
-            mainLayout.Controls.Add(sliderMinLabel, 2, 3);
+            sliderMinLabel.Text = "Low";
+            sliderMinLabel.TextAlign = ContentAlignment.MiddleLeft;
 
-            sliderMaxLabel = new Label();
+            var sliderMaxLabel = CreateInLayout<Label>(sliderLayout, 0, 1);
             sliderMaxLabel.Dock = DockStyle.Fill;
-            sliderMaxLabel.TextAlign = ContentAlignment.MiddleCenter;
-            mainLayout.Controls.Add(sliderMaxLabel, 2, 5);
+            sliderMaxLabel.Text = "High";
+            sliderMaxLabel.TextAlign = ContentAlignment.MiddleLeft;
 
-            minTempSlider = new TrackBar();
+            sliderMinTempLabel = CreateInLayout<Label>(sliderLayout, 2, 0);
+            sliderMinTempLabel.Dock = DockStyle.Fill;
+            sliderMinTempLabel.TextAlign = ContentAlignment.MiddleCenter;
+            
+            sliderMaxTempLabel = CreateInLayout<Label>(sliderLayout, 2, 1);
+            sliderMaxTempLabel.Dock = DockStyle.Fill;
+            sliderMaxTempLabel.TextAlign = ContentAlignment.MiddleCenter;
+            
+            minTempSlider = CreateInLayout<TrackBar>(sliderLayout, 1, 0);
             minTempSlider.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             minTempSlider.CausesValidation = false;
             minTempSlider.LargeChange = 100;
@@ -494,10 +450,8 @@ namespace SeekOFix
             minTempSlider.TickFrequency = 100;
             minTempSlider.Value = 4000;
             minTempSlider.Scroll += new EventHandler(HandleMinTempSliderScroll);
-            mainLayout.Controls.Add(minTempSlider, 0, 3);
-            mainLayout.SetColumnSpan(minTempSlider, 2);
 
-            maxTempSlider = new TrackBar();
+            maxTempSlider = CreateInLayout<TrackBar>(sliderLayout, 1, 1);
             maxTempSlider.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             maxTempSlider.CausesValidation = false;
             maxTempSlider.LargeChange = 100;
@@ -507,8 +461,6 @@ namespace SeekOFix
             maxTempSlider.TickFrequency = 100;
             maxTempSlider.Value = 4000;
             maxTempSlider.Scroll += new EventHandler(HandleMaxTempSliderScroll);
-            mainLayout.Controls.Add(maxTempSlider, 0, 5);
-            mainLayout.SetColumnSpan(maxTempSlider, 2);
         }
     }
 }

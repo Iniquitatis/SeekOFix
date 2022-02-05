@@ -486,8 +486,8 @@ namespace SeekOFix
 
                 tempGaugeMinLabel.Text = minTemp;
                 tempGaugeMaxLabel.Text = maxTemp;
-                sliderMinLabel.Text = minTemp;
-                sliderMaxLabel.Text = maxTemp;
+                sliderMinTempLabel.Text = minTemp;
+                sliderMaxTempLabel.Text = maxTemp;
 
                 gModeLeftLabel.Text = gModeLeft.ToString();
                 gModeRightLabel.Text = gModeRight.ToString();

@@ -111,6 +111,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Analyzer.cs" />
+    <Compile Include="UIUtils.cs" />
     <Compile Include="MainWindowUI.cs">
       <SubType>Form</SubType>
     </Compile>
