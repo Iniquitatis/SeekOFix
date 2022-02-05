@@ -111,6 +111,10 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Analyzer.cs" />
+    <Compile Include="DrawingUtils.cs" />
+    <Compile Include="TemperatureGaugePictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UIUtils.cs" />
     <Compile Include="MainWindowUI.cs">
       <SubType>Form</SubType>

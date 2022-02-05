@@ -8,6 +8,7 @@ namespace SeekOFix
 {
     partial class MainWindow
     {
+        private CheckBox liveCheck;
         private ComboBox paletteCombo;
         private RadioButton unitsKRadio;
         private RadioButton unitsCRadio;
@@ -16,25 +17,14 @@ namespace SeekOFix
         private PictureBox histogramPicture;
         private Button manualRangeSwitchButton;
         private CheckBox dynSlidersCheck;
-        private CheckBox enableAnalysisCheck;
-        private CheckBox showTemperatureCheck;
-        private NumericUpDown crossSizeSpinner;
-        private CheckBox showExtremesCheck;
-        private NumericUpDown maxCountSpinner;
         private TextBox outputPathField;
         private Button recordVideoButton;
         private Label gModeLeftLabel;
         private Label gModeRightLabel;
         private Label maxTempRawLabel;
-        private TabControl pictureTabs;
-        private TabPage liveTab;
-        private AnalyzablePictureBox livePicture;
-        private TabPage firstAfterCalTab;
-        private AnalyzablePictureBox firstAfterCalPicture;
+        private AnalyzablePictureBox picture;
+        private TemperatureGaugePictureBox tempGaugePicture;
         private Label mouseLabel;
-        private PictureBox tempGaugePicture;
-        private Label tempGaugeMinLabel;
-        private Label tempGaugeMaxLabel;
         private Label sliderMinTempLabel;
         private Label sliderMaxTempLabel;
         private TrackBar minTempSlider;
@@ -59,6 +49,7 @@ namespace SeekOFix
 
             var mainControlLayout = CreateSublayout(mainLayout, 0, 0);
             AddColumn(mainControlLayout, SizeType.Percent, 100f);
+            AddRow(mainControlLayout, SizeType.Absolute, 30f);
             AddRow(mainControlLayout, SizeType.Absolute, 30f);
             AddRow(mainControlLayout, SizeType.Percent, 100f);
 
@@ -90,7 +81,13 @@ namespace SeekOFix
             extCalButton.Click += new EventHandler((sender, e) => grabExternalReference = true);
             SetToolTip(extCalButton, "Do external calibration");
 
-            var mainControlTabs = CreateInLayout<TabControl>(mainControlLayout, 0, 1);
+            liveCheck = CreateInLayout<CheckBox>(mainControlLayout, 0, 1);
+            liveCheck.Anchor = AnchorStyles.Left;
+            liveCheck.Checked = true;
+            liveCheck.Text = "Live mode";
+            SetToolTip(liveCheck, "Display each frame, otherwise display frames only after the calibration");
+
+            var mainControlTabs = CreateInLayout<TabControl>(mainControlLayout, 0, 2);
             mainControlTabs.Dock = DockStyle.Fill;
 
             var appearanceTab = CreateChild<TabPage>(mainControlTabs, "Appearance");
@@ -182,18 +179,19 @@ namespace SeekOFix
             AddRow(analysisLayout, SizeType.Absolute, 30f);
             AddRow(analysisLayout, SizeType.Absolute, 30f);
             AddRow(analysisLayout, SizeType.Absolute, 30f);
+            AddRow(analysisLayout, SizeType.Absolute, 30f);
 
-            enableAnalysisCheck = CreateInLayout<CheckBox>(analysisLayout, 0, 0);
+            var enableAnalysisCheck = CreateInLayout<CheckBox>(analysisLayout, 0, 0);
             enableAnalysisCheck.Anchor = AnchorStyles.Left;
             enableAnalysisCheck.Text = "Enabled";
-            enableAnalysisCheck.CheckedChanged += new EventHandler(HandleAnalysisCheckCheckedChanged);
+            enableAnalysisCheck.CheckedChanged += new EventHandler((sender, e) => picture.AnalysisEnabled = enableAnalysisCheck.Checked);
             SetColumnSpan(enableAnalysisCheck, 2);
 
-            showTemperatureCheck = CreateInLayout<CheckBox>(analysisLayout, 0, 1);
+            var showTemperatureCheck = CreateInLayout<CheckBox>(analysisLayout, 0, 1);
             showTemperatureCheck.Anchor = AnchorStyles.Left;
             showTemperatureCheck.Checked = true;
             showTemperatureCheck.Text = "Show temperature";
-            showTemperatureCheck.CheckedChanged += new EventHandler(HandleShowTemperatureCheckCheckedChanged);
+            showTemperatureCheck.CheckedChanged += new EventHandler((sender, e) => picture.ShowTemperature = showTemperatureCheck.Checked);
             SetColumnSpan(showTemperatureCheck, 2);
 
             var crossSizeLabel = CreateInLayout<Label>(analysisLayout, 0, 2);
@@ -201,37 +199,49 @@ namespace SeekOFix
             crossSizeLabel.Text = "Cross size:";
             crossSizeLabel.TextAlign = ContentAlignment.MiddleLeft;
 
-            crossSizeSpinner = CreateInLayout<NumericUpDown>(analysisLayout, 1, 2);
+            var crossSizeSpinner = CreateInLayout<NumericUpDown>(analysisLayout, 1, 2);
             crossSizeSpinner.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             crossSizeSpinner.Maximum = 64;
             crossSizeSpinner.Minimum = 8;
             crossSizeSpinner.Value = 16;
-            crossSizeSpinner.ValueChanged += new EventHandler(HandleCrossSizeSpinnerValueChanged);
+            crossSizeSpinner.ValueChanged += new EventHandler((sender, e) => picture.CrossSize = (int) crossSizeSpinner.Value);
 
-            showExtremesCheck = CreateInLayout<CheckBox>(analysisLayout, 0, 3);
+            var showExtremesCheck = CreateInLayout<CheckBox>(analysisLayout, 0, 3);
             showExtremesCheck.Anchor = AnchorStyles.Left;
             showExtremesCheck.Checked = true;
             showExtremesCheck.Text = "Show extremes";
-            showExtremesCheck.CheckedChanged += new EventHandler(HandleShowExtremesCheckCheckedChanged);
+            showExtremesCheck.CheckedChanged += new EventHandler((sender, e) => picture.ShowExtremes = showExtremesCheck.Checked);
             SetColumnSpan(showExtremesCheck, 2);
 
-            var maxCountLabel = CreateInLayout<Label>(analysisLayout, 0, 4);
-            maxCountLabel.Anchor = AnchorStyles.Left;
-            maxCountLabel.Text = "Max count:";
-            maxCountLabel.TextAlign = ContentAlignment.MiddleLeft;
+            var maxPointsLabel = CreateInLayout<Label>(analysisLayout, 0, 4);
+            maxPointsLabel.Anchor = AnchorStyles.Left;
+            maxPointsLabel.Text = "Max points:";
+            maxPointsLabel.TextAlign = ContentAlignment.MiddleLeft;
 
-            maxCountSpinner = CreateInLayout<NumericUpDown>(analysisLayout, 1, 4);
-            maxCountSpinner.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            maxCountSpinner.Maximum = 10;
-            maxCountSpinner.Minimum = 1;
-            maxCountSpinner.Value = 3;
-            maxCountSpinner.ValueChanged += new EventHandler(HandleMaxCountSpinnerValueChanged);
+            var maxPointsSpinner = CreateInLayout<NumericUpDown>(analysisLayout, 1, 4);
+            maxPointsSpinner.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            maxPointsSpinner.Maximum = 10;
+            maxPointsSpinner.Minimum = 1;
+            maxPointsSpinner.Value = 3;
+            maxPointsSpinner.ValueChanged += new EventHandler((sender, e) => picture.MaxPoints = (int) maxPointsSpinner.Value);
 
             var deletePointsButton = CreateInLayout<Button>(analysisLayout, 0, 5);
             deletePointsButton.Dock = DockStyle.Fill;
             deletePointsButton.Text = "Delete all points";
-            deletePointsButton.Click += new EventHandler(HandleDeletePointsButtonClick);
+            deletePointsButton.Click += new EventHandler((sender, e) => picture.DeleteAllAnalyzers());
             SetColumnSpan(deletePointsButton, 2);
+
+            var gaugeLabelCountLabel = CreateInLayout<Label>(analysisLayout, 0, 6);
+            gaugeLabelCountLabel.Anchor = AnchorStyles.Left;
+            gaugeLabelCountLabel.Text = "Gauge labels:";
+            gaugeLabelCountLabel.TextAlign = ContentAlignment.MiddleLeft;
+
+            var gaugeLabelCountSpinner = CreateInLayout<NumericUpDown>(analysisLayout, 1, 6);
+            gaugeLabelCountSpinner.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            gaugeLabelCountSpinner.Maximum = 10;
+            gaugeLabelCountSpinner.Minimum = 2;
+            gaugeLabelCountSpinner.Value = 2;
+            gaugeLabelCountSpinner.ValueChanged += new EventHandler((sender, e) => tempGaugePicture.LabelCount = (int) gaugeLabelCountSpinner.Value);
 
             var outputTab = CreateChild<TabPage>(mainControlTabs, "Output");
             outputTab.Padding = new Padding(3);
@@ -300,57 +310,25 @@ namespace SeekOFix
             maxTempRawLabel.Anchor = AnchorStyles.None;
             maxTempRawLabel.TextAlign = ContentAlignment.MiddleCenter;
 
-            var mainPictureLayout = CreateSublayout(mainLayout, 1, 0);
-            AddColumn(mainPictureLayout, SizeType.Percent, 100f);
-            AddColumn(mainPictureLayout, SizeType.Absolute, 60f);
-            AddRow(mainPictureLayout, SizeType.Percent, 100f);
+            var picturePanel = CreateInLayout<Panel>(mainLayout, 1, 0);
+            picturePanel.Dock = DockStyle.Fill;
+            picturePanel.Padding = new Padding(3);
 
-            pictureTabs = CreateInLayout<TabControl>(mainPictureLayout, 0, 0);
-            pictureTabs.Dock = DockStyle.Fill;
+            picture = CreateChild<AnalyzablePictureBox>(picturePanel);
+            picture.BorderStyle = BorderStyle.FixedSingle;
+            picture.Size = new Size(32, 32);
+            picture.SizeMode = PictureBoxSizeMode.StretchImage;
+            picture.MouseEnter += new EventHandler(HandleAnalyzablePictureMouseEnter);
+            picture.MouseLeave += new EventHandler(HandleAnalyzablePictureMouseLeave);
+            picture.MouseMove += new MouseEventHandler(HandleAnalyzablePictureMouseMove);
 
-            liveTab = CreateChild<TabPage>(pictureTabs, "Live");
-            liveTab.Padding = new Padding(3);
-
-            livePicture = CreateChild<AnalyzablePictureBox>(liveTab);
-            livePicture.BorderStyle = BorderStyle.FixedSingle;
-            livePicture.Size = new Size(32, 32);
-            livePicture.SizeMode = PictureBoxSizeMode.StretchImage;
-            livePicture.MouseEnter += new EventHandler(HandleAnalyzablePictureMouseEnter);
-            livePicture.MouseLeave += new EventHandler(HandleAnalyzablePictureMouseLeave);
-            livePicture.MouseMove += new MouseEventHandler(HandleAnalyzablePictureMouseMove);
-
-            firstAfterCalTab = CreateChild<TabPage>(pictureTabs, "On calibration");
-            firstAfterCalTab.Padding = new Padding(3);
-
-            firstAfterCalPicture = CreateChild<AnalyzablePictureBox>(firstAfterCalTab);
-            firstAfterCalPicture.BorderStyle = BorderStyle.FixedSingle;
-            firstAfterCalPicture.Size = new Size(32, 32);
-            firstAfterCalPicture.SizeMode = PictureBoxSizeMode.StretchImage;
-            firstAfterCalPicture.MouseEnter += new EventHandler(HandleAnalyzablePictureMouseEnter);
-            firstAfterCalPicture.MouseLeave += new EventHandler(HandleAnalyzablePictureMouseLeave);
-            firstAfterCalPicture.MouseMove += new MouseEventHandler(HandleAnalyzablePictureMouseMove);
+            tempGaugePicture = CreateChild<TemperatureGaugePictureBox>(picturePanel);
+            tempGaugePicture.BorderStyle = BorderStyle.FixedSingle;
+            tempGaugePicture.SizeMode = PictureBoxSizeMode.StretchImage;
 
             mouseLabel = CreateInLayout<Label>(mainLayout, 1, 1);
             mouseLabel.Dock = DockStyle.Fill;
             mouseLabel.TextAlign = ContentAlignment.MiddleCenter;
-
-            var gaugeLayout = CreateSublayout(mainPictureLayout, 1, 0);
-            AddColumn(gaugeLayout, SizeType.Percent, 100f);
-            AddRow(gaugeLayout, SizeType.Absolute, 25f);
-            AddRow(gaugeLayout, SizeType.Percent, 100f);
-            AddRow(gaugeLayout, SizeType.Absolute, 25f);
-
-            tempGaugePicture = CreateInLayout<PictureBox>(gaugeLayout, 0, 1);
-            tempGaugePicture.Dock = DockStyle.Fill;
-            tempGaugePicture.SizeMode = PictureBoxSizeMode.StretchImage;
-
-            tempGaugeMinLabel = CreateInLayout<Label>(gaugeLayout, 0, 2);
-            tempGaugeMinLabel.Dock = DockStyle.Fill;
-            tempGaugeMinLabel.TextAlign = ContentAlignment.MiddleCenter;
-
-            tempGaugeMaxLabel = CreateInLayout<Label>(gaugeLayout, 0, 0);
-            tempGaugeMaxLabel.Dock = DockStyle.Fill;
-            tempGaugeMaxLabel.TextAlign = ContentAlignment.MiddleCenter;
 
             var sliderLayout = CreateSublayout(mainLayout, 0, 2);
             AddColumn(sliderLayout, SizeType.Absolute, 40f);

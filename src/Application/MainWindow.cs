@@ -446,11 +446,13 @@ namespace SeekOFix
             box.Reanalyze();
         }
 
-        private void UpdateAnalyzablePictureBoxSize(AnalyzablePictureBox box)
+        private void UpdateAnalyzablePictureBoxSize(AnalyzablePictureBox box, TemperatureGaugePictureBox gauge)
         {
+            const int GAUGE_W = 70;
+
             if (box.Parent == null || box.Image == null) return;
 
-            var pw = (double) box.Parent.Width;
+            var pw = (double) box.Parent.Width - GAUGE_W;
             var ph = (double) box.Parent.Height;
             var iw = (double) box.Image.Width;
             var ih = (double) box.Image.Height;
@@ -463,6 +465,10 @@ namespace SeekOFix
             box.Location = new Point((int) ((pw - w) / 2.0),
                                      (int) ((ph - h) / 2.0));
             box.Size = new Size((int) w, (int) h);
+
+            gauge.Location = new Point(box.Location.X + box.Size.Width,
+                                       box.Location.Y);
+            gauge.Size = new Size(GAUGE_W, box.Size.Height);
         }
 
         private void HandleLoad(object sender, EventArgs e)
@@ -479,15 +485,12 @@ namespace SeekOFix
 
         private void HandlePaint(object sender, PaintEventArgs e)
         {
-            if (lastUsableFrame != null)
+            if (lastUsableFrame != null && (liveCheck.Checked || firstAfterCal))
             {
-                string minTemp = Utils.FormatTempString(tempUnit, gModeLeft);
-                string maxTemp = Utils.FormatTempString(tempUnit, gModeRight);
-
-                tempGaugeMinLabel.Text = minTemp;
-                tempGaugeMaxLabel.Text = maxTemp;
-                sliderMinTempLabel.Text = minTemp;
-                sliderMaxTempLabel.Text = maxTemp;
+                tempGaugePicture.MinTemp = gModeLeft;
+                tempGaugePicture.MaxTemp = gModeRight;
+                sliderMinTempLabel.Text = Utils.FormatTempString(tempUnit, gModeLeft);
+                sliderMaxTempLabel.Text = Utils.FormatTempString(tempUnit, gModeRight);
 
                 gModeLeftLabel.Text = gModeLeft.ToString();
                 gModeRightLabel.Text = gModeRight.ToString();
@@ -513,7 +516,7 @@ namespace SeekOFix
                 // Sharpen image
                 if (sharpenImage) sharpenFilter.ApplyInPlace(bigBitmap);
 
-                UpdateAnalyzablePictureBox(livePicture, bigBitmap, arrID3);
+                UpdateAnalyzablePictureBox(picture, bigBitmap, arrID3);
 
                 if (recorder != null)
                     recorder.SupplyFrame(bigBitmap);
@@ -521,7 +524,6 @@ namespace SeekOFix
                 if (firstAfterCal)
                 {
                     firstAfterCal = false;
-                    UpdateAnalyzablePictureBox(firstAfterCalPicture, bigBitmap, arrID3);
 
                     if (autoSaveImg)
                         Output.Screenshot(bigBitmap, outputPathField.Text);
@@ -530,8 +532,7 @@ namespace SeekOFix
                 DrawHistogram();
             }
 
-            UpdateAnalyzablePictureBoxSize(livePicture);
-            UpdateAnalyzablePictureBoxSize(firstAfterCalPicture);
+            UpdateAnalyzablePictureBoxSize(picture, tempGaugePicture);
         }
 
         private void HandleFormClosing(object sender, FormClosingEventArgs e)
@@ -585,8 +586,8 @@ namespace SeekOFix
             if (unitsCRadio.Checked) tempUnit = "C";
             if (unitsFRadio.Checked) tempUnit = "F";
 
-            livePicture.TempUnit = tempUnit;
-            firstAfterCalPicture.TempUnit = tempUnit;
+            picture.TempUnit = tempUnit;
+            tempGaugePicture.TempUnit = tempUnit;
         }
 
         private void HandleManualRangeSwitchButtonClick(object sender, EventArgs e)
@@ -649,44 +650,6 @@ namespace SeekOFix
             }
         }
 
-        private void HandleAnalysisCheckCheckedChanged(object sender, EventArgs e)
-        {
-            livePicture.AnalysisEnabled = enableAnalysisCheck.Checked;
-            firstAfterCalPicture.AnalysisEnabled = enableAnalysisCheck.Checked;
-        }
-
-        private void HandleShowTemperatureCheckCheckedChanged(object sender, EventArgs e)
-        {
-            livePicture.ShowTemperature = showTemperatureCheck.Checked;
-            firstAfterCalPicture.ShowTemperature = showTemperatureCheck.Checked;
-        }
-
-        private void HandleCrossSizeSpinnerValueChanged(object sender, EventArgs e)
-        {
-            livePicture.CrossSize = (int) crossSizeSpinner.Value;
-            firstAfterCalPicture.CrossSize = (int) crossSizeSpinner.Value;
-        }
-
-        private void HandleShowExtremesCheckCheckedChanged(object sender, EventArgs e)
-        {
-            livePicture.ShowExtremes = showExtremesCheck.Checked;
-            firstAfterCalPicture.ShowExtremes = showExtremesCheck.Checked;
-        }
-
-        private void HandleMaxCountSpinnerValueChanged(object sender, EventArgs e)
-        {
-            livePicture.MaxCount = (int) maxCountSpinner.Value;
-            firstAfterCalPicture.MaxCount = (int) maxCountSpinner.Value;
-        }
-
-        private void HandleDeletePointsButtonClick(object sender, EventArgs e)
-        {
-            if (pictureTabs.SelectedTab == liveTab)
-                livePicture.DeleteAllAnalyzers();
-            else if (pictureTabs.SelectedTab == firstAfterCalTab)
-                firstAfterCalPicture.DeleteAllAnalyzers();
-        }
-
         private void HandleOutputPathButtonClick(object sender, EventArgs e)
         {
             using (var dialog = new FolderBrowserDialog())
@@ -738,7 +701,6 @@ namespace SeekOFix
 
         private void HandleAnalyzablePictureMouseMove(object sender, MouseEventArgs e)
         {
-            var picture = (AnalyzablePictureBox) sender;
             var coords = picture.LocalToCoords(e.Location);
             mouseLabel.Text = $"({coords.X}, {coords.Y}): {Utils.FormatTempString(tempUnit, picture.DetectTemperature(coords))}";
         }

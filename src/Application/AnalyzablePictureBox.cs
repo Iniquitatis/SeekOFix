@@ -13,7 +13,7 @@ namespace SeekOFix
         private bool _showTemperature = true;
         private int _crossSize = 16;
         private bool _showExtremes = true;
-        private int _maxCount = 3;
+        private int _maxPoints = 3;
         private ushort[] _rawValues = null;
         private List<Analyzer> _analyzers = new List<Analyzer>();
         private Analyzer _hotAnalyzer = new Analyzer();
@@ -49,10 +49,10 @@ namespace SeekOFix
             set { _showExtremes = value; Reanalyze(); }
         }
 
-        public int MaxCount
+        public int MaxPoints
         {
-            get => _maxCount;
-            set { _maxCount = value; AdjustAnalyzerCount(); Invalidate(); }
+            get => _maxPoints;
+            set { _maxPoints = value; AdjustAnalyzerCount(); Invalidate(); }
         }
 
         public ushort[] RawValues
@@ -157,29 +157,23 @@ namespace SeekOFix
             if (!_analysisEnabled) return;
 
             var g = e.Graphics;
-            g.CompositingQuality = CompositingQuality.HighQuality;
-            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+            DrawingUtils.EnableHQGraphics(g);
 
             foreach (var analyzer in _analyzers)
             {
-                DrawAnalyzer(g, analyzer, Color.White, Color.White);
+                DrawAnalyzer(g, analyzer, Color.White);
             }
 
             if (_showExtremes)
             {
-                DrawAnalyzer(g, _hotAnalyzer, Color.Orange, Color.White);
-                DrawAnalyzer(g, _coldAnalyzer, Color.LightBlue, Color.White);
+                DrawAnalyzer(g, _hotAnalyzer, Color.Orange);
+                DrawAnalyzer(g, _coldAnalyzer, Color.LightBlue);
             }
 
-            g.TextRenderingHint = TextRenderingHint.SystemDefault;
-            g.SmoothingMode = SmoothingMode.None;
-            g.InterpolationMode = InterpolationMode.Default;
-            g.CompositingQuality = CompositingQuality.Default;
+            DrawingUtils.DisableHQGraphics(g);
         }
 
-        private void DrawAnalyzer(Graphics graphics, Analyzer analyzer, Color color, Color textColor)
+        private void DrawAnalyzer(Graphics graphics, Analyzer analyzer, Color color)
         {
             var local = CoordsToLocal(analyzer.coords);
             var pixelSize = PixelSize();
@@ -207,28 +201,8 @@ namespace SeekOFix
 
             if (_showTemperature)
             {
-                var textOutline = new Pen(Color.Black, 4.0f);
-                textOutline.LineJoin = LineJoin.Round;
-
-                var textFill = new SolidBrush(textColor);
-
-                var font = new FontFamily("Segoe UI");
-
-                var textFormat = new StringFormat();
-                textFormat.Alignment = StringAlignment.Center;
-                textFormat.LineAlignment = StringAlignment.Far;
-
-                var textPath = new GraphicsPath();
-                textPath.AddString(Utils.FormatTempString(_tempUnit, t), font, (int) FontStyle.Regular, 18.0f, new Point(x, y - hh), textFormat);
-
-                g.DrawPath(textOutline, textPath);
-                g.FillPath(textFill, textPath);
-
-                textPath.Dispose();
-                textFormat.Dispose();
-                font.Dispose();
-                textFill.Dispose();
-                textOutline.Dispose();
+                var text = Utils.FormatTempString(_tempUnit, t);
+                DrawingUtils.DrawText(g, new Point(x, y - hh), text, 18.0f, ContentAlignment.BottomCenter, Color.White, Color.Black);
             }
 
             crossPath.Dispose();
@@ -281,7 +255,7 @@ namespace SeekOFix
 
         private void AdjustAnalyzerCount()
         {
-            while (_analyzers.Count > _maxCount)
+            while (_analyzers.Count > _maxPoints)
                 _analyzers.RemoveAt(0);
         }
     }
