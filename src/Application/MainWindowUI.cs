@@ -13,11 +13,13 @@ namespace SeekOFix
         private RadioButton unitsKRadio;
         private RadioButton unitsCRadio;
         private RadioButton unitsFRadio;
+        private CheckBox applyDenoisingCheck;
         private CheckBox applySharpenCheck;
-        private PictureBox histogramPicture;
+        private CustomPictureBox histogramPicture;
         private Button manualRangeSwitchButton;
         private CheckBox dynSlidersCheck;
         private TextBox outputPathField;
+        private CheckBox autoSaveCheck;
         private Button recordVideoButton;
         private Label gModeLeftLabel;
         private Label gModeRightLabel;
@@ -99,6 +101,7 @@ namespace SeekOFix
             AddRow(appearanceLayout, SizeType.Absolute, 30f);
             AddRow(appearanceLayout, SizeType.Absolute, 30f);
             AddRow(appearanceLayout, SizeType.Absolute, 30f);
+            AddRow(appearanceLayout, SizeType.Absolute, 30f);
             AddRow(appearanceLayout, SizeType.Absolute, 100f);
             AddRow(appearanceLayout, SizeType.Absolute, 30f);
             AddRow(appearanceLayout, SizeType.Absolute, 30f);
@@ -141,25 +144,30 @@ namespace SeekOFix
             unitsFRadio.Text = "°F";
             unitsFRadio.CheckedChanged += new EventHandler(HandleUnitRadiosCheckedChanged);
 
-            applySharpenCheck = CreateInLayout<CheckBox>(appearanceLayout, 0, 2);
+            applyDenoisingCheck = CreateInLayout<CheckBox>(appearanceLayout, 0, 2);
+            applyDenoisingCheck.Anchor = AnchorStyles.Left;
+            applyDenoisingCheck.Checked = true;
+            applyDenoisingCheck.Text = "Apply denoising filter";
+            SetColumnSpan(applyDenoisingCheck, 2);
+
+            applySharpenCheck = CreateInLayout<CheckBox>(appearanceLayout, 0, 3);
             applySharpenCheck.Anchor = AnchorStyles.Left;
             applySharpenCheck.Text = "Apply sharpening filter";
-            applySharpenCheck.CheckedChanged += new EventHandler((sender, e) => sharpenImage = !sharpenImage);
             SetColumnSpan(applySharpenCheck, 2);
 
-            histogramPicture = CreateInLayout<PictureBox>(appearanceLayout, 0, 3);
+            histogramPicture = CreateInLayout<CustomPictureBox>(appearanceLayout, 0, 4);
             histogramPicture.BorderStyle = BorderStyle.FixedSingle;
             histogramPicture.Dock = DockStyle.Fill;
             histogramPicture.SizeMode = PictureBoxSizeMode.StretchImage;
             SetColumnSpan(histogramPicture, 2);
 
-            manualRangeSwitchButton = CreateInLayout<Button>(appearanceLayout, 0, 4);
+            manualRangeSwitchButton = CreateInLayout<Button>(appearanceLayout, 0, 5);
             manualRangeSwitchButton.Dock = DockStyle.Fill;
             manualRangeSwitchButton.Text = "Switch to manual range";
             manualRangeSwitchButton.Click += new EventHandler(HandleManualRangeSwitchButtonClick);
             SetColumnSpan(manualRangeSwitchButton, 2);
 
-            dynSlidersCheck = CreateInLayout<CheckBox>(appearanceLayout, 0, 5);
+            dynSlidersCheck = CreateInLayout<CheckBox>(appearanceLayout, 0, 6);
             dynSlidersCheck.Anchor = AnchorStyles.Left;
             dynSlidersCheck.Text = "Enable relative sliders";
             dynSlidersCheck.Visible = false;
@@ -276,10 +284,9 @@ namespace SeekOFix
             outputPathButton.Text = "...";
             outputPathButton.Click += new EventHandler(HandleOutputPathButtonClick);
 
-            var autoSaveCheck = CreateInLayout<CheckBox>(outputLayout, 0, 2);
+            autoSaveCheck = CreateInLayout<CheckBox>(outputLayout, 0, 2);
             autoSaveCheck.Anchor = AnchorStyles.Left;
             autoSaveCheck.Text = "Screenshot on each calibration";
-            autoSaveCheck.CheckedChanged += new EventHandler((sender, e) => autoSaveImg = !autoSaveImg);
             SetColumnSpan(autoSaveCheck, 2);
 
             var screenshotButton = CreateInLayout<Button>(outputLayout, 0, 3);

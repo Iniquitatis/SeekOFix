@@ -1,11 +1,9 @@
 ﻿using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Text;
 using System.Windows.Forms;
 
 namespace SeekOFix
 {
-    public class TemperatureGaugePictureBox : PictureBox
+    public class TemperatureGaugePictureBox : CustomPictureBox
     {
         private string _tempUnit = "K";
         private int _labelCount = 2;
@@ -36,13 +34,10 @@ namespace SeekOFix
             set { _maxTemp = value; Invalidate(); }
         }
 
-        public TemperatureGaugePictureBox()
+        protected override void OnPaint(PaintEventArgs e)
         {
-            Paint += HandlePaint;
-        }
+            base.OnPaint(e);
 
-        private void HandlePaint(object sender, PaintEventArgs e)
-        {
             var g = e.Graphics;
             DrawingUtils.EnableHQGraphics(g);
 

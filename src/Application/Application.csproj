@@ -89,6 +89,10 @@
     <Reference Include="AForge.Imaging">
       <HintPath>..\..\lib\AForge\AForge.Imaging.dll</HintPath>
     </Reference>
+    <Reference Include="AForge.Math, Version=2.2.5.0, Culture=neutral, PublicKeyToken=abba2e25397ee8c9, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\AForge\AForge.Math.dll</HintPath>
+    </Reference>
     <Reference Include="AForge.Video">
       <HintPath>..\..\lib\AForge\AForge.Video.dll</HintPath>
     </Reference>
@@ -111,6 +115,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Analyzer.cs" />
+    <Compile Include="CustomPictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="DrawingUtils.cs" />
     <Compile Include="TemperatureGaugePictureBox.cs">
       <SubType>Component</SubType>

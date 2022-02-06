@@ -15,7 +15,7 @@
     <Content Include="$(MSBuildThisFileDirectory)Palette\Iron.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="$(MSBuildThisFileDirectory)Palette\Rain.png">
+    <Content Include="$(MSBuildThisFileDirectory)Palette\Rainbow.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

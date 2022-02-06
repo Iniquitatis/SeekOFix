@@ -15,16 +15,14 @@ namespace SeekOFix
     {
         SeekThermal thermal;
         Thread thermalThread;
-        ThermalFrame currentFrame, lastUsableFrame;
+        ThermalFrame currentFrame;
+        ThermalFrame lastUsableFrame;
 
-        bool stopThread;
+        bool stopThread = false;
         bool grabExternalReference = false;
         bool firstAfterCal = false;
         bool usingExternalCal = false;
-        bool autoSaveImg = false;
         bool autoRange = true;
-        bool dynSliders = false;
-        bool sharpenImage = false;
         bool isRunning = true;
 
         string tempUnit = "K";
@@ -37,7 +35,7 @@ namespace SeekOFix
 
         ushort[] gMode = new ushort[1000];
 
-        ushort[,] paletteArr = new ushort[1001, 3]; //-> ushort
+        ushort[,] paletteArr = new ushort[1001, 3];
 
         byte[] imgBuffer = new byte[Constants.DATA_LENGTH * 3];
 
@@ -53,14 +51,8 @@ namespace SeekOFix
 
         double[] gainCalArr = new double[Constants.DATA_LENGTH];
 
-        Bitmap bitmap = new Bitmap(Constants.DATA_W, Constants.DATA_H, PixelFormat.Format24bppRgb);
-        Bitmap croppedBitmap = new Bitmap(Constants.IMAGE_W, Constants.IMAGE_H, PixelFormat.Format24bppRgb);
-        Bitmap bigBitmap = new Bitmap(Constants.IMAGE_W * 2, Constants.IMAGE_H * 2, PixelFormat.Format24bppRgb);
-        BitmapData bitmapData;
-
-        Crop cropFilter = new Crop(new Rectangle(0, 0, Constants.IMAGE_W, Constants.IMAGE_H));
-        ResizeBilinear resizeFilter = new ResizeBilinear(Constants.IMAGE_W * 2, Constants.IMAGE_H * 2);
-        Sharpen sharpenFilter = new Sharpen();
+        Bitmap frameBitmap = new Bitmap(Constants.DATA_W, Constants.DATA_H, PixelFormat.Format24bppRgb);
+        Bitmap finalBitmap = null;
 
         Output.VideoRecorder recorder = null;
 
@@ -416,27 +408,76 @@ namespace SeekOFix
             }
         }
 
-        public void DrawHistogram()
+        private void LoadPalette(string path)
         {
-            int imgWidth = (gModeRight - gModeLeft) / 10;
-            int leftBorder = gModeLeft / 10;
-            var hist = new Bitmap(imgWidth, 100, PixelFormat.Format24bppRgb);
-            Pen blackPen = new Pen(Color.Black, 1);
+            var paletteBitmap = new Bitmap(path);
 
-            using (var g = Graphics.FromImage(hist))
+            for (var i = 0; i < 1001; i++)
             {
-                g.FillRectangle(new SolidBrush(Color.White), 0, 0, imgWidth, 100);
-
-                for (int i = 0; i < imgWidth; i++)
-                {
-                    g.DrawLine(blackPen, i, 0, i, gMode[leftBorder + i]);
-                }
+                var color = paletteBitmap.GetPixel(i, 0);
+                paletteArr[i, 0] = color.R;
+                paletteArr[i, 1] = color.G;
+                paletteArr[i, 2] = color.B;
             }
 
-            hist.RotateFlip(RotateFlipType.Rotate180FlipX);
-            hist = new Bitmap(hist, new Size(200, 100));
+            paletteBitmap.RotateFlip(RotateFlipType.Rotate270FlipNone);
+            tempGaugePicture.Image = paletteBitmap;
+        }
 
-            histogramPicture.Image = hist;
+        public void UpdateFrameBitmap()
+        {
+            const int UPSCALE_FACTOR = 2;
+
+            var bitmapData = frameBitmap.LockBits(new Rectangle(0, 0, frameBitmap.Width, frameBitmap.Height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+            Marshal.Copy(imgBuffer, 0, bitmapData.Scan0, imgBuffer.Length);
+            frameBitmap.UnlockBits(bitmapData);
+
+            var cropFilter = new Crop(new Rectangle(0, 0, Constants.IMAGE_W, Constants.IMAGE_H));
+            var croppedBitmap = cropFilter.Apply(frameBitmap);
+
+            if (applyDenoisingCheck.Checked)
+            {
+                var denoisingFilter = new BilateralSmoothing();
+                denoisingFilter.ApplyInPlace(croppedBitmap);
+            }
+
+            var upscaleFilter = new ResizeNearestNeighbor(Constants.IMAGE_W * UPSCALE_FACTOR, Constants.IMAGE_H * UPSCALE_FACTOR);
+            finalBitmap = upscaleFilter.Apply(croppedBitmap);
+
+            if (applySharpenCheck.Checked)
+            {
+                var sharpenFilter = new GaussianSharpen(1.0f);
+                sharpenFilter.ApplyInPlace(finalBitmap);
+            }
+
+            var blurFilter = new GaussianBlur(1.0f);
+            blurFilter.ApplyInPlace(finalBitmap);
+        }
+
+        public void UpdateHistogramPictureBox()
+        {
+            var imageWidth = (gModeRight - gModeLeft) / 10;
+            var leftBorder = gModeLeft / 10;
+            var bitmap = new Bitmap(imageWidth, 100, PixelFormat.Format24bppRgb);
+
+            using (var g = Graphics.FromImage(bitmap))
+            {
+                var fill = new SolidBrush(Color.White);
+                var pen = new Pen(Color.Black, 1.0f);
+
+                g.FillRectangle(fill, 0, 0, imageWidth, 100);
+
+                for (int i = 0; i < imageWidth; i++)
+                {
+                    g.DrawLine(pen, i, 0, i, gMode[leftBorder + i]);
+                }
+
+                pen.Dispose();
+                fill.Dispose();
+            }
+
+            bitmap.RotateFlip(RotateFlipType.Rotate180FlipX);
+            histogramPicture.Image = new Bitmap(bitmap, new Size(200, 100));
         }
 
         private void UpdateAnalyzablePictureBox(AnalyzablePictureBox box, Bitmap image, ushort[] rawValues)
@@ -489,9 +530,11 @@ namespace SeekOFix
             {
                 tempGaugePicture.MinTemp = gModeLeft;
                 tempGaugePicture.MaxTemp = gModeRight;
+
                 sliderMinTempLabel.Text = Utils.FormatTempString(tempUnit, gModeLeft);
                 sliderMaxTempLabel.Text = Utils.FormatTempString(tempUnit, gModeRight);
 
+                // Set debug labels
                 gModeLeftLabel.Text = gModeLeft.ToString();
                 gModeRightLabel.Text = gModeRight.ToString();
                 maxTempRawLabel.Text = maxTempRaw.ToString();
@@ -503,33 +546,21 @@ namespace SeekOFix
                     maxTempSlider.Value = gModeRight;
                 }
 
-                bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
-                Marshal.Copy(imgBuffer, 0, bitmapData.Scan0, imgBuffer.Length);
-                bitmap.UnlockBits(bitmapData);
-
-                // Crop image to 206x156
-                croppedBitmap = cropFilter.Apply(bitmap);
-
-                // Upscale 200%
-                bigBitmap = resizeFilter.Apply(croppedBitmap);
-
-                // Sharpen image
-                if (sharpenImage) sharpenFilter.ApplyInPlace(bigBitmap);
-
-                UpdateAnalyzablePictureBox(picture, bigBitmap, arrID3);
+                UpdateFrameBitmap();
+                UpdateAnalyzablePictureBox(picture, finalBitmap, arrID3);
 
                 if (recorder != null)
-                    recorder.SupplyFrame(bigBitmap);
+                    recorder.SupplyFrame(finalBitmap);
 
                 if (firstAfterCal)
                 {
                     firstAfterCal = false;
 
-                    if (autoSaveImg)
-                        Output.Screenshot(bigBitmap, outputPathField.Text);
+                    if (autoSaveCheck.Checked)
+                        Output.Screenshot(finalBitmap, outputPathField.Text);
                 }
 
-                DrawHistogram();
+                UpdateHistogramPictureBox();
             }
 
             UpdateAnalyzablePictureBoxSize(picture, tempGaugePicture);
@@ -565,19 +596,8 @@ namespace SeekOFix
 
         private void HandlePaletteComboSelectedIndexChanged(object sender, EventArgs e)
         {
-            ComboItem newPal = (ComboItem) paletteCombo.SelectedItem;
-            Bitmap paletteImg = new Bitmap(newPal.Key);
-
-            for (int i = 0; i < 1001; i++)
-            {
-                Color picColor = paletteImg.GetPixel(i, 0);
-                paletteArr[i, 0] = picColor.R;
-                paletteArr[i, 1] = picColor.G;
-                paletteArr[i, 2] = picColor.B;
-            }
-
-            paletteImg.RotateFlip(RotateFlipType.Rotate270FlipNone);
-            tempGaugePicture.Image = paletteImg;
+            var newPal = (ComboItem) paletteCombo.SelectedItem;
+            LoadPalette(newPal.Key);
         }
 
         private void HandleUnitRadiosCheckedChanged(object sender, EventArgs e)
@@ -609,13 +629,11 @@ namespace SeekOFix
 
         private void HandleDynSlidersCheckCheckedChanged(object sender, EventArgs e)
         {
-            dynSliders = !dynSliders;
-
             int currentLeftPos = minTempSlider.Value;
             int currentRightPos = maxTempSlider.Value;
             int currentDiff = currentRightPos - currentLeftPos;
 
-            if (dynSliders)
+            if (dynSlidersCheck.Checked)
             {
                 // Left min
                 if (currentLeftPos - currentDiff > 4000)
@@ -663,7 +681,8 @@ namespace SeekOFix
 
         private void HandleScreenshotButtonClick(object sender, EventArgs e)
         {
-            Output.Screenshot(bigBitmap, outputPathField.Text);
+            if (finalBitmap == null) return;
+            Output.Screenshot(finalBitmap, outputPathField.Text);
         }
 
         private void HandleRecordVideoButtonClick(object sender, EventArgs e)

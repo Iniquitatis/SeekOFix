@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Text;
 using System.Windows.Forms;
 
 namespace SeekOFix
 {
-    public class AnalyzablePictureBox : PictureBox
+    public class AnalyzablePictureBox : CustomPictureBox
     {
         private bool _analysisEnabled = false;
         private string _tempUnit = "K";
@@ -64,7 +63,6 @@ namespace SeekOFix
         public AnalyzablePictureBox()
         {
             MouseDown += HandleMouseDown;
-            Paint += HandlePaint;
         }
 
         public void Reanalyze()
@@ -130,6 +128,29 @@ namespace SeekOFix
             return _rawValues[coords.Y * Constants.DATA_W + coords.X];
         }
 
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            if (!_analysisEnabled) return;
+
+            var g = e.Graphics;
+            DrawingUtils.EnableHQGraphics(g);
+
+            foreach (var analyzer in _analyzers)
+            {
+                DrawAnalyzer(g, analyzer, Color.White);
+            }
+
+            if (_showExtremes)
+            {
+                DrawAnalyzer(g, _hotAnalyzer, Color.Orange);
+                DrawAnalyzer(g, _coldAnalyzer, Color.LightBlue);
+            }
+
+            DrawingUtils.DisableHQGraphics(g);
+        }
+
         private void HandleMouseDown(object sender, MouseEventArgs e)
         {
             if (!_analysisEnabled) return;
@@ -150,27 +171,6 @@ namespace SeekOFix
             }
 
             Invalidate();
-        }
-
-        private void HandlePaint(object sender, PaintEventArgs e)
-        {
-            if (!_analysisEnabled) return;
-
-            var g = e.Graphics;
-            DrawingUtils.EnableHQGraphics(g);
-
-            foreach (var analyzer in _analyzers)
-            {
-                DrawAnalyzer(g, analyzer, Color.White);
-            }
-
-            if (_showExtremes)
-            {
-                DrawAnalyzer(g, _hotAnalyzer, Color.Orange);
-                DrawAnalyzer(g, _coldAnalyzer, Color.LightBlue);
-            }
-
-            DrawingUtils.DisableHQGraphics(g);
         }
 
         private void DrawAnalyzer(Graphics graphics, Analyzer analyzer, Color color)
