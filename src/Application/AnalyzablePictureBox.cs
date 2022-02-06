@@ -135,7 +135,7 @@ namespace SeekOFix
             if (!_analysisEnabled) return;
 
             var g = e.Graphics;
-            DrawingUtils.EnableHQGraphics(g);
+            g.EnableHQGraphics();
 
             foreach (var analyzer in _analyzers)
             {
@@ -148,7 +148,7 @@ namespace SeekOFix
                 DrawAnalyzer(g, _coldAnalyzer, Color.LightBlue);
             }
 
-            DrawingUtils.DisableHQGraphics(g);
+            g.DisableHQGraphics();
         }
 
         private void HandleMouseDown(object sender, MouseEventArgs e)
@@ -202,7 +202,7 @@ namespace SeekOFix
             if (_showTemperature)
             {
                 var text = Utils.FormatTempString(_tempUnit, t);
-                DrawingUtils.DrawText(g, new Point(x, y - hh), text, 18.0f, ContentAlignment.BottomCenter, Color.White, Color.Black);
+                g.DrawText(new Point(x, y - hh), text, 18.0f, ContentAlignment.BottomCenter, Color.White, Color.Black);
             }
 
             crossPath.Dispose();

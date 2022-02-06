@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 
@@ -7,7 +6,7 @@ namespace SeekOFix
 {
     public static class DrawingUtils
     {
-        public static void EnableHQGraphics(Graphics graphics)
+        public static void EnableHQGraphics(this Graphics graphics)
         {
             graphics.CompositingQuality = CompositingQuality.HighQuality;
             graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
@@ -15,7 +14,7 @@ namespace SeekOFix
             graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
         }
 
-        public static void DisableHQGraphics(Graphics graphics)
+        public static void DisableHQGraphics(this Graphics graphics)
         {
             graphics.CompositingQuality = CompositingQuality.Default;
             graphics.InterpolationMode = InterpolationMode.Default;
@@ -23,7 +22,7 @@ namespace SeekOFix
             graphics.TextRenderingHint = TextRenderingHint.SystemDefault;
         }
 
-        public static void DrawText(Graphics graphics,
+        public static void DrawText(this Graphics graphics,
                                     Point origin,
                                     string text,
                                     float size,
@@ -39,8 +38,8 @@ namespace SeekOFix
             var font = new FontFamily("Segoe UI");
 
             var format = new StringFormat();
-            format.Alignment = ToStringAlignmentX(alignment);
-            format.LineAlignment = ToStringAlignmentY(alignment);
+            format.Alignment = alignment.ToStringAlignmentX();
+            format.LineAlignment = alignment.ToStringAlignmentY();
 
             var path = new GraphicsPath();
             path.AddString(text, font, (int) FontStyle.Regular, size, origin, format);
@@ -55,7 +54,7 @@ namespace SeekOFix
             outline.Dispose();
         }
 
-        private static StringAlignment ToStringAlignmentX(ContentAlignment alignment)
+        private static StringAlignment ToStringAlignmentX(this ContentAlignment alignment)
         {
             switch (alignment)
             {
@@ -79,7 +78,7 @@ namespace SeekOFix
             }
         }
 
-        private static StringAlignment ToStringAlignmentY(ContentAlignment alignment)
+        private static StringAlignment ToStringAlignmentY(this ContentAlignment alignment)
         {
             switch (alignment)
             {

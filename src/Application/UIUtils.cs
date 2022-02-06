@@ -22,7 +22,7 @@ namespace SeekOFix
             return result;
         }
 
-        public static T CreateChild<T>(Control parent, params object[] args)
+        public static T CreateChild<T>(this Control parent, params object[] args)
             where T : Control
         {
             T result = CreateControl<T>(args);
@@ -30,7 +30,7 @@ namespace SeekOFix
             return result;
         }
 
-        public static T CreateInLayout<T>(TableLayoutPanel layout, int column, int row, params object[] args)
+        public static T CreateInCell<T>(this TableLayoutPanel layout, int column, int row, params object[] args)
             where T : Control
         {
             T result = CreateControl<T>(args);
@@ -38,19 +38,19 @@ namespace SeekOFix
             return result;
         }
 
-        public static void AddColumn(TableLayoutPanel layout, SizeType sizeType, float size = 0.0f)
+        public static void AddColumn(this TableLayoutPanel layout, SizeType sizeType, float size = 0.0f)
         {
             layout.ColumnCount += 1;
             layout.ColumnStyles.Add(new ColumnStyle(sizeType, size));
         }
 
-        public static void AddRow(TableLayoutPanel layout, SizeType sizeType, float size = 0.0f)
+        public static void AddRow(this TableLayoutPanel layout, SizeType sizeType, float size = 0.0f)
         {
             layout.RowCount += 1;
             layout.RowStyles.Add(new RowStyle(sizeType, size));
         }
 
-        public static TableLayoutPanel CreateLayout(Control parent)
+        public static TableLayoutPanel CreateLayout(this Control parent)
         {
             var layout = CreateControl<TableLayoutPanel>();
             layout.Dock = DockStyle.Fill;
@@ -59,7 +59,7 @@ namespace SeekOFix
             return layout;
         }
 
-        public static TableLayoutPanel CreateSublayout(TableLayoutPanel layout, int column, int row)
+        public static TableLayoutPanel CreateSublayout(this TableLayoutPanel layout, int column, int row)
         {
             var sublayout = CreateControl<TableLayoutPanel>();
             sublayout.Dock = DockStyle.Fill;
@@ -68,26 +68,26 @@ namespace SeekOFix
             return sublayout;
         }
 
-        public static void SetColumnSpan(Control control, int count)
+        public static void SetColumnSpan(this Control control, int count)
         {
             var layout = control?.Parent as TableLayoutPanel;
             layout?.SetColumnSpan(control, count);
         }
 
-        public static void SetRowSpan(Control control, int count)
+        public static void SetRowSpan(this Control control, int count)
         {
             var layout = control?.Parent as TableLayoutPanel;
             layout?.SetColumnSpan(control, count);
         }
 
-        public static void SetSpan(Control control, int columns, int rows)
+        public static void SetSpan(this Control control, int columns, int rows)
         {
             var layout = control?.Parent as TableLayoutPanel;
             layout?.SetColumnSpan(control, columns);
             layout?.SetRowSpan(control, rows);
         }
 
-        public static void SetToolTip(Control control, string text)
+        public static void SetToolTip(this Control control, string text)
         {
             var toolTip = new ToolTip();
             toolTip.SetToolTip(control, text);

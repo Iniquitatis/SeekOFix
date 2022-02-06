@@ -39,14 +39,14 @@ namespace SeekOFix
             base.OnPaint(e);
 
             var g = e.Graphics;
-            DrawingUtils.EnableHQGraphics(g);
+            g.EnableHQGraphics();
 
             for (var i = 0; i < _labelCount; i++)
             {
                 DrawLabel(e.Graphics, i, _labelCount - 1);
             }
 
-            DrawingUtils.DisableHQGraphics(g);
+            g.DisableHQGraphics();
         }
 
         private void DrawLabel(Graphics graphics, int current, int maximum)
@@ -63,7 +63,7 @@ namespace SeekOFix
             var t = (ushort) Lerp(_maxTemp, _minTemp, factorFinal);
 
             var text = Utils.FormatTempString(_tempUnit, t);
-            DrawingUtils.DrawText(graphics, new Point(x, y), text, 17.0f, ContentAlignment.MiddleCenter, Color.White, Color.Black);
+            graphics.DrawText(new Point(x, y), text, 17.0f, ContentAlignment.MiddleCenter, Color.White, Color.Black);
         }
 
         private float Lerp(float a, float b, float x)
