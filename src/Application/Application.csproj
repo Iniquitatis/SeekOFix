@@ -115,6 +115,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Analyzer.cs" />
+    <Compile Include="FrameIO.cs" />
     <Compile Include="CustomPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>

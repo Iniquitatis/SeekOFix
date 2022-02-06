@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using AForge.Video.FFMPEG;
 
 namespace SeekOFix
 {
@@ -21,7 +22,7 @@ namespace SeekOFix
         public class VideoRecorder
         {
             private string _path;
-            private AForge.Video.FFMPEG.VideoFileWriter _writer;
+            private VideoFileWriter _writer;
             private DateTime _startDate;
 
             public VideoRecorder(string path)
@@ -33,8 +34,8 @@ namespace SeekOFix
             {
                 if (!Directory.Exists(_path)) return false;
 
-                _writer = new AForge.Video.FFMPEG.VideoFileWriter();
-                _writer.Open(_path + FormatFileName(".avi"), Constants.IMAGE_W * 2, Constants.IMAGE_H * 2, 24, AForge.Video.FFMPEG.VideoCodec.MPEG4);
+                _writer = new VideoFileWriter();
+                _writer.Open(_path + FormatFileName(".avi"), Constants.IMAGE_W * 2, Constants.IMAGE_H * 2, 24, VideoCodec.MPEG4);
 
                 _startDate = DateTime.Now;
 
