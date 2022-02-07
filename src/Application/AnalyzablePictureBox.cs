@@ -1,22 +1,51 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using AForge.Imaging.Filters;
 
 namespace SeekOFix
 {
     public class AnalyzablePictureBox : CustomPictureBox
     {
+        private byte[,] _palette = new byte[Constants.PALETTE_SIZE, 3];
+        private bool _applyDenoising = true;
+        private bool _applySharpening = false;
         private bool _analysisEnabled = false;
         private string _tempUnit = "K";
         private bool _showTemperature = true;
         private int _crossSize = 16;
         private bool _showExtremes = true;
         private int _maxPoints = 3;
-        private ushort[] _rawValues = null;
+        private ushort[] _data = new ushort[Constants.DATA_LENGTH];
+        private ushort _gModeLeft = 0;
+        private ushort _gModeRight = 0;
+        private Bitmap _frameBitmap = new Bitmap(Constants.DATA_W, Constants.DATA_H, PixelFormat.Format24bppRgb);
+        private Bitmap _finalBitmap = null;
         private List<Analyzer> _analyzers = new List<Analyzer>();
         private Analyzer _hotAnalyzer = new Analyzer();
         private Analyzer _coldAnalyzer = new Analyzer();
+
+        public byte[,] Palette
+        {
+            get => _palette;
+            set { _palette = value; UpdateImage(); Invalidate(); }
+        }
+
+        public bool ApplyDenoising
+        {
+            get => _applyDenoising;
+            set { _applyDenoising = value; UpdateImage(); Invalidate(); }
+        }
+
+        public bool ApplySharpening
+        {
+            get => _applySharpening;
+            set { _applySharpening = value; UpdateImage(); Invalidate(); }
+        }
 
         public bool AnalysisEnabled
         {
@@ -54,15 +83,63 @@ namespace SeekOFix
             set { _maxPoints = value; AdjustAnalyzerCount(); Invalidate(); }
         }
 
-        public ushort[] RawValues
-        {
-            get => _rawValues;
-            set { _rawValues = value; Reanalyze(); }
-        }
-
         public AnalyzablePictureBox()
         {
             MouseDown += HandleMouseDown;
+        }
+
+        public void SupplyData(ushort[] data, ushort gModeLeft, ushort gModeRight)
+        {
+            Buffer.BlockCopy(data, 0, _data, 0, Constants.DATA_LENGTH * 2);
+            _gModeLeft = gModeLeft;
+            _gModeRight = gModeRight;
+        }
+
+        public void UpdateImage()
+        {
+            const int UPSCALE_FACTOR = 2;
+
+            unsafe
+            {
+                var data = _frameBitmap.LockBits(new Rectangle(0, 0, _frameBitmap.Width, _frameBitmap.Height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+                var bytes = (byte*) data.Scan0;
+
+                var scale = (double) (_gModeRight - _gModeLeft) / 1000.0;
+
+                Parallel.For(0, Constants.DATA_LENGTH, i =>
+                {
+                    var value = MathUtils.Clamp(_data[i], _gModeLeft, _gModeRight);
+                    value -= _gModeLeft;
+
+                    var index = (ushort) ((double) value / scale);
+
+                    bytes[i * 3 + 0] = _palette[index, 2];
+                    bytes[i * 3 + 1] = _palette[index, 1];
+                    bytes[i * 3 + 2] = _palette[index, 0];
+                });
+
+                _frameBitmap.UnlockBits(data);
+            }
+
+            var cropFilter = new Crop(new Rectangle(0, 0, Constants.IMAGE_W, Constants.IMAGE_H));
+            var croppedBitmap = cropFilter.Apply(_frameBitmap);
+
+            if (_applyDenoising)
+            {
+                var denoisingFilter = new BilateralSmoothing();
+                denoisingFilter.ApplyInPlace(croppedBitmap);
+            }
+
+            var upscaleFilter = new ResizeNearestNeighbor(Constants.IMAGE_W * UPSCALE_FACTOR, Constants.IMAGE_H * UPSCALE_FACTOR);
+            _finalBitmap = upscaleFilter.Apply(croppedBitmap);
+
+            if (_applySharpening)
+            {
+                var sharpenFilter = new GaussianSharpen(1.0f);
+                sharpenFilter.ApplyInPlace(_finalBitmap);
+            }
+
+            Image = _finalBitmap;
         }
 
         public void Reanalyze()
@@ -124,8 +201,7 @@ namespace SeekOFix
 
         public int DetectTemperature(Point coords)
         {
-            if (_rawValues == null) return 0;
-            return _rawValues[coords.Y * Constants.DATA_W + coords.X];
+            return _data[coords.Y * Constants.DATA_W + coords.X];
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -212,8 +288,6 @@ namespace SeekOFix
 
         private void DetectExtremes()
         {
-            if (_rawValues == null) return;
-
             var lowest = 30000;
             var highest = 0;
 
@@ -226,7 +300,7 @@ namespace SeekOFix
             {
                 for (var x = 0; x < Constants.IMAGE_W; x++)
                 {
-                    var value = _rawValues[y * Constants.DATA_W + x];
+                    var value = _data[y * Constants.DATA_W + x];
 
                     if (value < lowest)
                     {

@@ -1,14 +1,23 @@
 ﻿using System.Drawing;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 namespace SeekOFix
 {
     public class TemperatureGaugePictureBox : CustomPictureBox
     {
+        private byte[,] _palette = new byte[Constants.PALETTE_SIZE, 3];
         private string _tempUnit = "K";
         private int _labelCount = 2;
         private ushort _minTemp = 0;
         private ushort _maxTemp = 30000;
+        private Bitmap _bitmap = new Bitmap(1, Constants.PALETTE_SIZE, PixelFormat.Format24bppRgb);
+
+        public byte[,] Palette
+        {
+            get => _palette;
+            set { _palette = value; UpdateImage(); Invalidate(); }
+        }
 
         public string TempUnit
         {
@@ -49,6 +58,18 @@ namespace SeekOFix
             g.DisableHQGraphics();
         }
 
+        private void UpdateImage()
+        {
+            for (var i = 0; i < Constants.PALETTE_SIZE; i++)
+            {
+                _bitmap.SetPixel(0, 1000 - i, Color.FromArgb(_palette[i, 0],
+                                                             _palette[i, 1],
+                                                             _palette[i, 2]));
+            }
+
+            Image = _bitmap;
+        }
+
         private void DrawLabel(Graphics graphics, int current, int maximum)
         {
             const int EDGE_OFFSET = 16;
@@ -59,16 +80,11 @@ namespace SeekOFix
             var factorFinal = factorOffset + factor * factorScale;
 
             var x = Width / 2;
-            var y = (int) Lerp(0, Height, factorFinal);
-            var t = (ushort) Lerp(_maxTemp, _minTemp, factorFinal);
+            var y = (int) MathUtils.Lerp(0, Height, factorFinal);
+            var t = (ushort) MathUtils.Lerp(_maxTemp, _minTemp, factorFinal);
 
             var text = Utils.FormatTempString(_tempUnit, t);
             graphics.DrawText(new Point(x, y), text, 17.0f, ContentAlignment.MiddleCenter, Color.White, Color.Black);
-        }
-
-        private float Lerp(float a, float b, float x)
-        {
-            return a * (1.0f - x) + b * x;
         }
     }
 }

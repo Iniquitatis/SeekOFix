@@ -35,7 +35,7 @@ namespace SeekOFix
                 if (!Directory.Exists(_path)) return false;
 
                 _writer = new VideoFileWriter();
-                _writer.Open(_path + FormatFileName(".avi"), Constants.IMAGE_W * 2, Constants.IMAGE_H * 2, 24, VideoCodec.MPEG4);
+                _writer.Open(_path + FormatFileName("avi"), Constants.IMAGE_W * 2, Constants.IMAGE_H * 2, 24, VideoCodec.MPEG4);
 
                 _startDate = DateTime.Now;
 

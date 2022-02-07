@@ -48,6 +48,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -115,6 +116,10 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Analyzer.cs" />
+    <Compile Include="MathUtils.cs" />
+    <Compile Include="HistogramPictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="FrameIO.cs" />
     <Compile Include="CustomPictureBox.cs">
       <SubType>Component</SubType>

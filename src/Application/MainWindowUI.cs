@@ -13,9 +13,7 @@ namespace SeekOFix
         private RadioButton unitsKRadio;
         private RadioButton unitsCRadio;
         private RadioButton unitsFRadio;
-        private CheckBox applyDenoisingCheck;
-        private CheckBox applySharpenCheck;
-        private CustomPictureBox histogramPicture;
+        private HistogramPictureBox histogramPicture;
         private Button manualRangeSwitchButton;
         private CheckBox dynSlidersCheck;
         private TextBox outputPathField;
@@ -144,18 +142,20 @@ namespace SeekOFix
             unitsFRadio.Text = "°F";
             unitsFRadio.CheckedChanged += HandleUnitRadiosCheckedChanged;
 
-            applyDenoisingCheck = appearanceLayout.CreateInCell<CheckBox>(0, 2);
+            var applyDenoisingCheck = appearanceLayout.CreateInCell<CheckBox>(0, 2);
             applyDenoisingCheck.Anchor = AnchorStyles.Left;
             applyDenoisingCheck.Checked = true;
             applyDenoisingCheck.Text = "Apply denoising filter";
+            applyDenoisingCheck.CheckedChanged += (sender, e) => picture.ApplyDenoising = applyDenoisingCheck.Checked;
             applyDenoisingCheck.SetColumnSpan(2);
 
-            applySharpenCheck = appearanceLayout.CreateInCell<CheckBox>(0, 3);
+            var applySharpenCheck = appearanceLayout.CreateInCell<CheckBox>(0, 3);
             applySharpenCheck.Anchor = AnchorStyles.Left;
             applySharpenCheck.Text = "Apply sharpening filter";
+            applySharpenCheck.CheckedChanged += (sender, e) => picture.ApplySharpening = applySharpenCheck.Checked;
             applySharpenCheck.SetColumnSpan(2);
 
-            histogramPicture = appearanceLayout.CreateInCell<CustomPictureBox>(0, 4);
+            histogramPicture = appearanceLayout.CreateInCell<HistogramPictureBox>(0, 4);
             histogramPicture.BorderStyle = BorderStyle.FixedSingle;
             histogramPicture.Dock = DockStyle.Fill;
             histogramPicture.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -322,15 +322,12 @@ namespace SeekOFix
             picturePanel.Padding = new Padding(3);
 
             picture = picturePanel.CreateChild<AnalyzablePictureBox>();
-            picture.BorderStyle = BorderStyle.FixedSingle;
-            picture.Size = new Size(32, 32);
             picture.SizeMode = PictureBoxSizeMode.StretchImage;
             picture.MouseEnter += HandleAnalyzablePictureMouseEnter;
             picture.MouseLeave += HandleAnalyzablePictureMouseLeave;
             picture.MouseMove += HandleAnalyzablePictureMouseMove;
 
             tempGaugePicture = picturePanel.CreateChild<TemperatureGaugePictureBox>();
-            tempGaugePicture.BorderStyle = BorderStyle.FixedSingle;
             tempGaugePicture.SizeMode = PictureBoxSizeMode.StretchImage;
 
             mouseLabel = mainLayout.CreateInCell<Label>(1, 1);

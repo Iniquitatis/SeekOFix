@@ -3,10 +3,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
-using AForge.Imaging.Filters;
 using winusbdotnet.UsbDevices;
 
 namespace SeekOFix
@@ -33,11 +31,9 @@ namespace SeekOFix
 
         bool[] badPixelArr = new bool[Constants.DATA_LENGTH];
 
-        ushort[] gMode = new ushort[1000];
+        ushort[] gMode = new ushort[Constants.HISTOGRAM_SIZE];
 
-        ushort[,] paletteArr = new ushort[1001, 3];
-
-        byte[] imgBuffer = new byte[Constants.DATA_LENGTH * 3];
+        byte[,] palette = new byte[Constants.PALETTE_SIZE, 3];
 
         ushort gModePeakIx = 0;
         ushort gModePeakCnt = 0;
@@ -51,12 +47,12 @@ namespace SeekOFix
 
         double[] gainCalArr = new double[Constants.DATA_LENGTH];
 
-        Bitmap frameBitmap = new Bitmap(Constants.DATA_W, Constants.DATA_H, PixelFormat.Format24bppRgb);
-        Bitmap finalBitmap = null;
-
         Output.VideoRecorder recorder = null;
 
-        public MainWindow()
+        FrameIO.Reader reader = null;
+        FrameIO.Writer writer = null;
+
+        public MainWindow(string mode, string ioPath, int maxFrames)
         {
             InitializeComponent();
 
@@ -65,15 +61,27 @@ namespace SeekOFix
             Directory.CreateDirectory(exportPath);
             outputPathField.Text = exportPath;
 
-            var device = SeekThermal.Enumerate().FirstOrDefault();
-
-            if (device == null)
+            if (mode == "stream" || mode == "write")
             {
-                MessageBox.Show("No Seek Thermal devices found.");
-                return;
-            }
+                var device = SeekThermal.Enumerate().FirstOrDefault();
 
-            thermal = new SeekThermal(device);
+                if (device == null)
+                {
+                    MessageBox.Show("No Seek Thermal devices found.");
+                    return;
+                }
+
+                thermal = new SeekThermal(device);
+
+                if (mode == "write")
+                {
+                    writer = new FrameIO.Writer(ioPath, maxFrames);
+                }
+            }
+            else if (mode == "read")
+            {
+                reader = new FrameIO.Reader(ioPath);
+            }
 
             thermalThread = new Thread(ThermalThreadProc);
             thermalThread.IsBackground = true;
@@ -92,11 +100,12 @@ namespace SeekOFix
 
         void ThermalThreadProc()
         {
-            while (!stopThread && thermal != null)
+            while (!stopThread && (thermal != null || reader != null))
             {
                 bool progress = false;
 
-                currentFrame = thermal.GetFrameBlocking();
+                currentFrame = GetFrame();
+                RecordFrame(currentFrame);
 
                 switch (currentFrame.StatusByte)
                 {
@@ -149,6 +158,25 @@ namespace SeekOFix
             }
         }
 
+        private ThermalFrame GetFrame()
+        {
+            if (thermal != null)
+            {
+                return thermal.GetFrameBlocking();
+            }
+            else
+            {
+                Thread.Sleep(100);
+                return reader.Read();
+            }
+        }
+
+        private void RecordFrame(ThermalFrame frame)
+        {
+            if (writer == null) return;
+            writer.Write(frame);
+        }
+
         private void Frame4Stuff()
         {
             arrID4 = currentFrame.RawDataU16;
@@ -194,25 +222,6 @@ namespace SeekOFix
             FixBadPixels();
             RemoveNoise();
             GetHistogram();
-            FillImgBuffer();
-        }
-
-        private void FillImgBuffer()
-        {
-            double iScaler = (double) (gModeRight - gModeLeft) / 1000;
-
-            for (int i = 0; i < Constants.DATA_LENGTH; i++)
-            {
-                ushort v = arrID3[i];
-                if (v < gModeLeft) v = gModeLeft;
-                if (v > gModeRight) v = gModeRight;
-                v = (ushort) (v - gModeLeft);
-                ushort loc = (ushort) (v / iScaler);
-
-                imgBuffer[i * 3] = (byte) paletteArr[loc, 2];
-                imgBuffer[i * 3 + 1] = (byte) paletteArr[loc, 1];
-                imgBuffer[i * 3 + 2] = (byte) paletteArr[loc, 0];
-            }
         }
 
         private void MarkBadPixels()
@@ -354,23 +363,20 @@ namespace SeekOFix
         {
             maxTempRaw = arrID3.Max();
 
-            ushort[] arrMode = new ushort[2100];
-
             for (ushort i = 0; i < Constants.DATA_LENGTH; i++)
             {
-                if ((arrID3[i] > 1000) && (arrID3[i] / 10 != 0) && !badPixelArr[i]) arrMode[arrID3[i] / 10]++;
+                if ((arrID3[i] > 1000) && (arrID3[i] / 10 != 0) && !badPixelArr[i]) gMode[arrID3[i] / 10]++;
             }
 
-            ushort topPos = (ushort) Array.IndexOf(arrMode, arrMode.Max());
+            ushort topPos = (ushort) Array.IndexOf(gMode, gMode.Max());
 
-            gMode = arrMode;
-            gModePeakCnt = arrMode.Max();
+            gModePeakCnt = gMode.Max();
             gModePeakIx = (ushort) (topPos * 10);
 
             // Lower it to 100px
-            for (ushort i = 0; i < 2100; i++)
+            for (ushort i = 0; i < Constants.HISTOGRAM_SIZE; i++)
             {
-                gMode[i] = (ushort) ((double) arrMode[i] / gModePeakCnt * 100);
+                gMode[i] = (ushort) ((double) gMode[i] / gModePeakCnt * 100);
             }
 
             if (autoRange)
@@ -381,7 +387,7 @@ namespace SeekOFix
                 // Find left border
                 for (ushort i = 0; i < topPos; i++)
                 {
-                    if (arrMode[i] > arrMode[topPos] * 0.01)
+                    if (gMode[i] > gMode[topPos] * 0.01)
                     {
                         gModeLeft = (ushort) (i * 10);
                         break;
@@ -389,9 +395,9 @@ namespace SeekOFix
                 }
 
                 // Find right border
-                for (ushort i = 2099; i > topPos; i--)
+                for (ushort i = (Constants.HISTOGRAM_SIZE - 1); i > topPos; i--)
                 {
-                    if (arrMode[i] > arrMode[topPos] * 0.01)
+                    if (gMode[i] > gMode[topPos] * 0.01)
                     {
                         gModeRight = (ushort) (i * 10);
                         break;
@@ -412,79 +418,16 @@ namespace SeekOFix
         {
             var paletteBitmap = new Bitmap(path);
 
-            for (var i = 0; i < 1001; i++)
+            for (var i = 0; i < Constants.PALETTE_SIZE; i++)
             {
                 var color = paletteBitmap.GetPixel(i, 0);
-                paletteArr[i, 0] = color.R;
-                paletteArr[i, 1] = color.G;
-                paletteArr[i, 2] = color.B;
+                palette[i, 0] = color.R;
+                palette[i, 1] = color.G;
+                palette[i, 2] = color.B;
             }
 
-            paletteBitmap.RotateFlip(RotateFlipType.Rotate270FlipNone);
-            tempGaugePicture.Image = paletteBitmap;
-        }
-
-        public void UpdateFrameBitmap()
-        {
-            const int UPSCALE_FACTOR = 2;
-
-            var bitmapData = frameBitmap.LockBits(new Rectangle(0, 0, frameBitmap.Width, frameBitmap.Height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
-            Marshal.Copy(imgBuffer, 0, bitmapData.Scan0, imgBuffer.Length);
-            frameBitmap.UnlockBits(bitmapData);
-
-            var cropFilter = new Crop(new Rectangle(0, 0, Constants.IMAGE_W, Constants.IMAGE_H));
-            var croppedBitmap = cropFilter.Apply(frameBitmap);
-
-            if (applyDenoisingCheck.Checked)
-            {
-                var denoisingFilter = new BilateralSmoothing();
-                denoisingFilter.ApplyInPlace(croppedBitmap);
-            }
-
-            var upscaleFilter = new ResizeNearestNeighbor(Constants.IMAGE_W * UPSCALE_FACTOR, Constants.IMAGE_H * UPSCALE_FACTOR);
-            finalBitmap = upscaleFilter.Apply(croppedBitmap);
-
-            if (applySharpenCheck.Checked)
-            {
-                var sharpenFilter = new GaussianSharpen(1.0f);
-                sharpenFilter.ApplyInPlace(finalBitmap);
-            }
-
-            var blurFilter = new GaussianBlur(1.0f);
-            blurFilter.ApplyInPlace(finalBitmap);
-        }
-
-        public void UpdateHistogramPictureBox()
-        {
-            var imageWidth = (gModeRight - gModeLeft) / 10;
-            var leftBorder = gModeLeft / 10;
-            var bitmap = new Bitmap(imageWidth, 100, PixelFormat.Format24bppRgb);
-
-            using (var g = Graphics.FromImage(bitmap))
-            {
-                var fill = new SolidBrush(Color.White);
-                var pen = new Pen(Color.Black, 1.0f);
-
-                g.FillRectangle(fill, 0, 0, imageWidth, 100);
-
-                for (int i = 0; i < imageWidth; i++)
-                {
-                    g.DrawLine(pen, i, 0, i, gMode[leftBorder + i]);
-                }
-
-                pen.Dispose();
-                fill.Dispose();
-            }
-
-            bitmap.RotateFlip(RotateFlipType.Rotate180FlipX);
-            histogramPicture.Image = new Bitmap(bitmap, new Size(200, 100));
-        }
-
-        private void UpdateAnalyzablePictureBox(AnalyzablePictureBox box, Bitmap image, ushort[] rawValues)
-        {
-            box.Image = image;
-            box.RawValues = rawValues;
-            box.Reanalyze();
+            picture.Palette = palette;
+            tempGaugePicture.Palette = palette;
         }
 
         private void UpdateAnalyzablePictureBoxSize(AnalyzablePictureBox box, TemperatureGaugePictureBox gauge)
@@ -546,21 +489,27 @@ namespace SeekOFix
                     maxTempSlider.Value = gModeRight;
                 }
 
-                UpdateFrameBitmap();
-                UpdateAnalyzablePictureBox(picture, finalBitmap, arrID3);
+                lock (arrID3.SyncRoot)
+                    picture.SupplyData(arrID3, gModeLeft, gModeRight);
+
+                picture.UpdateImage();
+                picture.Reanalyze();
 
                 if (recorder != null)
-                    recorder.SupplyFrame(finalBitmap);
+                    recorder.SupplyFrame(picture.Image as Bitmap);
 
                 if (firstAfterCal)
                 {
                     firstAfterCal = false;
 
                     if (autoSaveCheck.Checked)
-                        Output.Screenshot(finalBitmap, outputPathField.Text);
+                        Output.Screenshot(picture.Image as Bitmap, outputPathField.Text);
                 }
 
-                UpdateHistogramPictureBox();
+                lock (gMode.SyncRoot)
+                    histogramPicture.SupplyData(gMode, gModeLeft, gModeRight);
+
+                histogramPicture.UpdateImage();
             }
 
             UpdateAnalyzablePictureBoxSize(picture, tempGaugePicture);
@@ -681,8 +630,8 @@ namespace SeekOFix
 
         private void HandleScreenshotButtonClick(object sender, EventArgs e)
         {
-            if (finalBitmap == null) return;
-            Output.Screenshot(finalBitmap, outputPathField.Text);
+            if (picture.Image == null) return;
+            Output.Screenshot(picture.Image as Bitmap, outputPathField.Text);
         }
 
         private void HandleRecordVideoButtonClick(object sender, EventArgs e)
