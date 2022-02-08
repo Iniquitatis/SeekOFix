@@ -10,7 +10,7 @@ namespace SeekOFix
         public static T CreateControl<T>(params object[] args)
             where T : Control
         {
-            T result = (T) typeof(T).GetConstructor(args.Select(x => x.GetType()).ToArray()).Invoke(args);
+            var result = (T) typeof(T).GetConstructor(args.Select(x => x.GetType()).ToArray()).Invoke(args);
             var defaultsFunc = typeof(UIUtils).GetMethod(
                 "ApplyControlDefaults",
                 BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
@@ -25,7 +25,7 @@ namespace SeekOFix
         public static T CreateChild<T>(this Control parent, params object[] args)
             where T : Control
         {
-            T result = CreateControl<T>(args);
+            var result = CreateControl<T>(args);
             parent.Controls.Add(result);
             return result;
         }
@@ -33,7 +33,7 @@ namespace SeekOFix
         public static T CreateInCell<T>(this TableLayoutPanel layout, int column, int row, params object[] args)
             where T : Control
         {
-            T result = CreateControl<T>(args);
+            var result = CreateControl<T>(args);
             layout.Controls.Add(result, column, row);
             return result;
         }

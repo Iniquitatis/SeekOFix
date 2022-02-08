@@ -6,6 +6,8 @@ namespace SeekOFix
 {
     public class TemperatureGaugePictureBox : CustomPictureBox
     {
+        private const int LABEL_EDGE_OFFSET = 16;
+
         private byte[,] _palette = new byte[Constants.PALETTE_SIZE, 3];
         private string _tempUnit = "K";
         private int _labelCount = 2;
@@ -67,9 +69,9 @@ namespace SeekOFix
         {
             for (var i = 0; i < Constants.PALETTE_SIZE; i++)
             {
-                _bitmap.SetPixel(0, 1000 - i, Color.FromArgb(_palette[i, 0],
-                                                             _palette[i, 1],
-                                                             _palette[i, 2]));
+                _bitmap.SetPixel(0, Constants.PALETTE_SIZE - 1 - i, Color.FromArgb(_palette[i, 0],
+                                                                                   _palette[i, 1],
+                                                                                   _palette[i, 2]));
             }
 
             Image = _bitmap;
@@ -77,10 +79,8 @@ namespace SeekOFix
 
         private void DrawLabel(Graphics graphics, int current, int maximum)
         {
-            const int EDGE_OFFSET = 16;
-
             var factor = (float) current / (float) maximum;
-            var factorScale = (float) (Height - EDGE_OFFSET * 2) / (float) Height;
+            var factorScale = (float) (Height - LABEL_EDGE_OFFSET * 2) / (float) Height;
             var factorOffset = (1.0f - factorScale) / 2.0f;
             var factorFinal = factorOffset + factor * factorScale;
 

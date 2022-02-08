@@ -430,29 +430,29 @@ namespace SeekOFix
             _tempGaugePicture.Palette = _palette;
         }
 
-        private void UpdateAnalyzablePictureBoxSize(FramePictureBox box, TemperatureGaugePictureBox gauge)
+        private void UpdatePictureBoxSizes()
         {
             const int GAUGE_W = 70;
 
-            if (box.Parent == null || box.Image == null) return;
+            if (_framePicture.Parent == null || _framePicture.Image == null) return;
 
-            var pw = (double) box.Parent.Width - GAUGE_W;
-            var ph = (double) box.Parent.Height;
-            var iw = (double) box.Image.Width;
-            var ih = (double) box.Image.Height;
+            var pw = (double) _framePicture.Parent.Width - GAUGE_W;
+            var ph = (double) _framePicture.Parent.Height;
+            var iw = (double) _framePicture.Image.Width;
+            var ih = (double) _framePicture.Image.Height;
 
             var scale = Math.Min(pw / iw, ph / ih);
 
             var w = iw * scale;
             var h = ih * scale;
 
-            box.Location = new Point((int) ((pw - w) / 2.0),
-                                     (int) ((ph - h) / 2.0));
-            box.Size = new Size((int) w, (int) h);
+            _framePicture.Location = new Point((int) ((pw - w) / 2.0),
+                                               (int) ((ph - h) / 2.0));
+            _framePicture.Size = new Size((int) w, (int) h);
 
-            gauge.Location = new Point(box.Location.X + box.Size.Width,
-                                       box.Location.Y);
-            gauge.Size = new Size(GAUGE_W, box.Size.Height);
+            _tempGaugePicture.Location = new Point(_framePicture.Location.X + _framePicture.Size.Width,
+                                                   _framePicture.Location.Y);
+            _tempGaugePicture.Size = new Size(GAUGE_W, _framePicture.Size.Height);
         }
 
         private void UpdateMouseLabelFromFramePicture(Point localPos)
@@ -530,7 +530,7 @@ namespace SeekOFix
                     UpdateMouseLabelFromTempGaugePicture(_tempGaugePicture.PointToClient(MousePosition));
             }
 
-            UpdateAnalyzablePictureBoxSize(_framePicture, _tempGaugePicture);
+            UpdatePictureBoxSizes();
         }
 
         private void HandleFormClosing(object sender, FormClosingEventArgs e)
