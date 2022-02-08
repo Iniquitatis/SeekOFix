@@ -112,30 +112,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FramePictureBox.cs">
+    <Compile Include="UI\FramePictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Analyzer.cs" />
-    <Compile Include="MathUtils.cs" />
-    <Compile Include="HistogramPictureBox.cs">
+    <Compile Include="Common\Analyzer.cs" />
+    <Compile Include="Utils\Math.cs" />
+    <Compile Include="UI\HistogramPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="FrameIO.cs" />
-    <Compile Include="CustomPictureBox.cs">
+    <Compile Include="Common\FrameIO.cs" />
+    <Compile Include="UI\CustomPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="DrawingUtils.cs" />
-    <Compile Include="TemperatureGaugePictureBox.cs">
+    <Compile Include="Utils\Drawing.cs" />
+    <Compile Include="UI\TemperatureGaugePictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UIUtils.cs" />
-    <Compile Include="MainWindowUI.cs">
+    <Compile Include="Utils\UI.cs" />
+    <Compile Include="UI\MainWindowUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Utils.cs" />
-    <Compile Include="Output.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="MainWindow.cs">
+    <Compile Include="Utils\Thermal.cs" />
+    <Compile Include="Common\Output.cs" />
+    <Compile Include="Common\Constants.cs" />
+    <Compile Include="UI\MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Program.cs" />
