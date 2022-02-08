@@ -90,15 +90,13 @@ namespace SeekOFix
 
         public void SupplyData(ushort[] data, ushort gModeLeft, ushort gModeRight)
         {
-            Buffer.BlockCopy(data, 0, _data, 0, Constants.DATA_LENGTH * 2);
+            Buffer.BlockCopy(data, 0, _data, 0, Constants.DATA_LENGTH * sizeof(ushort));
             _gModeLeft = gModeLeft;
             _gModeRight = gModeRight;
         }
 
         public void UpdateImage()
         {
-            const int UPSCALE_FACTOR = 2;
-
             unsafe
             {
                 var data = _frameBitmap.LockBits(new Rectangle(0, 0, _frameBitmap.Width, _frameBitmap.Height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
@@ -130,7 +128,7 @@ namespace SeekOFix
                 denoisingFilter.ApplyInPlace(croppedBitmap);
             }
 
-            var upscaleFilter = new ResizeNearestNeighbor(Constants.IMAGE_W * UPSCALE_FACTOR, Constants.IMAGE_H * UPSCALE_FACTOR);
+            var upscaleFilter = new ResizeNearestNeighbor(Constants.FINAL_IMAGE_W, Constants.FINAL_IMAGE_H);
             _finalBitmap = upscaleFilter.Apply(croppedBitmap);
 
             if (_applySharpening)

@@ -10,6 +10,7 @@ namespace SeekOFix
         private const int HEIGHT = 100;
         private const int DRAW_WIDTH = WIDTH - 1;
         private const int DRAW_HEIGHT = HEIGHT - 1;
+        private const int OUTLINE_WIDTH = 2;
 
         private ushort[] _gMode = new ushort[Constants.HISTOGRAM_SIZE];
         private ushort _gModeLeft = 0;
@@ -35,8 +36,10 @@ namespace SeekOFix
 
                 if (valueCount > 1)
                 {
+                    var yScale = (float) (HEIGHT - OUTLINE_WIDTH) / (float) HEIGHT;
+
                     var curveFill = new SolidBrush(Color.LightGray);
-                    var curveLine = new Pen(Color.Black, 2.0f);
+                    var curveLine = new Pen(Color.Black, OUTLINE_WIDTH);
 
                     var points = new Point[valueCount + 2];
                     points[0].X = 0;
@@ -47,7 +50,7 @@ namespace SeekOFix
                         var pointIndex = i + 1;
                         var factor = (float) i / (float) (valueCount - 1);
                         points[pointIndex].X = (int) ((float) DRAW_WIDTH * factor);
-                        points[pointIndex].Y = DRAW_HEIGHT - _gMode[leftBorder + i];
+                        points[pointIndex].Y = DRAW_HEIGHT - (int) ((float) _gMode[leftBorder + i] * yScale);
                     }
 
                     points[points.Length - 1].X = DRAW_WIDTH;

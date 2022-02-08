@@ -21,6 +21,8 @@ namespace SeekOFix
 
         public class VideoRecorder
         {
+            private const int FPS = 30;
+
             private string _path;
             private VideoFileWriter _writer;
             private DateTime _startDate;
@@ -35,7 +37,7 @@ namespace SeekOFix
                 if (!Directory.Exists(_path)) return false;
 
                 _writer = new VideoFileWriter();
-                _writer.Open(_path + FormatFileName("avi"), Constants.IMAGE_W * 2, Constants.IMAGE_H * 2, 24, VideoCodec.MPEG4);
+                _writer.Open(_path + FormatFileName("avi"), Constants.FINAL_IMAGE_W, Constants.FINAL_IMAGE_H, FPS, VideoCodec.MPEG4);
 
                 _startDate = DateTime.Now;
 
