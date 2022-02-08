@@ -6,30 +6,30 @@ using static SeekOFix.UIUtils;
 
 namespace SeekOFix
 {
-    partial class MainWindow
+    public partial class MainWindow
     {
-        private CheckBox liveCheck;
-        private ComboBox paletteCombo;
-        private RadioButton unitsKRadio;
-        private RadioButton unitsCRadio;
-        private RadioButton unitsFRadio;
-        private HistogramPictureBox histogramPicture;
-        private Button manualRangeSwitchButton;
-        private CheckBox dynSlidersCheck;
-        private TextBox outputPathField;
-        private CheckBox autoSaveCheck;
-        private Button recordVideoButton;
-        private Label gModeLeftLabel;
-        private Label gModeRightLabel;
-        private Label maxTempRawLabel;
-        private Panel picturePanel;
-        private FramePictureBox framePicture;
-        private TemperatureGaugePictureBox tempGaugePicture;
-        private Label mouseLabel;
-        private Label sliderMinTempLabel;
-        private Label sliderMaxTempLabel;
-        private TrackBar minTempSlider;
-        private TrackBar maxTempSlider;
+        private CheckBox _liveCheck;
+        private ComboBox _paletteCombo;
+        private RadioButton _unitsKRadio;
+        private RadioButton _unitsCRadio;
+        private RadioButton _unitsFRadio;
+        private HistogramPictureBox _histogramPicture;
+        private Button _manualRangeSwitchButton;
+        private CheckBox _dynSlidersCheck;
+        private TextBox _outputPathField;
+        private CheckBox _autoSaveCheck;
+        private Button _recordVideoButton;
+        private Label _gModeLeftLabel;
+        private Label _gModeRightLabel;
+        private Label _maxTempRawLabel;
+        private Panel _picturePanel;
+        private FramePictureBox _framePicture;
+        private TemperatureGaugePictureBox _tempGaugePicture;
+        private Label _mouseLabel;
+        private Label _sliderMinTempLabel;
+        private Label _sliderMaxTempLabel;
+        private TrackBar _minTempSlider;
+        private TrackBar _maxTempSlider;
 
         private void InitializeComponent()
         {
@@ -66,27 +66,27 @@ namespace SeekOFix
             startStopButton.Click += (sender, e) =>
             {
                 ToggleThreadActivity();
-                startStopButton.Text = isRunning ? "STOP" : "START";
+                startStopButton.Text = _isRunning ? "STOP" : "START";
             };
             startStopButton.SetToolTip("Start/stop streaming");
 
             var intCalButton = mainControlButtons.CreateInCell<Button>(1, 0);
             intCalButton.Dock = DockStyle.Fill;
             intCalButton.Text = "INT Cal";
-            intCalButton.Click += (sender, e) => usingExternalCal = false;
+            intCalButton.Click += (sender, e) => _usingExternalCal = false;
             intCalButton.SetToolTip("Do internal calibration");
 
             var extCalButton = mainControlButtons.CreateInCell<Button>(2, 0);
             extCalButton.Dock = DockStyle.Fill;
             extCalButton.Text = "EXT Cal";
-            extCalButton.Click += (sender, e) => grabExternalReference = true;
+            extCalButton.Click += (sender, e) => _grabExternalReference = true;
             extCalButton.SetToolTip("Do external calibration");
 
-            liveCheck = mainControlLayout.CreateInCell<CheckBox>(0, 1);
-            liveCheck.Anchor = AnchorStyles.Left;
-            liveCheck.Checked = true;
-            liveCheck.Text = "Live mode";
-            liveCheck.SetToolTip("Display each frame, otherwise display frames only after the calibration");
+            _liveCheck = mainControlLayout.CreateInCell<CheckBox>(0, 1);
+            _liveCheck.Anchor = AnchorStyles.Left;
+            _liveCheck.Checked = true;
+            _liveCheck.Text = "Live mode";
+            _liveCheck.SetToolTip("Display each frame, otherwise display frames only after the calibration");
 
             var mainControlTabs = mainControlLayout.CreateInCell<TabControl>(0, 2);
             mainControlTabs.Dock = DockStyle.Fill;
@@ -111,10 +111,10 @@ namespace SeekOFix
             paletteLabel.Text = "Palette:";
             paletteLabel.TextAlign = ContentAlignment.MiddleLeft;
 
-            paletteCombo = appearanceLayout.CreateInCell<ComboBox>(1, 0);
-            paletteCombo.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            paletteCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            paletteCombo.SelectedIndexChanged += HandlePaletteComboSelectedIndexChanged;
+            _paletteCombo = appearanceLayout.CreateInCell<ComboBox>(1, 0);
+            _paletteCombo.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            _paletteCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            _paletteCombo.SelectedIndexChanged += HandlePaletteComboSelectedIndexChanged;
 
             var unitsLabel = appearanceLayout.CreateInCell<Label>(0, 1);
             unitsLabel.Anchor = AnchorStyles.Left;
@@ -127,53 +127,53 @@ namespace SeekOFix
             unitsLayout.AddColumn(SizeType.Percent, 1f / 3f);
             unitsLayout.AddRow(SizeType.Percent, 100f);
 
-            unitsKRadio = unitsLayout.CreateInCell<RadioButton>(0, 0);
-            unitsKRadio.Anchor = AnchorStyles.Left;
-            unitsKRadio.Checked = true;
-            unitsKRadio.Text = "K";
-            unitsKRadio.CheckedChanged += HandleUnitRadiosCheckedChanged;
+            _unitsKRadio = unitsLayout.CreateInCell<RadioButton>(0, 0);
+            _unitsKRadio.Anchor = AnchorStyles.Left;
+            _unitsKRadio.Checked = true;
+            _unitsKRadio.Text = "K";
+            _unitsKRadio.CheckedChanged += HandleUnitRadiosCheckedChanged;
 
-            unitsCRadio = unitsLayout.CreateInCell<RadioButton>(1, 0);
-            unitsCRadio.Anchor = AnchorStyles.Left;
-            unitsCRadio.Text = "°C";
-            unitsCRadio.CheckedChanged += HandleUnitRadiosCheckedChanged;
+            _unitsCRadio = unitsLayout.CreateInCell<RadioButton>(1, 0);
+            _unitsCRadio.Anchor = AnchorStyles.Left;
+            _unitsCRadio.Text = "°C";
+            _unitsCRadio.CheckedChanged += HandleUnitRadiosCheckedChanged;
 
-            unitsFRadio = unitsLayout.CreateInCell<RadioButton>(2, 0);
-            unitsFRadio.Anchor = AnchorStyles.Left;
-            unitsFRadio.Text = "°F";
-            unitsFRadio.CheckedChanged += HandleUnitRadiosCheckedChanged;
+            _unitsFRadio = unitsLayout.CreateInCell<RadioButton>(2, 0);
+            _unitsFRadio.Anchor = AnchorStyles.Left;
+            _unitsFRadio.Text = "°F";
+            _unitsFRadio.CheckedChanged += HandleUnitRadiosCheckedChanged;
 
             var applyDenoisingCheck = appearanceLayout.CreateInCell<CheckBox>(0, 2);
             applyDenoisingCheck.Anchor = AnchorStyles.Left;
             applyDenoisingCheck.Checked = true;
             applyDenoisingCheck.Text = "Apply denoising filter";
-            applyDenoisingCheck.CheckedChanged += (sender, e) => framePicture.ApplyDenoising = applyDenoisingCheck.Checked;
+            applyDenoisingCheck.CheckedChanged += (sender, e) => _framePicture.ApplyDenoising = applyDenoisingCheck.Checked;
             applyDenoisingCheck.SetColumnSpan(2);
 
             var applySharpenCheck = appearanceLayout.CreateInCell<CheckBox>(0, 3);
             applySharpenCheck.Anchor = AnchorStyles.Left;
             applySharpenCheck.Text = "Apply sharpening filter";
-            applySharpenCheck.CheckedChanged += (sender, e) => framePicture.ApplySharpening = applySharpenCheck.Checked;
+            applySharpenCheck.CheckedChanged += (sender, e) => _framePicture.ApplySharpening = applySharpenCheck.Checked;
             applySharpenCheck.SetColumnSpan(2);
 
-            histogramPicture = appearanceLayout.CreateInCell<HistogramPictureBox>(0, 4);
-            histogramPicture.BorderStyle = BorderStyle.FixedSingle;
-            histogramPicture.Dock = DockStyle.Fill;
-            histogramPicture.SizeMode = PictureBoxSizeMode.StretchImage;
-            histogramPicture.SetColumnSpan(2);
+            _histogramPicture = appearanceLayout.CreateInCell<HistogramPictureBox>(0, 4);
+            _histogramPicture.BorderStyle = BorderStyle.FixedSingle;
+            _histogramPicture.Dock = DockStyle.Fill;
+            _histogramPicture.SizeMode = PictureBoxSizeMode.StretchImage;
+            _histogramPicture.SetColumnSpan(2);
 
-            manualRangeSwitchButton = appearanceLayout.CreateInCell<Button>(0, 5);
-            manualRangeSwitchButton.Dock = DockStyle.Fill;
-            manualRangeSwitchButton.Text = "Switch to manual range";
-            manualRangeSwitchButton.Click += HandleManualRangeSwitchButtonClick;
-            manualRangeSwitchButton.SetColumnSpan(2);
+            _manualRangeSwitchButton = appearanceLayout.CreateInCell<Button>(0, 5);
+            _manualRangeSwitchButton.Dock = DockStyle.Fill;
+            _manualRangeSwitchButton.Text = "Switch to manual range";
+            _manualRangeSwitchButton.Click += HandleManualRangeSwitchButtonClick;
+            _manualRangeSwitchButton.SetColumnSpan(2);
 
-            dynSlidersCheck = appearanceLayout.CreateInCell<CheckBox>(0, 6);
-            dynSlidersCheck.Anchor = AnchorStyles.Left;
-            dynSlidersCheck.Text = "Enable relative sliders";
-            dynSlidersCheck.Visible = false;
-            dynSlidersCheck.CheckedChanged += HandleDynSlidersCheckCheckedChanged;
-            dynSlidersCheck.SetColumnSpan(2);
+            _dynSlidersCheck = appearanceLayout.CreateInCell<CheckBox>(0, 6);
+            _dynSlidersCheck.Anchor = AnchorStyles.Left;
+            _dynSlidersCheck.Text = "Enable relative sliders";
+            _dynSlidersCheck.Visible = false;
+            _dynSlidersCheck.CheckedChanged += HandleDynSlidersCheckCheckedChanged;
+            _dynSlidersCheck.SetColumnSpan(2);
 
             var analysisTab = mainControlTabs.CreateChild<TabPage>("Analysis");
             analysisTab.Padding = new Padding(3);
@@ -193,14 +193,14 @@ namespace SeekOFix
             var enableAnalysisCheck = analysisLayout.CreateInCell<CheckBox>(0, 0);
             enableAnalysisCheck.Anchor = AnchorStyles.Left;
             enableAnalysisCheck.Text = "Enabled";
-            enableAnalysisCheck.CheckedChanged += (sender, e) => framePicture.AnalysisEnabled = enableAnalysisCheck.Checked;
+            enableAnalysisCheck.CheckedChanged += (sender, e) => _framePicture.AnalysisEnabled = enableAnalysisCheck.Checked;
             enableAnalysisCheck.SetColumnSpan(2);
 
             var showTemperatureCheck = analysisLayout.CreateInCell<CheckBox>(0, 1);
             showTemperatureCheck.Anchor = AnchorStyles.Left;
             showTemperatureCheck.Checked = true;
             showTemperatureCheck.Text = "Show temperature";
-            showTemperatureCheck.CheckedChanged += (sender, e) => framePicture.ShowTemperature = showTemperatureCheck.Checked;
+            showTemperatureCheck.CheckedChanged += (sender, e) => _framePicture.ShowTemperature = showTemperatureCheck.Checked;
             showTemperatureCheck.SetColumnSpan(2);
 
             var crossSizeLabel = analysisLayout.CreateInCell<Label>(0, 2);
@@ -213,13 +213,13 @@ namespace SeekOFix
             crossSizeSpinner.Maximum = 64;
             crossSizeSpinner.Minimum = 8;
             crossSizeSpinner.Value = 16;
-            crossSizeSpinner.ValueChanged += (sender, e) => framePicture.CrossSize = (int) crossSizeSpinner.Value;
+            crossSizeSpinner.ValueChanged += (sender, e) => _framePicture.CrossSize = (int) crossSizeSpinner.Value;
 
             var showExtremesCheck = analysisLayout.CreateInCell<CheckBox>(0, 3);
             showExtremesCheck.Anchor = AnchorStyles.Left;
             showExtremesCheck.Checked = true;
             showExtremesCheck.Text = "Show extremes";
-            showExtremesCheck.CheckedChanged += (sender, e) => framePicture.ShowExtremes = showExtremesCheck.Checked;
+            showExtremesCheck.CheckedChanged += (sender, e) => _framePicture.ShowExtremes = showExtremesCheck.Checked;
             showExtremesCheck.SetColumnSpan(2);
 
             var maxPointsLabel = analysisLayout.CreateInCell<Label>(0, 4);
@@ -232,12 +232,12 @@ namespace SeekOFix
             maxPointsSpinner.Maximum = 10;
             maxPointsSpinner.Minimum = 1;
             maxPointsSpinner.Value = 3;
-            maxPointsSpinner.ValueChanged += (sender, e) => framePicture.MaxPoints = (int) maxPointsSpinner.Value;
+            maxPointsSpinner.ValueChanged += (sender, e) => _framePicture.MaxPoints = (int) maxPointsSpinner.Value;
 
             var deletePointsButton = analysisLayout.CreateInCell<Button>(0, 5);
             deletePointsButton.Dock = DockStyle.Fill;
             deletePointsButton.Text = "Delete all points";
-            deletePointsButton.Click += (sender, e) => framePicture.DeleteAllAnalyzers();
+            deletePointsButton.Click += (sender, e) => _framePicture.DeleteAllAnalyzers();
             deletePointsButton.SetColumnSpan(2);
 
             var gaugeLabelCountLabel = analysisLayout.CreateInCell<Label>(0, 6);
@@ -250,7 +250,7 @@ namespace SeekOFix
             gaugeLabelCountSpinner.Maximum = 10;
             gaugeLabelCountSpinner.Minimum = 2;
             gaugeLabelCountSpinner.Value = 2;
-            gaugeLabelCountSpinner.ValueChanged += (sender, e) => tempGaugePicture.LabelCount = (int) gaugeLabelCountSpinner.Value;
+            gaugeLabelCountSpinner.ValueChanged += (sender, e) => _tempGaugePicture.LabelCount = (int) gaugeLabelCountSpinner.Value;
 
             var outputTab = mainControlTabs.CreateChild<TabPage>("Output");
             outputTab.Padding = new Padding(3);
@@ -276,29 +276,29 @@ namespace SeekOFix
             outputPathLayout.AddRow(SizeType.Percent, 100f);
             outputPathLayout.SetColumnSpan(2);
 
-            outputPathField = outputPathLayout.CreateInCell<TextBox>(0, 0);
-            outputPathField.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            outputPathField.MaxLength = 256;
+            _outputPathField = outputPathLayout.CreateInCell<TextBox>(0, 0);
+            _outputPathField.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            _outputPathField.MaxLength = 256;
 
             var outputPathButton = outputPathLayout.CreateInCell<Button>(1, 0);
             outputPathButton.Dock = DockStyle.Fill;
             outputPathButton.Text = "...";
             outputPathButton.Click += HandleOutputPathButtonClick;
 
-            autoSaveCheck = outputLayout.CreateInCell<CheckBox>(0, 2);
-            autoSaveCheck.Anchor = AnchorStyles.Left;
-            autoSaveCheck.Text = "Screenshot on each calibration";
-            autoSaveCheck.SetColumnSpan(2);
+            _autoSaveCheck = outputLayout.CreateInCell<CheckBox>(0, 2);
+            _autoSaveCheck.Anchor = AnchorStyles.Left;
+            _autoSaveCheck.Text = "Screenshot on each calibration";
+            _autoSaveCheck.SetColumnSpan(2);
 
             var screenshotButton = outputLayout.CreateInCell<Button>(0, 3);
             screenshotButton.Dock = DockStyle.Fill;
             screenshotButton.Text = "Screenshot";
             screenshotButton.Click += HandleScreenshotButtonClick;
 
-            recordVideoButton = outputLayout.CreateInCell<Button>(1, 3);
-            recordVideoButton.Dock = DockStyle.Fill;
-            recordVideoButton.Text = "Record video";
-            recordVideoButton.Click += HandleRecordVideoButtonClick;
+            _recordVideoButton = outputLayout.CreateInCell<Button>(1, 3);
+            _recordVideoButton.Dock = DockStyle.Fill;
+            _recordVideoButton.Text = "Record video";
+            _recordVideoButton.Click += HandleRecordVideoButtonClick;
 
             var debugValueLayout = mainLayout.CreateSublayout(0, 1);
             debugValueLayout.AddColumn(SizeType.Percent, 1f / 3f);
@@ -306,37 +306,37 @@ namespace SeekOFix
             debugValueLayout.AddColumn(SizeType.Percent, 1f / 3f);
             debugValueLayout.AddRow(SizeType.Percent, 100f);
 
-            gModeLeftLabel = debugValueLayout.CreateInCell<Label>(0, 0);
-            gModeLeftLabel.Anchor = AnchorStyles.None;
-            gModeLeftLabel.TextAlign = ContentAlignment.MiddleCenter;
+            _gModeLeftLabel = debugValueLayout.CreateInCell<Label>(0, 0);
+            _gModeLeftLabel.Anchor = AnchorStyles.None;
+            _gModeLeftLabel.TextAlign = ContentAlignment.MiddleCenter;
 
-            gModeRightLabel = debugValueLayout.CreateInCell<Label>(1, 0);
-            gModeRightLabel.Anchor = AnchorStyles.None;
-            gModeRightLabel.TextAlign = ContentAlignment.MiddleCenter;
+            _gModeRightLabel = debugValueLayout.CreateInCell<Label>(1, 0);
+            _gModeRightLabel.Anchor = AnchorStyles.None;
+            _gModeRightLabel.TextAlign = ContentAlignment.MiddleCenter;
 
-            maxTempRawLabel = debugValueLayout.CreateInCell<Label>(2, 0);
-            maxTempRawLabel.Anchor = AnchorStyles.None;
-            maxTempRawLabel.TextAlign = ContentAlignment.MiddleCenter;
+            _maxTempRawLabel = debugValueLayout.CreateInCell<Label>(2, 0);
+            _maxTempRawLabel.Anchor = AnchorStyles.None;
+            _maxTempRawLabel.TextAlign = ContentAlignment.MiddleCenter;
 
-            picturePanel = mainLayout.CreateInCell<Panel>(1, 0);
-            picturePanel.Dock = DockStyle.Fill;
-            picturePanel.Padding = new Padding(3);
+            _picturePanel = mainLayout.CreateInCell<Panel>(1, 0);
+            _picturePanel.Dock = DockStyle.Fill;
+            _picturePanel.Padding = new Padding(3);
 
-            framePicture = picturePanel.CreateChild<FramePictureBox>();
-            framePicture.SizeMode = PictureBoxSizeMode.StretchImage;
-            framePicture.MouseEnter += HandlePictureMouseEnter;
-            framePicture.MouseLeave += HandlePictureMouseLeave;
-            framePicture.MouseMove += (sender, e) => UpdateMouseLabelFromFramePicture(e.Location);
+            _framePicture = _picturePanel.CreateChild<FramePictureBox>();
+            _framePicture.SizeMode = PictureBoxSizeMode.StretchImage;
+            _framePicture.MouseEnter += HandlePictureMouseEnter;
+            _framePicture.MouseLeave += HandlePictureMouseLeave;
+            _framePicture.MouseMove += (sender, e) => UpdateMouseLabelFromFramePicture(e.Location);
 
-            tempGaugePicture = picturePanel.CreateChild<TemperatureGaugePictureBox>();
-            tempGaugePicture.SizeMode = PictureBoxSizeMode.StretchImage;
-            tempGaugePicture.MouseEnter += HandlePictureMouseEnter;
-            tempGaugePicture.MouseLeave += HandlePictureMouseLeave;
-            tempGaugePicture.MouseMove += (sender, e) => UpdateMouseLabelFromTempGaugePicture(e.Location);
+            _tempGaugePicture = _picturePanel.CreateChild<TemperatureGaugePictureBox>();
+            _tempGaugePicture.SizeMode = PictureBoxSizeMode.StretchImage;
+            _tempGaugePicture.MouseEnter += HandlePictureMouseEnter;
+            _tempGaugePicture.MouseLeave += HandlePictureMouseLeave;
+            _tempGaugePicture.MouseMove += (sender, e) => UpdateMouseLabelFromTempGaugePicture(e.Location);
 
-            mouseLabel = mainLayout.CreateInCell<Label>(1, 1);
-            mouseLabel.Dock = DockStyle.Fill;
-            mouseLabel.TextAlign = ContentAlignment.MiddleCenter;
+            _mouseLabel = mainLayout.CreateInCell<Label>(1, 1);
+            _mouseLabel.Dock = DockStyle.Fill;
+            _mouseLabel.TextAlign = ContentAlignment.MiddleCenter;
 
             var sliderLayout = mainLayout.CreateSublayout(0, 2);
             sliderLayout.AddColumn(SizeType.Absolute, 40f);
@@ -356,33 +356,33 @@ namespace SeekOFix
             sliderMaxLabel.Text = "High";
             sliderMaxLabel.TextAlign = ContentAlignment.MiddleLeft;
 
-            sliderMinTempLabel = sliderLayout.CreateInCell<Label>(2, 0);
-            sliderMinTempLabel.Dock = DockStyle.Fill;
-            sliderMinTempLabel.TextAlign = ContentAlignment.MiddleCenter;
+            _sliderMinTempLabel = sliderLayout.CreateInCell<Label>(2, 0);
+            _sliderMinTempLabel.Dock = DockStyle.Fill;
+            _sliderMinTempLabel.TextAlign = ContentAlignment.MiddleCenter;
 
-            sliderMaxTempLabel = sliderLayout.CreateInCell<Label>(2, 1);
-            sliderMaxTempLabel.Dock = DockStyle.Fill;
-            sliderMaxTempLabel.TextAlign = ContentAlignment.MiddleCenter;
+            _sliderMaxTempLabel = sliderLayout.CreateInCell<Label>(2, 1);
+            _sliderMaxTempLabel.Dock = DockStyle.Fill;
+            _sliderMaxTempLabel.TextAlign = ContentAlignment.MiddleCenter;
 
-            minTempSlider = sliderLayout.CreateInCell<TrackBar>(1, 0);
-            minTempSlider.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            minTempSlider.LargeChange = 100;
-            minTempSlider.Maximum = 20000;
-            minTempSlider.Minimum = 4000;
-            minTempSlider.SmallChange = 10;
-            minTempSlider.TickFrequency = 100;
-            minTempSlider.Value = 4000;
-            minTempSlider.Scroll += HandleMinTempSliderScroll;
+            _minTempSlider = sliderLayout.CreateInCell<TrackBar>(1, 0);
+            _minTempSlider.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            _minTempSlider.LargeChange = 100;
+            _minTempSlider.Maximum = 20000;
+            _minTempSlider.Minimum = 4000;
+            _minTempSlider.SmallChange = 10;
+            _minTempSlider.TickFrequency = 100;
+            _minTempSlider.Value = 4000;
+            _minTempSlider.Scroll += HandleMinTempSliderScroll;
 
-            maxTempSlider = sliderLayout.CreateInCell<TrackBar>(1, 1);
-            maxTempSlider.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            maxTempSlider.LargeChange = 100;
-            maxTempSlider.Maximum = 20000;
-            maxTempSlider.Minimum = 4000;
-            maxTempSlider.SmallChange = 10;
-            maxTempSlider.TickFrequency = 100;
-            maxTempSlider.Value = 4000;
-            maxTempSlider.Scroll += HandleMaxTempSliderScroll;
+            _maxTempSlider = sliderLayout.CreateInCell<TrackBar>(1, 1);
+            _maxTempSlider.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            _maxTempSlider.LargeChange = 100;
+            _maxTempSlider.Maximum = 20000;
+            _maxTempSlider.Minimum = 4000;
+            _maxTempSlider.SmallChange = 10;
+            _maxTempSlider.TickFrequency = 100;
+            _maxTempSlider.Value = 4000;
+            _maxTempSlider.Scroll += HandleMaxTempSliderScroll;
         }
     }
 }

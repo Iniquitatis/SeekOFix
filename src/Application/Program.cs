@@ -3,10 +3,10 @@ using System.Windows.Forms;
 
 namespace SeekOFix
 {
-    static class Program
+    public static class Program
     {
         [STAThread]
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             var mode = args.GetWithFallback(0, "stream");
             var ioPath = args.GetWithFallback(1, "");

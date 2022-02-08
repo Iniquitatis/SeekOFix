@@ -11,46 +11,46 @@ namespace SeekOFix
 {
     public partial class MainWindow : Form
     {
-        SeekThermal thermal;
-        Thread thermalThread;
-        ThermalFrame currentFrame;
-        ThermalFrame lastUsableFrame;
+        private SeekThermal _thermal = null;
+        private Thread _thermalThread = null;
+        private ThermalFrame _currentFrame = null;
+        private ThermalFrame _lastUsableFrame = null;
 
-        bool stopThread = false;
-        bool grabExternalReference = false;
-        bool firstAfterCal = false;
-        bool usingExternalCal = false;
-        bool autoRange = true;
-        bool isRunning = true;
+        private bool _stopThread = false;
+        private bool _grabExternalReference = false;
+        private bool _firstAfterCal = false;
+        private bool _usingExternalCal = false;
+        private bool _autoRange = true;
+        private bool _isRunning = true;
 
-        string tempUnit = "K";
+        private string _tempUnit = "K";
 
-        ushort[] arrID4 = new ushort[Constants.DATA_LENGTH];
-        ushort[] arrID1 = new ushort[Constants.DATA_LENGTH];
-        ushort[] arrID3 = new ushort[Constants.DATA_LENGTH];
+        private ushort[] _arrID4 = new ushort[Constants.DATA_LENGTH];
+        private ushort[] _arrID1 = new ushort[Constants.DATA_LENGTH];
+        private ushort[] _arrID3 = new ushort[Constants.DATA_LENGTH];
 
-        bool[] badPixelArr = new bool[Constants.DATA_LENGTH];
+        private bool[] _badPixelArr = new bool[Constants.DATA_LENGTH];
 
-        ushort[] gMode = new ushort[Constants.HISTOGRAM_SIZE];
+        private ushort[] _gMode = new ushort[Constants.HISTOGRAM_SIZE];
 
-        byte[,] palette = new byte[Constants.PALETTE_SIZE, 3];
+        private byte[,] _palette = new byte[Constants.PALETTE_SIZE, 3];
 
-        ushort gModePeakIx = 0;
-        ushort gModePeakCnt = 0;
-        ushort gModeLeft = 0;
-        ushort gModeRight = 0;
-        ushort gModeLeftManual = 0;
-        ushort gModeRightManual = 0;
-        ushort avgID4 = 0;
-        ushort avgID1 = 0;
-        ushort maxTempRaw = 0;
+        private ushort _gModePeakIx = 0;
+        private ushort _gModePeakCnt = 0;
+        private ushort _gModeLeft = 0;
+        private ushort _gModeRight = 0;
+        private ushort _gModeLeftManual = 0;
+        private ushort _gModeRightManual = 0;
+        private ushort _avgID4 = 0;
+        private ushort _avgID1 = 0;
+        private ushort _maxTempRaw = 0;
 
-        double[] gainCalArr = new double[Constants.DATA_LENGTH];
+        private double[] _gainCalArr = new double[Constants.DATA_LENGTH];
 
-        Output.VideoRecorder recorder = null;
+        private Output.VideoRecorder _recorder = null;
 
-        FrameIO.Reader reader = null;
-        FrameIO.Writer writer = null;
+        private FrameIO.Reader _reader = null;
+        private FrameIO.Writer _writer = null;
 
         public MainWindow(string mode, string ioPath, int maxFrames)
         {
@@ -59,7 +59,7 @@ namespace SeekOFix
             var localPath = Directory.GetCurrentDirectory().ToString();
             var exportPath = localPath + @"\Export";
             Directory.CreateDirectory(exportPath);
-            outputPathField.Text = exportPath;
+            _outputPathField.Text = exportPath;
 
             if (mode == "stream" || mode == "write")
             {
@@ -71,43 +71,43 @@ namespace SeekOFix
                     return;
                 }
 
-                thermal = new SeekThermal(device);
+                _thermal = new SeekThermal(device);
 
                 if (mode == "write")
                 {
-                    writer = new FrameIO.Writer(ioPath, maxFrames);
+                    _writer = new FrameIO.Writer(ioPath, maxFrames);
                 }
             }
             else if (mode == "read")
             {
-                reader = new FrameIO.Reader(ioPath);
+                _reader = new FrameIO.Reader(ioPath);
             }
 
-            thermalThread = new Thread(ThermalThreadProc);
-            thermalThread.IsBackground = true;
-            thermalThread.Start();
+            _thermalThread = new Thread(ThermalThreadProc);
+            _thermalThread.IsBackground = true;
+            _thermalThread.Start();
         }
 
-        void ToggleThreadActivity()
+        private void ToggleThreadActivity()
         {
-            if (isRunning)
-                thermalThread.Suspend();
+            if (_isRunning)
+                _thermalThread.Suspend();
             else
-                thermalThread.Resume();
+                _thermalThread.Resume();
 
-            isRunning = !isRunning;
+            _isRunning = !_isRunning;
         }
 
-        void ThermalThreadProc()
+        private void ThermalThreadProc()
         {
-            while (!stopThread && (thermal != null || reader != null))
+            while (!_stopThread && (_thermal != null || _reader != null))
             {
                 bool progress = false;
 
-                currentFrame = GetFrame();
-                RecordFrame(currentFrame);
+                _currentFrame = GetFrame();
+                RecordFrame(_currentFrame);
 
-                switch (currentFrame.StatusByte)
+                switch (_currentFrame.StatusByte)
                 {
                     // Gain calibration
                     case 4:
@@ -119,10 +119,10 @@ namespace SeekOFix
                     case 1:
                         MarkBadPixels();
 
-                        if (!usingExternalCal)
+                        if (!_usingExternalCal)
                             Frame1Stuff();
 
-                        firstAfterCal = true;
+                        _firstAfterCal = true;
 
                         break;
 
@@ -131,16 +131,16 @@ namespace SeekOFix
                         MarkBadPixels();
 
                         // Use this image as reference
-                        if (grabExternalReference)
+                        if (_grabExternalReference)
                         {
-                            grabExternalReference = false;
-                            usingExternalCal = true;
+                            _grabExternalReference = false;
+                            _usingExternalCal = true;
                             Frame1Stuff();
                         }
                         else
                         {
                             Frame3Stuff();
-                            lastUsableFrame = currentFrame;
+                            _lastUsableFrame = _currentFrame;
                             progress = true;
                         }
 
@@ -160,62 +160,62 @@ namespace SeekOFix
 
         private ThermalFrame GetFrame()
         {
-            if (thermal != null)
+            if (_thermal != null)
             {
-                return thermal.GetFrameBlocking();
+                return _thermal.GetFrameBlocking();
             }
             else
             {
                 Thread.Sleep(100);
-                return reader.Read();
+                return _reader.Read();
             }
         }
 
         private void RecordFrame(ThermalFrame frame)
         {
-            if (writer == null) return;
-            writer.Write(frame);
+            if (_writer == null) return;
+            _writer.Write(frame);
         }
 
         private void Frame4Stuff()
         {
-            arrID4 = currentFrame.RawDataU16;
-            avgID4 = GetMode(arrID4);
+            _arrID4 = _currentFrame.RawDataU16;
+            _avgID4 = GetMode(_arrID4);
 
             for (int i = 0; i < Constants.DATA_LENGTH; i++)
             {
-                if (arrID4[i] > 2000 && arrID4[i] < 8000)
+                if (_arrID4[i] > 2000 && _arrID4[i] < 8000)
                 {
-                    gainCalArr[i] = avgID4 / (double) arrID4[i];
+                    _gainCalArr[i] = _avgID4 / (double) _arrID4[i];
                 }
                 else
                 {
-                    gainCalArr[i] = 1;
-                    badPixelArr[i] = true;
+                    _gainCalArr[i] = 1;
+                    _badPixelArr[i] = true;
                 }
             }
         }
 
         private void Frame1Stuff()
         {
-            arrID1 = currentFrame.RawDataU16;
-            //avgID1 = GetMode(arrID1);
+            _arrID1 = _currentFrame.RawDataU16;
+            //_avgID1 = GetMode(_arrID1);
         }
 
         private void Frame3Stuff()
         {
-            arrID3 = currentFrame.RawDataU16;
+            _arrID3 = _currentFrame.RawDataU16;
 
             for (int i = 0; i < Constants.DATA_LENGTH; i++)
             {
-                if (arrID3[i] > 2000)
+                if (_arrID3[i] > 2000)
                 {
-                    arrID3[i] = (ushort) ((arrID3[i] - arrID1[i]) * gainCalArr[i] + 7500);
+                    _arrID3[i] = (ushort) ((_arrID3[i] - _arrID1[i]) * _gainCalArr[i] + 7500);
                 }
                 else
                 {
-                    arrID3[i] = 0;
-                    badPixelArr[i] = true;
+                    _arrID3[i] = 0;
+                    _badPixelArr[i] = true;
                 }
             }
 
@@ -226,13 +226,13 @@ namespace SeekOFix
 
         private void MarkBadPixels()
         {
-            ushort[] rawDataArr = currentFrame.RawDataU16;
+            ushort[] rawDataArr = _currentFrame.RawDataU16;
 
             for (int i = 0; i < rawDataArr.Length; i++)
             {
                 if (rawDataArr[i] < 2000 || rawDataArr[i] > 22000)
                 {
-                    badPixelArr[i] = true;
+                    _badPixelArr[i] = true;
                 }
             }
         }
@@ -245,43 +245,43 @@ namespace SeekOFix
             {
                 for (ushort x = 0; x < Constants.DATA_W; x++)
                 {
-                    if (badPixelArr[i] && x < Constants.IMAGE_W)
+                    if (_badPixelArr[i] && x < Constants.IMAGE_W)
                     {
                         ushort val = 0;
                         ushort nr = 0;
 
                         // Top pixel
-                        if (y > 0 && !badPixelArr[i - Constants.DATA_W])
+                        if (y > 0 && !_badPixelArr[i - Constants.DATA_W])
                         {
-                            val += arrID3[i - Constants.DATA_W];
+                            val += _arrID3[i - Constants.DATA_W];
                             ++nr;
                         }
 
                         // Bottom pixel
-                        if (y < (Constants.IMAGE_H - 1) && !badPixelArr[i + Constants.DATA_W])
+                        if (y < (Constants.IMAGE_H - 1) && !_badPixelArr[i + Constants.DATA_W])
                         {
-                            val += arrID3[i + Constants.DATA_W];
+                            val += _arrID3[i + Constants.DATA_W];
                             ++nr;
                         }
 
                         // Left pixel
-                        if (x > 0 && !badPixelArr[i - 1])
+                        if (x > 0 && !_badPixelArr[i - 1])
                         {
-                            val += arrID3[i - 1];
+                            val += _arrID3[i - 1];
                             ++nr;
                         }
 
                         // Right pixel
-                        if (x < (Constants.IMAGE_W - 1) && !badPixelArr[i + 1])
+                        if (x < (Constants.IMAGE_W - 1) && !_badPixelArr[i + 1])
                         {
-                            val += arrID3[i + 1];
+                            val += _arrID3[i + 1];
                             ++nr;
                         }
 
                         if (nr > 0)
                         {
                             val /= nr;
-                            arrID3[i] = val;
+                            _arrID3[i] = val;
                         }
                     }
 
@@ -301,16 +301,16 @@ namespace SeekOFix
                 {
                     if (x > 0 && x < Constants.IMAGE_W && y > 0 && y < (Constants.IMAGE_H - 1))
                     {
-                        arrColor[0] = arrID3[i - Constants.DATA_W]; // Top
-                        arrColor[1] = arrID3[i + Constants.DATA_W]; // Bottom
-                        arrColor[2] = arrID3[i - 1]; // Left
-                        arrColor[3] = arrID3[i + 1]; // Right
+                        arrColor[0] = _arrID3[i - Constants.DATA_W]; // Top
+                        arrColor[1] = _arrID3[i + Constants.DATA_W]; // Bottom
+                        arrColor[2] = _arrID3[i - 1]; // Left
+                        arrColor[3] = _arrID3[i + 1]; // Right
 
                         ushort val = (ushort) ((arrColor[0] + arrColor[1] + arrColor[2] + arrColor[3] - Highest(arrColor) - Lowest(arrColor)) / 2);
 
-                        if (Math.Abs(val - arrID3[i]) > 100 && val != 0)
+                        if (Math.Abs(val - _arrID3[i]) > 100 && val != 0)
                         {
-                            arrID3[i] = val;
+                            _arrID3[i] = val;
                         }
                     }
 
@@ -345,7 +345,7 @@ namespace SeekOFix
             return lowest;
         }
 
-        public ushort GetMode(ushort[] arr)
+        private ushort GetMode(ushort[] arr)
         {
             ushort[] arrMode = new ushort[320];
 
@@ -359,37 +359,37 @@ namespace SeekOFix
             return (ushort) (topPos * 100);
         }
 
-        public void GetHistogram()
+        private void GetHistogram()
         {
-            maxTempRaw = arrID3.Max();
+            _maxTempRaw = _arrID3.Max();
 
             for (ushort i = 0; i < Constants.DATA_LENGTH; i++)
             {
-                if ((arrID3[i] > 1000) && (arrID3[i] / 10 != 0) && !badPixelArr[i]) gMode[arrID3[i] / 10]++;
+                if ((_arrID3[i] > 1000) && (_arrID3[i] / 10 != 0) && !_badPixelArr[i]) _gMode[_arrID3[i] / 10]++;
             }
 
-            ushort topPos = (ushort) Array.IndexOf(gMode, gMode.Max());
+            ushort topPos = (ushort) Array.IndexOf(_gMode, _gMode.Max());
 
-            gModePeakCnt = gMode.Max();
-            gModePeakIx = (ushort) (topPos * 10);
+            _gModePeakCnt = _gMode.Max();
+            _gModePeakIx = (ushort) (topPos * 10);
 
             // Lower it to 100px
             for (ushort i = 0; i < Constants.HISTOGRAM_SIZE; i++)
             {
-                gMode[i] = (ushort) ((double) gMode[i] / gModePeakCnt * 100);
+                _gMode[i] = (ushort) ((double) _gMode[i] / _gModePeakCnt * 100);
             }
 
-            if (autoRange)
+            if (_autoRange)
             {
-                gModeLeft = gModePeakIx;
-                gModeRight = gModePeakIx;
+                _gModeLeft = _gModePeakIx;
+                _gModeRight = _gModePeakIx;
 
                 // Find left border
                 for (ushort i = 0; i < topPos; i++)
                 {
-                    if (gMode[i] > gMode[topPos] * 0.01)
+                    if (_gMode[i] > _gMode[topPos] * 0.01)
                     {
-                        gModeLeft = (ushort) (i * 10);
+                        _gModeLeft = (ushort) (i * 10);
                         break;
                     }
                 }
@@ -397,20 +397,20 @@ namespace SeekOFix
                 // Find right border
                 for (ushort i = (Constants.HISTOGRAM_SIZE - 1); i > topPos; i--)
                 {
-                    if (gMode[i] > gMode[topPos] * 0.01)
+                    if (_gMode[i] > _gMode[topPos] * 0.01)
                     {
-                        gModeRight = (ushort) (i * 10);
+                        _gModeRight = (ushort) (i * 10);
                         break;
                     }
                 }
 
-                gModeLeftManual = gModeLeft;
-                gModeRightManual = gModeRight;
+                _gModeLeftManual = _gModeLeft;
+                _gModeRightManual = _gModeRight;
             }
             else
             {
-                gModeLeft = gModeLeftManual;
-                gModeRight = gModeRightManual;
+                _gModeLeft = _gModeLeftManual;
+                _gModeRight = _gModeRightManual;
             }
         }
 
@@ -421,13 +421,13 @@ namespace SeekOFix
             for (var i = 0; i < Constants.PALETTE_SIZE; i++)
             {
                 var color = paletteBitmap.GetPixel(i, 0);
-                palette[i, 0] = color.R;
-                palette[i, 1] = color.G;
-                palette[i, 2] = color.B;
+                _palette[i, 0] = color.R;
+                _palette[i, 1] = color.G;
+                _palette[i, 2] = color.B;
             }
 
-            framePicture.Palette = palette;
-            tempGaugePicture.Palette = palette;
+            _framePicture.Palette = _palette;
+            _tempGaugePicture.Palette = _palette;
         }
 
         private void UpdateAnalyzablePictureBoxSize(FramePictureBox box, TemperatureGaugePictureBox gauge)
@@ -457,13 +457,13 @@ namespace SeekOFix
 
         private void UpdateMouseLabelFromFramePicture(Point localPos)
         {
-            var coords = framePicture.LocalToCoords(localPos);
-            mouseLabel.Text = $"({coords.X}, {coords.Y}): {Utils.FormatTempString(tempUnit, framePicture.DetectTemperature(coords))}";
+            var coords = _framePicture.LocalToCoords(localPos);
+            _mouseLabel.Text = $"({coords.X}, {coords.Y}): {Utils.FormatTempString(_tempUnit, _framePicture.DetectTemperature(coords))}";
         }
 
         private void UpdateMouseLabelFromTempGaugePicture(Point localPos)
         {
-            mouseLabel.Text = Utils.FormatTempString(tempUnit, tempGaugePicture.DetectTemperature(localPos));
+            _mouseLabel.Text = Utils.FormatTempString(_tempUnit, _tempGaugePicture.DetectTemperature(localPos));
         }
 
         private void HandleLoad(object sender, EventArgs e)
@@ -472,79 +472,79 @@ namespace SeekOFix
 
             foreach (FileInfo file in pngFiles)
             {
-                paletteCombo.Items.Add(new ComboItem(file.FullName, file.Name.Replace(".png", "")));
+                _paletteCombo.Items.Add(new ComboItem(file.FullName, file.Name.Replace(".png", "")));
             }
 
-            paletteCombo.SelectedIndex = 1;
+            _paletteCombo.SelectedIndex = 1;
         }
 
         private void HandlePaint(object sender, PaintEventArgs e)
         {
-            if (lastUsableFrame != null && (liveCheck.Checked || firstAfterCal))
+            if (_lastUsableFrame != null && (_liveCheck.Checked || _firstAfterCal))
             {
-                tempGaugePicture.MinTemp = gModeLeft;
-                tempGaugePicture.MaxTemp = gModeRight;
+                _tempGaugePicture.MinTemp = _gModeLeft;
+                _tempGaugePicture.MaxTemp = _gModeRight;
 
-                sliderMinTempLabel.Text = Utils.FormatTempString(tempUnit, gModeLeft);
-                sliderMaxTempLabel.Text = Utils.FormatTempString(tempUnit, gModeRight);
+                _sliderMinTempLabel.Text = Utils.FormatTempString(_tempUnit, _gModeLeft);
+                _sliderMaxTempLabel.Text = Utils.FormatTempString(_tempUnit, _gModeRight);
 
                 // Set debug labels
-                gModeLeftLabel.Text = gModeLeft.ToString();
-                gModeRightLabel.Text = gModeRight.ToString();
-                maxTempRawLabel.Text = maxTempRaw.ToString();
+                _gModeLeftLabel.Text = _gModeLeft.ToString();
+                _gModeRightLabel.Text = _gModeRight.ToString();
+                _maxTempRawLabel.Text = _maxTempRaw.ToString();
 
                 // Set sliders position
-                if (autoRange)
+                if (_autoRange)
                 {
-                    minTempSlider.Value = gModeLeft;
-                    maxTempSlider.Value = gModeRight;
+                    _minTempSlider.Value = _gModeLeft;
+                    _maxTempSlider.Value = _gModeRight;
                 }
 
-                lock (arrID3.SyncRoot)
-                    framePicture.SupplyData(arrID3, gModeLeft, gModeRight);
+                lock (_arrID3.SyncRoot)
+                    _framePicture.SupplyData(_arrID3, _gModeLeft, _gModeRight);
 
-                framePicture.UpdateImage();
-                framePicture.Reanalyze();
+                _framePicture.UpdateImage();
+                _framePicture.Reanalyze();
 
-                if (recorder != null)
-                    recorder.SupplyFrame(framePicture.Image as Bitmap);
+                if (_recorder != null)
+                    _recorder.SupplyFrame(_framePicture.Image as Bitmap);
 
-                if (firstAfterCal)
+                if (_firstAfterCal)
                 {
-                    firstAfterCal = false;
+                    _firstAfterCal = false;
 
-                    if (autoSaveCheck.Checked)
-                        Output.Screenshot(framePicture.Image as Bitmap, outputPathField.Text);
+                    if (_autoSaveCheck.Checked)
+                        Output.Screenshot(_framePicture.Image as Bitmap, _outputPathField.Text);
                 }
 
-                lock (gMode.SyncRoot)
-                    histogramPicture.SupplyData(gMode, gModeLeft, gModeRight);
+                lock (_gMode.SyncRoot)
+                    _histogramPicture.SupplyData(_gMode, _gModeLeft, _gModeRight);
 
-                histogramPicture.UpdateImage();
+                _histogramPicture.UpdateImage();
 
-                var pictureUnderCursor = picturePanel.GetChildAtPoint(picturePanel.PointToClient(MousePosition));
+                var pictureUnderCursor = _picturePanel.GetChildAtPoint(_picturePanel.PointToClient(MousePosition));
 
-                if (pictureUnderCursor == framePicture)
-                    UpdateMouseLabelFromFramePicture(framePicture.PointToClient(MousePosition));
-                else if (pictureUnderCursor == tempGaugePicture)
-                    UpdateMouseLabelFromTempGaugePicture(tempGaugePicture.PointToClient(MousePosition));
+                if (pictureUnderCursor == _framePicture)
+                    UpdateMouseLabelFromFramePicture(_framePicture.PointToClient(MousePosition));
+                else if (pictureUnderCursor == _tempGaugePicture)
+                    UpdateMouseLabelFromTempGaugePicture(_tempGaugePicture.PointToClient(MousePosition));
             }
 
-            UpdateAnalyzablePictureBoxSize(framePicture, tempGaugePicture);
+            UpdateAnalyzablePictureBoxSize(_framePicture, _tempGaugePicture);
         }
 
         private void HandleFormClosing(object sender, FormClosingEventArgs e)
         {
-            stopThread = true;
+            _stopThread = true;
 
-            if (thermal != null)
+            if (_thermal != null)
             {
-                thermalThread.Join(500);
-                thermal.Deinit();
+                _thermalThread.Join(500);
+                _thermal.Deinit();
             }
         }
 
-        class ComboItem
+        private class ComboItem
         {
             public string Key { get; set; }
             public string Value { get; set; }
@@ -563,75 +563,75 @@ namespace SeekOFix
 
         private void HandlePaletteComboSelectedIndexChanged(object sender, EventArgs e)
         {
-            var newPal = (ComboItem) paletteCombo.SelectedItem;
+            var newPal = (ComboItem) _paletteCombo.SelectedItem;
             LoadPalette(newPal.Key);
         }
 
         private void HandleUnitRadiosCheckedChanged(object sender, EventArgs e)
         {
-            if (unitsKRadio.Checked) tempUnit = "K";
-            if (unitsCRadio.Checked) tempUnit = "C";
-            if (unitsFRadio.Checked) tempUnit = "F";
+            if (_unitsKRadio.Checked) _tempUnit = "K";
+            if (_unitsCRadio.Checked) _tempUnit = "C";
+            if (_unitsFRadio.Checked) _tempUnit = "F";
 
-            framePicture.TempUnit = tempUnit;
-            tempGaugePicture.TempUnit = tempUnit;
+            _framePicture.TempUnit = _tempUnit;
+            _tempGaugePicture.TempUnit = _tempUnit;
         }
 
         private void HandleManualRangeSwitchButtonClick(object sender, EventArgs e)
         {
-            autoRange = !autoRange;
+            _autoRange = !_autoRange;
 
-            if (autoRange)
+            if (_autoRange)
             {
-                manualRangeSwitchButton.Text = "Switch to manual range";
-                dynSlidersCheck.Checked = false;
-                dynSlidersCheck.Visible = false;
+                _manualRangeSwitchButton.Text = "Switch to manual range";
+                _dynSlidersCheck.Checked = false;
+                _dynSlidersCheck.Visible = false;
             }
             else
             {
-                manualRangeSwitchButton.Text = "Switch to auto range";
-                dynSlidersCheck.Visible = true;
+                _manualRangeSwitchButton.Text = "Switch to auto range";
+                _dynSlidersCheck.Visible = true;
             }
         }
 
         private void HandleDynSlidersCheckCheckedChanged(object sender, EventArgs e)
         {
-            int currentLeftPos = minTempSlider.Value;
-            int currentRightPos = maxTempSlider.Value;
+            int currentLeftPos = _minTempSlider.Value;
+            int currentRightPos = _maxTempSlider.Value;
             int currentDiff = currentRightPos - currentLeftPos;
 
-            if (dynSlidersCheck.Checked)
+            if (_dynSlidersCheck.Checked)
             {
                 // Left min
                 if (currentLeftPos - currentDiff > 4000)
-                    minTempSlider.Minimum = currentLeftPos - currentDiff;
+                    _minTempSlider.Minimum = currentLeftPos - currentDiff;
                 else
-                    minTempSlider.Minimum = 4000;
+                    _minTempSlider.Minimum = 4000;
 
                 // Left max
                 if (currentLeftPos + currentDiff * 2 < 20000)
-                    minTempSlider.Maximum = currentLeftPos + currentDiff * 2;
+                    _minTempSlider.Maximum = currentLeftPos + currentDiff * 2;
                 else
-                    minTempSlider.Maximum = 20000;
+                    _minTempSlider.Maximum = 20000;
 
                 // Right min
                 if (currentRightPos - currentDiff * 2 > 4000)
-                    maxTempSlider.Minimum = currentRightPos - currentDiff * 2;
+                    _maxTempSlider.Minimum = currentRightPos - currentDiff * 2;
                 else
-                    maxTempSlider.Minimum = 4000;
+                    _maxTempSlider.Minimum = 4000;
 
                 // Right max
                 if (currentRightPos + currentDiff < 20000)
-                    maxTempSlider.Maximum = currentRightPos + currentDiff;
+                    _maxTempSlider.Maximum = currentRightPos + currentDiff;
                 else
-                    maxTempSlider.Maximum = 20000;
+                    _maxTempSlider.Maximum = 20000;
             }
             else
             {
-                maxTempSlider.Minimum = 4000;
-                minTempSlider.Minimum = 4000;
-                maxTempSlider.Maximum = 20000;
-                minTempSlider.Maximum = 20000;
+                _maxTempSlider.Minimum = 4000;
+                _minTempSlider.Minimum = 4000;
+                _maxTempSlider.Maximum = 20000;
+                _minTempSlider.Maximum = 20000;
             }
         }
 
@@ -641,75 +641,75 @@ namespace SeekOFix
             {
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    outputPathField.Text = dialog.SelectedPath;
+                    _outputPathField.Text = dialog.SelectedPath;
                 }
             }
         }
 
         private void HandleScreenshotButtonClick(object sender, EventArgs e)
         {
-            if (framePicture.Image == null) return;
-            Output.Screenshot(framePicture.Image as Bitmap, outputPathField.Text);
+            if (_framePicture.Image == null) return;
+            Output.Screenshot(_framePicture.Image as Bitmap, _outputPathField.Text);
         }
 
         private void HandleRecordVideoButtonClick(object sender, EventArgs e)
         {
-            if (recorder == null)
+            if (_recorder == null)
             {
-                recorder = new Output.VideoRecorder(outputPathField.Text);
+                _recorder = new Output.VideoRecorder(_outputPathField.Text);
 
-                if (!recorder.Start())
+                if (!_recorder.Start())
                 {
-                    recorder = null;
+                    _recorder = null;
                     return;
                 }
 
-                recordVideoButton.Text = "Stop recording";
+                _recordVideoButton.Text = "Stop recording";
             }
             else
             {
-                recorder.Stop();
-                recorder = null;
+                _recorder.Stop();
+                _recorder = null;
 
-                recordVideoButton.Text = "Record video";
+                _recordVideoButton.Text = "Record video";
             }
         }
 
         private void HandlePictureMouseEnter(object sender, EventArgs e)
         {
-            mouseLabel.Visible = true;
+            _mouseLabel.Visible = true;
         }
 
         private void HandlePictureMouseLeave(object sender, EventArgs e)
         {
-            mouseLabel.Visible = false;
+            _mouseLabel.Visible = false;
         }
 
         private void HandleMinTempSliderScroll(object sender, EventArgs e)
         {
-            if (autoRange) return;
+            if (_autoRange) return;
 
-            if (minTempSlider.Value < maxTempSlider.Value - 10)
+            if (_minTempSlider.Value < _maxTempSlider.Value - 10)
             {
-                gModeLeftManual = (ushort) minTempSlider.Value;
+                _gModeLeftManual = (ushort) _minTempSlider.Value;
             }
             else
             {
-                minTempSlider.Value = maxTempSlider.Value - 10;
+                _minTempSlider.Value = _maxTempSlider.Value - 10;
             }
         }
 
         private void HandleMaxTempSliderScroll(object sender, EventArgs e)
         {
-            if (autoRange) return;
+            if (_autoRange) return;
 
-            if (maxTempSlider.Value > minTempSlider.Value + 10)
+            if (_maxTempSlider.Value > _minTempSlider.Value + 10)
             {
-                gModeRightManual = (ushort) maxTempSlider.Value;
+                _gModeRightManual = (ushort) _maxTempSlider.Value;
             }
             else
             {
-                maxTempSlider.Value = minTempSlider.Value + 10;
+                _maxTempSlider.Value = _minTempSlider.Value + 10;
             }
         }
     }

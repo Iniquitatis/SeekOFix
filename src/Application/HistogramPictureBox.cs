@@ -6,10 +6,10 @@ namespace SeekOFix
 {
     public class HistogramPictureBox : CustomPictureBox
     {
-        const int WIDTH = 200;
-        const int HEIGHT = 100;
-        const int DRAW_WIDTH = WIDTH - 1;
-        const int DRAW_HEIGHT = HEIGHT - 1;
+        private const int WIDTH = 200;
+        private const int HEIGHT = 100;
+        private const int DRAW_WIDTH = WIDTH - 1;
+        private const int DRAW_HEIGHT = HEIGHT - 1;
 
         private ushort[] _gMode = new ushort[Constants.HISTOGRAM_SIZE];
         private ushort _gModeLeft = 0;
