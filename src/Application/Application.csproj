@@ -112,7 +112,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnalyzablePictureBox.cs">
+    <Compile Include="FramePictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Analyzer.cs" />

@@ -9,7 +9,7 @@ using AForge.Imaging.Filters;
 
 namespace SeekOFix
 {
-    public class AnalyzablePictureBox : CustomPictureBox
+    public class FramePictureBox : CustomPictureBox
     {
         private byte[,] _palette = new byte[Constants.PALETTE_SIZE, 3];
         private bool _applyDenoising = true;
@@ -83,7 +83,7 @@ namespace SeekOFix
             set { _maxPoints = value; AdjustAnalyzerCount(); Invalidate(); }
         }
 
-        public AnalyzablePictureBox()
+        public FramePictureBox()
         {
             MouseDown += HandleMouseDown;
         }
@@ -199,7 +199,7 @@ namespace SeekOFix
             return new Size((int) sx, (int) sy);
         }
 
-        public int DetectTemperature(Point coords)
+        public ushort DetectTemperature(Point coords)
         {
             return _data[coords.Y * Constants.DATA_W + coords.X];
         }

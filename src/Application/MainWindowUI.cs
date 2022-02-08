@@ -22,7 +22,8 @@ namespace SeekOFix
         private Label gModeLeftLabel;
         private Label gModeRightLabel;
         private Label maxTempRawLabel;
-        private AnalyzablePictureBox picture;
+        private Panel picturePanel;
+        private FramePictureBox framePicture;
         private TemperatureGaugePictureBox tempGaugePicture;
         private Label mouseLabel;
         private Label sliderMinTempLabel;
@@ -146,13 +147,13 @@ namespace SeekOFix
             applyDenoisingCheck.Anchor = AnchorStyles.Left;
             applyDenoisingCheck.Checked = true;
             applyDenoisingCheck.Text = "Apply denoising filter";
-            applyDenoisingCheck.CheckedChanged += (sender, e) => picture.ApplyDenoising = applyDenoisingCheck.Checked;
+            applyDenoisingCheck.CheckedChanged += (sender, e) => framePicture.ApplyDenoising = applyDenoisingCheck.Checked;
             applyDenoisingCheck.SetColumnSpan(2);
 
             var applySharpenCheck = appearanceLayout.CreateInCell<CheckBox>(0, 3);
             applySharpenCheck.Anchor = AnchorStyles.Left;
             applySharpenCheck.Text = "Apply sharpening filter";
-            applySharpenCheck.CheckedChanged += (sender, e) => picture.ApplySharpening = applySharpenCheck.Checked;
+            applySharpenCheck.CheckedChanged += (sender, e) => framePicture.ApplySharpening = applySharpenCheck.Checked;
             applySharpenCheck.SetColumnSpan(2);
 
             histogramPicture = appearanceLayout.CreateInCell<HistogramPictureBox>(0, 4);
@@ -192,14 +193,14 @@ namespace SeekOFix
             var enableAnalysisCheck = analysisLayout.CreateInCell<CheckBox>(0, 0);
             enableAnalysisCheck.Anchor = AnchorStyles.Left;
             enableAnalysisCheck.Text = "Enabled";
-            enableAnalysisCheck.CheckedChanged += (sender, e) => picture.AnalysisEnabled = enableAnalysisCheck.Checked;
+            enableAnalysisCheck.CheckedChanged += (sender, e) => framePicture.AnalysisEnabled = enableAnalysisCheck.Checked;
             enableAnalysisCheck.SetColumnSpan(2);
 
             var showTemperatureCheck = analysisLayout.CreateInCell<CheckBox>(0, 1);
             showTemperatureCheck.Anchor = AnchorStyles.Left;
             showTemperatureCheck.Checked = true;
             showTemperatureCheck.Text = "Show temperature";
-            showTemperatureCheck.CheckedChanged += (sender, e) => picture.ShowTemperature = showTemperatureCheck.Checked;
+            showTemperatureCheck.CheckedChanged += (sender, e) => framePicture.ShowTemperature = showTemperatureCheck.Checked;
             showTemperatureCheck.SetColumnSpan(2);
 
             var crossSizeLabel = analysisLayout.CreateInCell<Label>(0, 2);
@@ -212,13 +213,13 @@ namespace SeekOFix
             crossSizeSpinner.Maximum = 64;
             crossSizeSpinner.Minimum = 8;
             crossSizeSpinner.Value = 16;
-            crossSizeSpinner.ValueChanged += (sender, e) => picture.CrossSize = (int) crossSizeSpinner.Value;
+            crossSizeSpinner.ValueChanged += (sender, e) => framePicture.CrossSize = (int) crossSizeSpinner.Value;
 
             var showExtremesCheck = analysisLayout.CreateInCell<CheckBox>(0, 3);
             showExtremesCheck.Anchor = AnchorStyles.Left;
             showExtremesCheck.Checked = true;
             showExtremesCheck.Text = "Show extremes";
-            showExtremesCheck.CheckedChanged += (sender, e) => picture.ShowExtremes = showExtremesCheck.Checked;
+            showExtremesCheck.CheckedChanged += (sender, e) => framePicture.ShowExtremes = showExtremesCheck.Checked;
             showExtremesCheck.SetColumnSpan(2);
 
             var maxPointsLabel = analysisLayout.CreateInCell<Label>(0, 4);
@@ -231,12 +232,12 @@ namespace SeekOFix
             maxPointsSpinner.Maximum = 10;
             maxPointsSpinner.Minimum = 1;
             maxPointsSpinner.Value = 3;
-            maxPointsSpinner.ValueChanged += (sender, e) => picture.MaxPoints = (int) maxPointsSpinner.Value;
+            maxPointsSpinner.ValueChanged += (sender, e) => framePicture.MaxPoints = (int) maxPointsSpinner.Value;
 
             var deletePointsButton = analysisLayout.CreateInCell<Button>(0, 5);
             deletePointsButton.Dock = DockStyle.Fill;
             deletePointsButton.Text = "Delete all points";
-            deletePointsButton.Click += (sender, e) => picture.DeleteAllAnalyzers();
+            deletePointsButton.Click += (sender, e) => framePicture.DeleteAllAnalyzers();
             deletePointsButton.SetColumnSpan(2);
 
             var gaugeLabelCountLabel = analysisLayout.CreateInCell<Label>(0, 6);
@@ -317,18 +318,21 @@ namespace SeekOFix
             maxTempRawLabel.Anchor = AnchorStyles.None;
             maxTempRawLabel.TextAlign = ContentAlignment.MiddleCenter;
 
-            var picturePanel = mainLayout.CreateInCell<Panel>(1, 0);
+            picturePanel = mainLayout.CreateInCell<Panel>(1, 0);
             picturePanel.Dock = DockStyle.Fill;
             picturePanel.Padding = new Padding(3);
 
-            picture = picturePanel.CreateChild<AnalyzablePictureBox>();
-            picture.SizeMode = PictureBoxSizeMode.StretchImage;
-            picture.MouseEnter += HandleAnalyzablePictureMouseEnter;
-            picture.MouseLeave += HandleAnalyzablePictureMouseLeave;
-            picture.MouseMove += HandleAnalyzablePictureMouseMove;
+            framePicture = picturePanel.CreateChild<FramePictureBox>();
+            framePicture.SizeMode = PictureBoxSizeMode.StretchImage;
+            framePicture.MouseEnter += HandlePictureMouseEnter;
+            framePicture.MouseLeave += HandlePictureMouseLeave;
+            framePicture.MouseMove += (sender, e) => UpdateMouseLabelFromFramePicture(e.Location);
 
             tempGaugePicture = picturePanel.CreateChild<TemperatureGaugePictureBox>();
             tempGaugePicture.SizeMode = PictureBoxSizeMode.StretchImage;
+            tempGaugePicture.MouseEnter += HandlePictureMouseEnter;
+            tempGaugePicture.MouseLeave += HandlePictureMouseLeave;
+            tempGaugePicture.MouseMove += (sender, e) => UpdateMouseLabelFromTempGaugePicture(e.Location);
 
             mouseLabel = mainLayout.CreateInCell<Label>(1, 1);
             mouseLabel.Dock = DockStyle.Fill;

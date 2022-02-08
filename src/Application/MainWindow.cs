@@ -426,11 +426,11 @@ namespace SeekOFix
                 palette[i, 2] = color.B;
             }
 
-            picture.Palette = palette;
+            framePicture.Palette = palette;
             tempGaugePicture.Palette = palette;
         }
 
-        private void UpdateAnalyzablePictureBoxSize(AnalyzablePictureBox box, TemperatureGaugePictureBox gauge)
+        private void UpdateAnalyzablePictureBoxSize(FramePictureBox box, TemperatureGaugePictureBox gauge)
         {
             const int GAUGE_W = 70;
 
@@ -453,6 +453,17 @@ namespace SeekOFix
             gauge.Location = new Point(box.Location.X + box.Size.Width,
                                        box.Location.Y);
             gauge.Size = new Size(GAUGE_W, box.Size.Height);
+        }
+
+        private void UpdateMouseLabelFromFramePicture(Point localPos)
+        {
+            var coords = framePicture.LocalToCoords(localPos);
+            mouseLabel.Text = $"({coords.X}, {coords.Y}): {Utils.FormatTempString(tempUnit, framePicture.DetectTemperature(coords))}";
+        }
+
+        private void UpdateMouseLabelFromTempGaugePicture(Point localPos)
+        {
+            mouseLabel.Text = Utils.FormatTempString(tempUnit, tempGaugePicture.DetectTemperature(localPos));
         }
 
         private void HandleLoad(object sender, EventArgs e)
@@ -490,29 +501,36 @@ namespace SeekOFix
                 }
 
                 lock (arrID3.SyncRoot)
-                    picture.SupplyData(arrID3, gModeLeft, gModeRight);
+                    framePicture.SupplyData(arrID3, gModeLeft, gModeRight);
 
-                picture.UpdateImage();
-                picture.Reanalyze();
+                framePicture.UpdateImage();
+                framePicture.Reanalyze();
 
                 if (recorder != null)
-                    recorder.SupplyFrame(picture.Image as Bitmap);
+                    recorder.SupplyFrame(framePicture.Image as Bitmap);
 
                 if (firstAfterCal)
                 {
                     firstAfterCal = false;
 
                     if (autoSaveCheck.Checked)
-                        Output.Screenshot(picture.Image as Bitmap, outputPathField.Text);
+                        Output.Screenshot(framePicture.Image as Bitmap, outputPathField.Text);
                 }
 
                 lock (gMode.SyncRoot)
                     histogramPicture.SupplyData(gMode, gModeLeft, gModeRight);
 
                 histogramPicture.UpdateImage();
+
+                var pictureUnderCursor = picturePanel.GetChildAtPoint(picturePanel.PointToClient(MousePosition));
+
+                if (pictureUnderCursor == framePicture)
+                    UpdateMouseLabelFromFramePicture(framePicture.PointToClient(MousePosition));
+                else if (pictureUnderCursor == tempGaugePicture)
+                    UpdateMouseLabelFromTempGaugePicture(tempGaugePicture.PointToClient(MousePosition));
             }
 
-            UpdateAnalyzablePictureBoxSize(picture, tempGaugePicture);
+            UpdateAnalyzablePictureBoxSize(framePicture, tempGaugePicture);
         }
 
         private void HandleFormClosing(object sender, FormClosingEventArgs e)
@@ -555,7 +573,7 @@ namespace SeekOFix
             if (unitsCRadio.Checked) tempUnit = "C";
             if (unitsFRadio.Checked) tempUnit = "F";
 
-            picture.TempUnit = tempUnit;
+            framePicture.TempUnit = tempUnit;
             tempGaugePicture.TempUnit = tempUnit;
         }
 
@@ -630,8 +648,8 @@ namespace SeekOFix
 
         private void HandleScreenshotButtonClick(object sender, EventArgs e)
         {
-            if (picture.Image == null) return;
-            Output.Screenshot(picture.Image as Bitmap, outputPathField.Text);
+            if (framePicture.Image == null) return;
+            Output.Screenshot(framePicture.Image as Bitmap, outputPathField.Text);
         }
 
         private void HandleRecordVideoButtonClick(object sender, EventArgs e)
@@ -657,20 +675,14 @@ namespace SeekOFix
             }
         }
 
-        private void HandleAnalyzablePictureMouseEnter(object sender, EventArgs e)
+        private void HandlePictureMouseEnter(object sender, EventArgs e)
         {
             mouseLabel.Visible = true;
         }
 
-        private void HandleAnalyzablePictureMouseLeave(object sender, EventArgs e)
+        private void HandlePictureMouseLeave(object sender, EventArgs e)
         {
             mouseLabel.Visible = false;
-        }
-
-        private void HandleAnalyzablePictureMouseMove(object sender, MouseEventArgs e)
-        {
-            var coords = picture.LocalToCoords(e.Location);
-            mouseLabel.Text = $"({coords.X}, {coords.Y}): {Utils.FormatTempString(tempUnit, picture.DetectTemperature(coords))}";
         }
 
         private void HandleMinTempSliderScroll(object sender, EventArgs e)

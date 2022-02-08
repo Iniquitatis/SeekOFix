@@ -43,6 +43,11 @@ namespace SeekOFix
             set { _maxTemp = value; Invalidate(); }
         }
 
+        public ushort DetectTemperature(Point localPos)
+        {
+            return (ushort) MathUtils.Lerp(_minTemp, _maxTemp, (float) (Height - localPos.Y) / (float) Height);
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
