@@ -112,6 +112,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\TemperatureUnit.cs" />
     <Compile Include="UI\FramePictureBox.cs">
       <SubType>Component</SubType>
     </Compile>

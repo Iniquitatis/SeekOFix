@@ -23,7 +23,7 @@ namespace SeekOFix.UI
         private bool _autoRange = true;
         private bool _isRunning = true;
 
-        private string _tempUnit = "K";
+        private TemperatureUnit _tempUnit = TemperatureUnit.K;
 
         private ushort[] _arrID4 = new ushort[Constants.DATA_LENGTH];
         private ushort[] _arrID1 = new ushort[Constants.DATA_LENGTH];
@@ -569,9 +569,9 @@ namespace SeekOFix.UI
 
         private void HandleUnitRadiosCheckedChanged(object sender, EventArgs e)
         {
-            if (_unitsKRadio.Checked) _tempUnit = "K";
-            if (_unitsCRadio.Checked) _tempUnit = "C";
-            if (_unitsFRadio.Checked) _tempUnit = "F";
+            if (_unitsKRadio.Checked) _tempUnit = TemperatureUnit.K;
+            if (_unitsCRadio.Checked) _tempUnit = TemperatureUnit.C;
+            if (_unitsFRadio.Checked) _tempUnit = TemperatureUnit.F;
 
             _framePicture.TempUnit = _tempUnit;
             _tempGaugePicture.TempUnit = _tempUnit;

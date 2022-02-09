@@ -12,7 +12,7 @@ namespace SeekOFix.UI
         private const int LABEL_EDGE_OFFSET = 16;
 
         private byte[,] _palette = new byte[Constants.PALETTE_SIZE, 3];
-        private string _tempUnit = "K";
+        private TemperatureUnit _tempUnit = TemperatureUnit.K;
         private int _labelCount = 2;
         private ushort _minTemp = 0;
         private ushort _maxTemp = 30000;
@@ -24,7 +24,7 @@ namespace SeekOFix.UI
             set { _palette = value; UpdateImage(); Invalidate(); }
         }
 
-        public string TempUnit
+        public TemperatureUnit TempUnit
         {
             get => _tempUnit;
             set { _tempUnit = value; Invalidate(); }

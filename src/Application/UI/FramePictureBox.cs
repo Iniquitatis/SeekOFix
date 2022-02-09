@@ -18,7 +18,7 @@ namespace SeekOFix.UI
         private bool _applyDenoising = true;
         private bool _applySharpening = false;
         private bool _analysisEnabled = false;
-        private string _tempUnit = "K";
+        private TemperatureUnit _tempUnit = TemperatureUnit.K;
         private bool _showTemperature = true;
         private int _crossSize = 16;
         private bool _showExtremes = true;
@@ -56,7 +56,7 @@ namespace SeekOFix.UI
             set { _analysisEnabled = value; Reanalyze(); }
         }
 
-        public string TempUnit
+        public TemperatureUnit TempUnit
         {
             get => _tempUnit;
             set { _tempUnit = value; Invalidate(); }
