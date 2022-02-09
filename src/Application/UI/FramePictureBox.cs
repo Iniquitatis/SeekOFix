@@ -28,9 +28,9 @@ namespace SeekOFix.UI
         private ushort _gModeRight = 0;
         private Bitmap _frameBitmap = new Bitmap(Constants.DATA_W, Constants.DATA_H, PixelFormat.Format24bppRgb);
         private Bitmap _finalBitmap = null;
-        private List<Analyzer> _analyzers = new List<Analyzer>();
-        private Analyzer _hotAnalyzer = new Analyzer();
-        private Analyzer _coldAnalyzer = new Analyzer();
+        private List<AnalysisPoint> _points = new List<AnalysisPoint>();
+        private AnalysisPoint _hotPoint = new AnalysisPoint();
+        private AnalysisPoint _coldPoint = new AnalysisPoint();
 
         public byte[,] Palette
         {
@@ -83,7 +83,7 @@ namespace SeekOFix.UI
         public int MaxPoints
         {
             get => _maxPoints;
-            set { _maxPoints = value; AdjustAnalyzerCount(); Invalidate(); }
+            set { _maxPoints = value; AdjustPointCount(); Invalidate(); }
         }
 
         public FramePictureBox()
@@ -147,17 +147,17 @@ namespace SeekOFix.UI
         {
             DetectExtremes();
 
-            foreach (var analyzer in _analyzers)
+            foreach (var point in _points)
             {
-                analyzer.temperature = DetectTemperature(analyzer.coords);
+                point.temperature = DetectTemperature(point.coords);
             }
 
             Invalidate();
         }
 
-        public void DeleteAllAnalyzers()
+        public void DeleteAllPoints()
         {
-            _analyzers.Clear();
+            _points.Clear();
             Invalidate();
         }
 
@@ -214,15 +214,15 @@ namespace SeekOFix.UI
             var g = e.Graphics;
             g.EnableHQGraphics();
 
-            foreach (var analyzer in _analyzers)
+            foreach (var point in _points)
             {
-                DrawAnalyzer(g, analyzer, Color.White);
+                DrawPoint(g, point, Color.White);
             }
 
             if (_showExtremes)
             {
-                DrawAnalyzer(g, _hotAnalyzer, Color.Orange);
-                DrawAnalyzer(g, _coldAnalyzer, Color.LightBlue);
+                DrawPoint(g, _hotPoint, Color.Orange);
+                DrawPoint(g, _coldPoint, Color.LightBlue);
             }
 
             g.DisableHQGraphics();
@@ -235,30 +235,30 @@ namespace SeekOFix.UI
             if (e.Button == MouseButtons.Left)
             {
                 var coords = LocalToCoords(e.Location);
-                _analyzers.Add(new Analyzer(coords, DetectTemperature(coords)));
+                _points.Add(new AnalysisPoint(coords, DetectTemperature(coords)));
 
-                AdjustAnalyzerCount();
+                AdjustPointCount();
             }
             else if (e.Button == MouseButtons.Right)
             {
                 var size = new Size(_crossSize, _crossSize);
                 var cursor = e.Location;
                 cursor.Offset(new Point(_crossSize / 2, _crossSize / 2));
-                _analyzers.RemoveAll(x => new Rectangle(CoordsToLocal(x.coords), size).Contains(cursor));
+                _points.RemoveAll(x => new Rectangle(CoordsToLocal(x.coords), size).Contains(cursor));
             }
 
             Invalidate();
         }
 
-        private void DrawAnalyzer(Graphics graphics, Analyzer analyzer, Color color)
+        private void DrawPoint(Graphics graphics, AnalysisPoint point, Color color)
         {
-            var local = CoordsToLocal(analyzer.coords);
+            var local = CoordsToLocal(point.coords);
             var pixelSize = PixelSize();
             var x = local.X + pixelSize.Width / 2;
             var y = local.Y + pixelSize.Height / 2;
             var hw = _crossSize / 2;
             var hh = _crossSize / 2;
-            var t = analyzer.temperature;
+            var t = point.temperature;
 
             var lineOutline = new Pen(Color.Black, 5.0f);
             lineOutline.LineJoin = LineJoin.Round;
@@ -319,19 +319,36 @@ namespace SeekOFix.UI
                 }
             }
 
-            _coldAnalyzer.coords.X = lx;
-            _coldAnalyzer.coords.Y = ly;
-            _coldAnalyzer.temperature = lowest;
+            _coldPoint.coords.X = lx;
+            _coldPoint.coords.Y = ly;
+            _coldPoint.temperature = lowest;
 
-            _hotAnalyzer.coords.X = hx;
-            _hotAnalyzer.coords.Y = hy;
-            _hotAnalyzer.temperature = highest;
+            _hotPoint.coords.X = hx;
+            _hotPoint.coords.Y = hy;
+            _hotPoint.temperature = highest;
         }
 
-        private void AdjustAnalyzerCount()
+        private void AdjustPointCount()
         {
-            while (_analyzers.Count > _maxPoints)
-                _analyzers.RemoveAt(0);
+            while (_points.Count > _maxPoints)
+                _points.RemoveAt(0);
+        }
+
+        private class AnalysisPoint
+        {
+            public Point coords = new Point();
+            public int temperature = 0;
+
+            public AnalysisPoint()
+            {
+
+            }
+
+            public AnalysisPoint(Point coords, int temperature)
+            {
+                this.coords = coords;
+                this.temperature = temperature;
+            }
         }
     }
 }

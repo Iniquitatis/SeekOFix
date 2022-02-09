@@ -115,7 +115,6 @@
     <Compile Include="UI\FramePictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Common\Analyzer.cs" />
     <Compile Include="Utils\Math.cs" />
     <Compile Include="UI\HistogramPictureBox.cs">
       <SubType>Component</SubType>

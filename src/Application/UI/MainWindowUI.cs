@@ -236,7 +236,7 @@ namespace SeekOFix.UI
             var deletePointsButton = analysisLayout.CreateInCell<Button>(0, 5);
             deletePointsButton.Dock = DockStyle.Fill;
             deletePointsButton.Text = "Delete all points";
-            deletePointsButton.Click += (sender, e) => _framePicture.DeleteAllAnalyzers();
+            deletePointsButton.Click += (sender, e) => _framePicture.DeleteAllPoints();
             deletePointsButton.SetColumnSpan(2);
 
             var gaugeLabelCountLabel = analysisLayout.CreateInCell<Label>(0, 6);
