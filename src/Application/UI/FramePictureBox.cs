@@ -241,10 +241,10 @@ namespace SeekOFix.UI
             }
             else if (e.Button == MouseButtons.Right)
             {
-                var size = new Size(_crossSize, _crossSize);
-                var cursor = e.Location;
-                cursor.Offset(new Point(_crossSize / 2, _crossSize / 2));
-                _points.RemoveAll(x => new Rectangle(CoordsToLocal(x.coords), size).Contains(cursor));
+                var rectOffset = new Size(_crossSize / 2, _crossSize / 2);
+                var rectSize = new Size(_crossSize, _crossSize);
+                var cursorPos = e.Location;
+                _points.RemoveAll(x => new Rectangle(CoordsToLocal(x.coords) - rectOffset, rectSize).Contains(cursorPos));
             }
 
             Invalidate();
