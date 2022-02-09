@@ -13,8 +13,8 @@ namespace SeekOFix.UI
         private RadioButton _unitsCRadio;
         private RadioButton _unitsFRadio;
         private HistogramPictureBox _histogramPicture;
-        private Button _manualRangeSwitchButton;
-        private CheckBox _dynSlidersCheck;
+        private Button _rangeSwitchButton;
+        private CheckBox _relativeSlidersCheck;
         private TextBox _outputPathField;
         private CheckBox _autoSaveCheck;
         private Button _recordVideoButton;
@@ -161,18 +161,18 @@ namespace SeekOFix.UI
             _histogramPicture.SizeMode = PictureBoxSizeMode.StretchImage;
             _histogramPicture.SetColumnSpan(2);
 
-            _manualRangeSwitchButton = appearanceLayout.CreateInCell<Button>(0, 5);
-            _manualRangeSwitchButton.Dock = DockStyle.Fill;
-            _manualRangeSwitchButton.Text = "Switch to manual range";
-            _manualRangeSwitchButton.Click += HandleManualRangeSwitchButtonClick;
-            _manualRangeSwitchButton.SetColumnSpan(2);
+            _rangeSwitchButton = appearanceLayout.CreateInCell<Button>(0, 5);
+            _rangeSwitchButton.Dock = DockStyle.Fill;
+            _rangeSwitchButton.Text = "Switch to manual range";
+            _rangeSwitchButton.Click += HandleManualRangeSwitchButtonClick;
+            _rangeSwitchButton.SetColumnSpan(2);
 
-            _dynSlidersCheck = appearanceLayout.CreateInCell<CheckBox>(0, 6);
-            _dynSlidersCheck.Anchor = AnchorStyles.Left;
-            _dynSlidersCheck.Text = "Enable relative sliders";
-            _dynSlidersCheck.Visible = false;
-            _dynSlidersCheck.CheckedChanged += HandleDynSlidersCheckCheckedChanged;
-            _dynSlidersCheck.SetColumnSpan(2);
+            _relativeSlidersCheck = appearanceLayout.CreateInCell<CheckBox>(0, 6);
+            _relativeSlidersCheck.Anchor = AnchorStyles.Left;
+            _relativeSlidersCheck.Text = "Enable relative sliders";
+            _relativeSlidersCheck.Visible = false;
+            _relativeSlidersCheck.CheckedChanged += HandleDynSlidersCheckCheckedChanged;
+            _relativeSlidersCheck.SetColumnSpan(2);
 
             var analysisTab = mainControlTabs.CreateChild<TabPage>("Analysis");
             analysisTab.Padding = new Padding(3);

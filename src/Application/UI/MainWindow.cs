@@ -25,11 +25,11 @@ namespace SeekOFix.UI
 
         private TemperatureUnit _tempUnit = TemperatureUnit.K;
 
-        private ushort[] _arrID4 = new ushort[Constants.DATA_LENGTH];
-        private ushort[] _arrID1 = new ushort[Constants.DATA_LENGTH];
-        private ushort[] _arrID3 = new ushort[Constants.DATA_LENGTH];
+        private ushort[] _dataFrame4 = new ushort[Constants.DATA_LENGTH];
+        private ushort[] _dataFrame1 = new ushort[Constants.DATA_LENGTH];
+        private ushort[] _dataFrame3 = new ushort[Constants.DATA_LENGTH];
 
-        private bool[] _badPixelArr = new bool[Constants.DATA_LENGTH];
+        private bool[] _badPixels = new bool[Constants.DATA_LENGTH];
 
         private ushort[] _gMode = new ushort[Constants.HISTOGRAM_SIZE];
 
@@ -41,11 +41,11 @@ namespace SeekOFix.UI
         private ushort _gModeRight = 0;
         private ushort _gModeLeftManual = 0;
         private ushort _gModeRightManual = 0;
-        private ushort _avgID4 = 0;
-        private ushort _avgID1 = 0;
+        private ushort _averageFrame4 = 0;
+        private ushort _averageFrame1 = 0;
         private ushort _maxTempRaw = 0;
 
-        private double[] _gainCalArr = new double[Constants.DATA_LENGTH];
+        private double[] _gainCal = new double[Constants.DATA_LENGTH];
 
         private Output.VideoRecorder _recorder = null;
 
@@ -179,43 +179,43 @@ namespace SeekOFix.UI
 
         private void Frame4Stuff()
         {
-            _arrID4 = _currentFrame.RawDataU16;
-            _avgID4 = GetMode(_arrID4);
+            _dataFrame4 = _currentFrame.RawDataU16;
+            _averageFrame4 = GetMode(_dataFrame4);
 
             for (int i = 0; i < Constants.DATA_LENGTH; i++)
             {
-                if (_arrID4[i] > 2000 && _arrID4[i] < 8000)
+                if (_dataFrame4[i] > 2000 && _dataFrame4[i] < 8000)
                 {
-                    _gainCalArr[i] = _avgID4 / (double) _arrID4[i];
+                    _gainCal[i] = _averageFrame4 / (double) _dataFrame4[i];
                 }
                 else
                 {
-                    _gainCalArr[i] = 1;
-                    _badPixelArr[i] = true;
+                    _gainCal[i] = 1.0;
+                    _badPixels[i] = true;
                 }
             }
         }
 
         private void Frame1Stuff()
         {
-            _arrID1 = _currentFrame.RawDataU16;
-            //_avgID1 = GetMode(_arrID1);
+            _dataFrame1 = _currentFrame.RawDataU16;
+            //_averageFrame1 = GetMode(_dataFrame1);
         }
 
         private void Frame3Stuff()
         {
-            _arrID3 = _currentFrame.RawDataU16;
+            _dataFrame3 = _currentFrame.RawDataU16;
 
             for (int i = 0; i < Constants.DATA_LENGTH; i++)
             {
-                if (_arrID3[i] > 2000)
+                if (_dataFrame3[i] > 2000)
                 {
-                    _arrID3[i] = (ushort) ((_arrID3[i] - _arrID1[i]) * _gainCalArr[i] + 7500);
+                    _dataFrame3[i] = (ushort) ((_dataFrame3[i] - _dataFrame1[i]) * _gainCal[i] + 7500);
                 }
                 else
                 {
-                    _arrID3[i] = 0;
-                    _badPixelArr[i] = true;
+                    _dataFrame3[i] = 0;
+                    _badPixels[i] = true;
                 }
             }
 
@@ -226,13 +226,13 @@ namespace SeekOFix.UI
 
         private void MarkBadPixels()
         {
-            ushort[] rawDataArr = _currentFrame.RawDataU16;
+            ushort[] data = _currentFrame.RawDataU16;
 
-            for (int i = 0; i < rawDataArr.Length; i++)
+            for (int i = 0; i < data.Length; i++)
             {
-                if (rawDataArr[i] < 2000 || rawDataArr[i] > 22000)
+                if (data[i] < 2000 || data[i] > 22000)
                 {
-                    _badPixelArr[i] = true;
+                    _badPixels[i] = true;
                 }
             }
         }
@@ -245,43 +245,43 @@ namespace SeekOFix.UI
             {
                 for (ushort x = 0; x < Constants.DATA_W; x++)
                 {
-                    if (_badPixelArr[i] && x < Constants.IMAGE_W)
+                    if (_badPixels[i] && x < Constants.IMAGE_W)
                     {
-                        ushort val = 0;
-                        ushort nr = 0;
+                        ushort value = 0;
+                        ushort count = 0;
 
                         // Top pixel
-                        if (y > 0 && !_badPixelArr[i - Constants.DATA_W])
+                        if (y > 0 && !_badPixels[i - Constants.DATA_W])
                         {
-                            val += _arrID3[i - Constants.DATA_W];
-                            ++nr;
+                            value += _dataFrame3[i - Constants.DATA_W];
+                            ++count;
                         }
 
                         // Bottom pixel
-                        if (y < (Constants.IMAGE_H - 1) && !_badPixelArr[i + Constants.DATA_W])
+                        if (y < (Constants.IMAGE_H - 1) && !_badPixels[i + Constants.DATA_W])
                         {
-                            val += _arrID3[i + Constants.DATA_W];
-                            ++nr;
+                            value += _dataFrame3[i + Constants.DATA_W];
+                            ++count;
                         }
 
                         // Left pixel
-                        if (x > 0 && !_badPixelArr[i - 1])
+                        if (x > 0 && !_badPixels[i - 1])
                         {
-                            val += _arrID3[i - 1];
-                            ++nr;
+                            value += _dataFrame3[i - 1];
+                            ++count;
                         }
 
                         // Right pixel
-                        if (x < (Constants.IMAGE_W - 1) && !_badPixelArr[i + 1])
+                        if (x < (Constants.IMAGE_W - 1) && !_badPixels[i + 1])
                         {
-                            val += _arrID3[i + 1];
-                            ++nr;
+                            value += _dataFrame3[i + 1];
+                            ++count;
                         }
 
-                        if (nr > 0)
+                        if (count > 0)
                         {
-                            val /= nr;
-                            _arrID3[i] = val;
+                            value /= count;
+                            _dataFrame3[i] = value;
                         }
                     }
 
@@ -293,7 +293,7 @@ namespace SeekOFix.UI
         private void RemoveNoise()
         {
             ushort i = 0;
-            ushort[] arrColor = new ushort[4];
+            ushort[] color = new ushort[4];
 
             for (ushort y = 0; y < Constants.DATA_H; y++)
             {
@@ -301,16 +301,16 @@ namespace SeekOFix.UI
                 {
                     if (x > 0 && x < Constants.IMAGE_W && y > 0 && y < (Constants.IMAGE_H - 1))
                     {
-                        arrColor[0] = _arrID3[i - Constants.DATA_W]; // Top
-                        arrColor[1] = _arrID3[i + Constants.DATA_W]; // Bottom
-                        arrColor[2] = _arrID3[i - 1]; // Left
-                        arrColor[3] = _arrID3[i + 1]; // Right
+                        color[0] = _dataFrame3[i - Constants.DATA_W]; // Top
+                        color[1] = _dataFrame3[i + Constants.DATA_W]; // Bottom
+                        color[2] = _dataFrame3[i - 1]; // Left
+                        color[3] = _dataFrame3[i + 1]; // Right
 
-                        ushort val = (ushort) ((arrColor[0] + arrColor[1] + arrColor[2] + arrColor[3] - Highest(arrColor) - Lowest(arrColor)) / 2);
+                        ushort value = (ushort) ((color[0] + color[1] + color[2] + color[3] - Highest(color) - Lowest(color)) / 2);
 
-                        if (Math.Abs(val - _arrID3[i]) > 100 && val != 0)
+                        if (Math.Abs(value - _dataFrame3[i]) > 100 && value != 0)
                         {
-                            _arrID3[i] = val;
+                            _dataFrame3[i] = value;
                         }
                     }
 
@@ -345,27 +345,27 @@ namespace SeekOFix.UI
             return lowest;
         }
 
-        private ushort GetMode(ushort[] arr)
+        private ushort GetMode(ushort[] data)
         {
-            ushort[] arrMode = new ushort[320];
+            ushort[] mode = new ushort[320];
 
             for (ushort i = 0; i < Constants.DATA_LENGTH; i++)
             {
-                if ((arr[i] > 1000) && (arr[i] / 100 != 0)) arrMode[arr[i] / 100]++;
+                if ((data[i] > 1000) && (data[i] / 100 != 0)) mode[data[i] / 100]++;
             }
 
-            ushort topPos = (ushort) Array.IndexOf(arrMode, arrMode.Max());
+            ushort topPos = (ushort) Array.IndexOf(mode, mode.Max());
 
             return (ushort) (topPos * 100);
         }
 
         private void GetHistogram()
         {
-            _maxTempRaw = _arrID3.Max();
+            _maxTempRaw = _dataFrame3.Max();
 
             for (ushort i = 0; i < Constants.DATA_LENGTH; i++)
             {
-                if ((_arrID3[i] > 1000) && (_arrID3[i] / 10 != 0) && !_badPixelArr[i]) _gMode[_arrID3[i] / 10]++;
+                if ((_dataFrame3[i] > 1000) && (_dataFrame3[i] / 10 != 0) && !_badPixels[i]) _gMode[_dataFrame3[i] / 10]++;
             }
 
             ushort topPos = (ushort) Array.IndexOf(_gMode, _gMode.Max());
@@ -470,7 +470,7 @@ namespace SeekOFix.UI
         {
             var pngFiles = new DirectoryInfo(Directory.GetCurrentDirectory() + "\\Palette").GetFiles("*.png");
 
-            foreach (FileInfo file in pngFiles)
+            foreach (var file in pngFiles)
             {
                 _paletteCombo.Items.Add(new ComboItem(file.FullName, file.Name.Replace(".png", "")));
             }
@@ -500,8 +500,8 @@ namespace SeekOFix.UI
                     _maxTempSlider.Value = _gModeRight;
                 }
 
-                lock (_arrID3.SyncRoot)
-                    _framePicture.SupplyData(_arrID3, _gModeLeft, _gModeRight);
+                lock (_dataFrame3.SyncRoot)
+                    _framePicture.SupplyData(_dataFrame3, _gModeLeft, _gModeRight);
 
                 _framePicture.UpdateImage();
                 _framePicture.Reanalyze();
@@ -563,8 +563,8 @@ namespace SeekOFix.UI
 
         private void HandlePaletteComboSelectedIndexChanged(object sender, EventArgs e)
         {
-            var newPal = (ComboItem) _paletteCombo.SelectedItem;
-            LoadPalette(newPal.Key);
+            var item = (ComboItem) _paletteCombo.SelectedItem;
+            LoadPalette(item.Key);
         }
 
         private void HandleUnitRadiosCheckedChanged(object sender, EventArgs e)
@@ -583,55 +583,58 @@ namespace SeekOFix.UI
 
             if (_autoRange)
             {
-                _manualRangeSwitchButton.Text = "Switch to manual range";
-                _dynSlidersCheck.Checked = false;
-                _dynSlidersCheck.Visible = false;
+                _rangeSwitchButton.Text = "Switch to manual range";
+                _relativeSlidersCheck.Checked = false;
+                _relativeSlidersCheck.Visible = false;
             }
             else
             {
-                _manualRangeSwitchButton.Text = "Switch to auto range";
-                _dynSlidersCheck.Visible = true;
+                _rangeSwitchButton.Text = "Switch to auto range";
+                _relativeSlidersCheck.Visible = true;
             }
         }
 
         private void HandleDynSlidersCheckCheckedChanged(object sender, EventArgs e)
         {
-            int currentLeftPos = _minTempSlider.Value;
-            int currentRightPos = _maxTempSlider.Value;
-            int currentDiff = currentRightPos - currentLeftPos;
+            const int MINIMUM = 4000;
+            const int MAXIMUM = 20000;
 
-            if (_dynSlidersCheck.Checked)
+            var currentLeftPos = _minTempSlider.Value;
+            var currentRightPos = _maxTempSlider.Value;
+            var currentDiff = currentRightPos - currentLeftPos;
+
+            if (_relativeSlidersCheck.Checked)
             {
                 // Left min
-                if (currentLeftPos - currentDiff > 4000)
+                if (currentLeftPos - currentDiff > MINIMUM)
                     _minTempSlider.Minimum = currentLeftPos - currentDiff;
                 else
-                    _minTempSlider.Minimum = 4000;
+                    _minTempSlider.Minimum = MINIMUM;
 
                 // Left max
-                if (currentLeftPos + currentDiff * 2 < 20000)
+                if (currentLeftPos + currentDiff * 2 < MAXIMUM)
                     _minTempSlider.Maximum = currentLeftPos + currentDiff * 2;
                 else
-                    _minTempSlider.Maximum = 20000;
+                    _minTempSlider.Maximum = MAXIMUM;
 
                 // Right min
-                if (currentRightPos - currentDiff * 2 > 4000)
+                if (currentRightPos - currentDiff * 2 > MINIMUM)
                     _maxTempSlider.Minimum = currentRightPos - currentDiff * 2;
                 else
-                    _maxTempSlider.Minimum = 4000;
+                    _maxTempSlider.Minimum = MINIMUM;
 
                 // Right max
-                if (currentRightPos + currentDiff < 20000)
+                if (currentRightPos + currentDiff < MAXIMUM)
                     _maxTempSlider.Maximum = currentRightPos + currentDiff;
                 else
-                    _maxTempSlider.Maximum = 20000;
+                    _maxTempSlider.Maximum = MAXIMUM;
             }
             else
             {
-                _maxTempSlider.Minimum = 4000;
-                _minTempSlider.Minimum = 4000;
-                _maxTempSlider.Maximum = 20000;
-                _minTempSlider.Maximum = 20000;
+                _minTempSlider.Minimum = MINIMUM;
+                _minTempSlider.Maximum = MAXIMUM;
+                _maxTempSlider.Minimum = MINIMUM;
+                _maxTempSlider.Maximum = MAXIMUM;
             }
         }
 
