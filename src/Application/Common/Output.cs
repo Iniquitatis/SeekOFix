@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 using AForge.Video.FFMPEG;
 
-namespace SeekOFix
+namespace SeekOFix.Common
 {
     public static class Output
     {

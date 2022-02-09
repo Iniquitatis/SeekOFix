@@ -2,9 +2,9 @@
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 
-namespace SeekOFix
+namespace SeekOFix.Utils
 {
-    public static class DrawingUtils
+    public static class Drawing
     {
         public static void EnableHQGraphics(this Graphics graphics)
         {

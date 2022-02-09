@@ -1,8 +1,11 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
+using SeekOFix.Common;
 
-namespace SeekOFix
+using static SeekOFix.Utils.Drawing;
+
+namespace SeekOFix.UI
 {
     public class TemperatureGaugePictureBox : CustomPictureBox
     {
@@ -47,7 +50,7 @@ namespace SeekOFix
 
         public ushort DetectTemperature(Point localPos)
         {
-            return (ushort) MathUtils.Lerp(_minTemp, _maxTemp, (float) (Height - localPos.Y) / (float) Height);
+            return (ushort) Utils.Math.Lerp(_minTemp, _maxTemp, (float) (Height - localPos.Y) / (float) Height);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -85,10 +88,10 @@ namespace SeekOFix
             var factorFinal = factorOffset + factor * factorScale;
 
             var x = Width / 2;
-            var y = (int) MathUtils.Lerp(0, Height, factorFinal);
-            var t = (ushort) MathUtils.Lerp(_maxTemp, _minTemp, factorFinal);
+            var y = (int) Utils.Math.Lerp(0, Height, factorFinal);
+            var t = (ushort) Utils.Math.Lerp(_maxTemp, _minTemp, factorFinal);
 
-            var text = Utils.FormatTempString(_tempUnit, t);
+            var text = Utils.Thermal.FormatTempString(_tempUnit, t);
             graphics.DrawText(new Point(x, y), text, 17.0f, ContentAlignment.MiddleCenter, Color.White, Color.Black);
         }
     }

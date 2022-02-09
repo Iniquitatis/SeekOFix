@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using SeekOFix.Common;
 
-namespace SeekOFix
+using static SeekOFix.Utils.Drawing;
+
+namespace SeekOFix.UI
 {
     public class HistogramPictureBox : CustomPictureBox
     {

@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace SeekOFix
+namespace SeekOFix.Common
 {
     public class Analyzer
     {

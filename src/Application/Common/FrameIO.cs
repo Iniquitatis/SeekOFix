@@ -2,7 +2,7 @@
 using System.IO;
 using winusbdotnet.UsbDevices;
 
-namespace SeekOFix
+namespace SeekOFix.Common
 {
     public static class FrameIO
     {

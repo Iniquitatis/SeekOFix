@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using winusbdotnet.UsbDevices;
+using SeekOFix.Common;
 
-namespace SeekOFix
+namespace SeekOFix.UI
 {
     public partial class MainWindow : Form
     {
@@ -458,12 +458,12 @@ namespace SeekOFix
         private void UpdateMouseLabelFromFramePicture(Point localPos)
         {
             var coords = _framePicture.LocalToCoords(localPos);
-            _mouseLabel.Text = $"({coords.X}, {coords.Y}): {Utils.FormatTempString(_tempUnit, _framePicture.DetectTemperature(coords))}";
+            _mouseLabel.Text = $"({coords.X}, {coords.Y}): {Utils.Thermal.FormatTempString(_tempUnit, _framePicture.DetectTemperature(coords))}";
         }
 
         private void UpdateMouseLabelFromTempGaugePicture(Point localPos)
         {
-            _mouseLabel.Text = Utils.FormatTempString(_tempUnit, _tempGaugePicture.DetectTemperature(localPos));
+            _mouseLabel.Text = Utils.Thermal.FormatTempString(_tempUnit, _tempGaugePicture.DetectTemperature(localPos));
         }
 
         private void HandleLoad(object sender, EventArgs e)
@@ -485,8 +485,8 @@ namespace SeekOFix
                 _tempGaugePicture.MinTemp = _gModeLeft;
                 _tempGaugePicture.MaxTemp = _gModeRight;
 
-                _sliderMinTempLabel.Text = Utils.FormatTempString(_tempUnit, _gModeLeft);
-                _sliderMaxTempLabel.Text = Utils.FormatTempString(_tempUnit, _gModeRight);
+                _sliderMinTempLabel.Text = Utils.Thermal.FormatTempString(_tempUnit, _gModeLeft);
+                _sliderMaxTempLabel.Text = Utils.Thermal.FormatTempString(_tempUnit, _gModeRight);
 
                 // Set debug labels
                 _gModeLeftLabel.Text = _gModeLeft.ToString();

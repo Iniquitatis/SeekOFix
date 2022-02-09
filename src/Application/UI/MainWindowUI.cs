@@ -1,10 +1,9 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
-using static SeekOFix.UIUtils;
+using static SeekOFix.Utils.UI;
 
-namespace SeekOFix
+namespace SeekOFix.UI
 {
     public partial class MainWindow
     {

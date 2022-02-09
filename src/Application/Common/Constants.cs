@@ -1,4 +1,4 @@
-﻿namespace SeekOFix
+﻿namespace SeekOFix.Common
 {
     public static class Constants
     {

@@ -6,8 +6,11 @@ using System.Drawing.Imaging;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AForge.Imaging.Filters;
+using SeekOFix.Common;
 
-namespace SeekOFix
+using static SeekOFix.Utils.Drawing;
+
+namespace SeekOFix.UI
 {
     public class FramePictureBox : CustomPictureBox
     {
@@ -106,7 +109,7 @@ namespace SeekOFix
 
                 Parallel.For(0, Constants.DATA_LENGTH, i =>
                 {
-                    var value = MathUtils.Clamp(_data[i], _gModeLeft, _gModeRight);
+                    var value = Utils.Math.Clamp(_data[i], _gModeLeft, _gModeRight);
                     value -= _gModeLeft;
 
                     var index = (ushort) ((double) value / scale);
@@ -275,7 +278,7 @@ namespace SeekOFix
 
             if (_showTemperature)
             {
-                var text = Utils.FormatTempString(_tempUnit, t);
+                var text = Utils.Thermal.FormatTempString(_tempUnit, t);
                 g.DrawText(new Point(x, y - hh), text, 18.0f, ContentAlignment.BottomCenter, Color.White, Color.Black);
             }
 

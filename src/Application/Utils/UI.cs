@@ -3,15 +3,15 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace SeekOFix
+namespace SeekOFix.Utils
 {
-    public static class UIUtils
+    public static class UI
     {
         public static T CreateControl<T>(params object[] args)
             where T : Control
         {
             var result = (T) typeof(T).GetConstructor(args.Select(x => x.GetType()).ToArray()).Invoke(args);
-            var defaultsFunc = typeof(UIUtils).GetMethod(
+            var defaultsFunc = typeof(UI).GetMethod(
                 "ApplyControlDefaults",
                 BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
                 null,

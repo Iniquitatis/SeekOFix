@@ -1,6 +1,6 @@
-﻿namespace SeekOFix
+﻿namespace SeekOFix.Utils
 {
-    public static class Utils
+    public static class Thermal
     {
         public static string FormatTempString(string unit, int rawValue)
         {

@@ -1,6 +1,6 @@
-﻿namespace SeekOFix
+﻿namespace SeekOFix.Utils
 {
-    public static class MathUtils
+    public static class Math
     {
         public static ushort Clamp(ushort value, ushort minimum, ushort maximum)
         {
