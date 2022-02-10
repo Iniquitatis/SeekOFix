@@ -77,7 +77,7 @@ namespace SeekOFix.Utils
         public static void SetRowSpan(this Control control, int count)
         {
             var layout = control?.Parent as TableLayoutPanel;
-            layout?.SetColumnSpan(control, count);
+            layout?.SetRowSpan(control, count);
         }
 
         public static void SetSpan(this Control control, int columns, int rows)
